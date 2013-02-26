@@ -1,0 +1,136 @@
+<?php
+/* vim:set softtabstop=4 shiftwidth=4 expandtab: */
+/**
+ *
+ * LICENSE: GNU General Public License, version 2 (GPLv2)
+ * Copyright 2001 - 2013 Ampache.org
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License v2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ */
+
+if (INIT_LOADED != '1') { exit; }
+
+$web_path = Config::get('web_path');
+$htmllang = str_replace("_","-",Config::get('lang'));
+$location = get_location();
+$dir = is_rtl(Config::get('lang')) ? "rtl" : "ltr";
+$themecss = Config::get('theme_path') . '/templates/';
+$css = ($dir == 'rtl') ? $themecss.'default-rtl.css' : $themecss.'default.css';
+$cssdir = Config::get('prefix').$themecss;
+if(!is_file($cssdir.'default-rtl.css')) {
+	$css = $themecss.'default.css';
+}
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $htmllang; ?>" lang="<?php echo $htmllang; ?>" dir="<?php echo $dir;?>">
+
+<head>
+<link rel="shortcut icon" href="<?php echo $web_path; ?>/favicon.ico" />
+<link rel="search" type="application/opensearchdescription+xml" title="<?php echo scrub_out(Config::get('site_title')); ?>" href="<?php echo $web_path; ?>/search.php?action=descriptor" />
+<?php
+if (Config::get('use_rss')) { ?>
+<link rel="alternate" type="application/rss+xml" title="<?php echo T_('Now Playing'); ?>" href="<?php echo $web_path; ?>/rss.php" />
+<link rel="alternate" type="application/rss+xml" title="<?php echo T_('Recently Played'); ?>" href="<?php echo $web_path; ?>/rss.php?type=recently_played" />
+<?php } ?>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=<?php echo Config::get('site_charset'); ?>" />
+<title><?php echo scrub_out(Config::get('site_title')); ?> - <?php echo $location['title']; ?></title>
+<?php require_once Config::get('prefix') . '/templates/stylesheets.inc.php'; ?>
+<?php  if (true == $GLOBALS['isMobile']) { ?>
+   <link rel="apple-touch-icon" href="<?php echo $web_path; ?>/tt-mobile/favicon.png" />
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <meta name="viewport" content="width=320, user-scalable = no" />
+   <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/mobile.playlist.css" type="text/css" media="screen" />
+<?php } else { ?>
+   <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/jplayer.blue.monday.css" type="text/css" media="screen" />
+<?php } ?>
+
+<script src="<?php echo $web_path; ?>/modules/prototype/prototype.js" type="text/javascript"></script>
+
+<script src="<?php echo $web_path; ?>/lib/javascript/base.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/lib/javascript/ajax.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/lib/javascript/search.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/lib/javascript/search-data.php?type=song" type="text/javascript"></script>
+
+<script src="<?php echo $web_path; ?>/modules/jplayer/extras/jquery-1.8.2-ajax-deprecated.min.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/modules/jplayer/jquery.jplayer.min.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/modules/jplayer/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/modules/jplayer/add-on/jquery.jplayer.inspector.js" type="text/javascript"></script>
+
+<script type="text/javascript">jQuery.noConflict();</script>
+
+
+
+</head>
+<body>
+
+
+
+<!-- rfc3514 implementation -->
+<div id="rfc3514" style="display:none;">0x0</div>
+<div id="maincontainer">
+
+<?php if (true == $GLOBALS['isMobile']){ ?>
+	<div id="header"><!-- This is the header -->
+	<table>
+	<tr>
+	<td>
+	    <a href="<?php echo Config::get('web_path'); ?>">
+		<h2><?php echo scrub_out(Config::get('site_title')); ?></h2>
+		</a>
+	</td>
+	<td>
+		<!-- Tiny little iframe, used to cheat the system -->
+		<div id="ajax-loading">Loading . . .</div>
+		<iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
+	</td>
+	</tr>
+	
+	</table>
+	</div><!-- End header -->
+<?php } else { ?>
+	<div id="header"><!-- This is the header -->
+        <h1 id="headerlogo">
+          <a href="<?php echo Config::get('web_path'); ?>">
+            <img src="<?php echo $web_path; ?><?php echo Config::get('theme_path'); ?>/images/ampache.png" title="<?php echo Config::get('site_title'); ?>" alt="<?php echo Config::get('site_title'); ?>" />
+          </a>
+        </h1>
+        <div id="headerbox">
+            <?php UI::show_box_top('','box box_headerbox'); ?>
+            <?php require_once Config::get('prefix') . '/templates/show_search_bar.inc.php'; ?>
+            <?php require_once Config::get('prefix') . '/templates/show_playtype_switch.inc.php'; ?>
+            <span id="loginInfo"><a href="<?php echo Config::get('web_path'); ?>/preferences.php?tab=account"><?php echo $GLOBALS['user']->fullname; ?></a> <a href="<?php echo Config::get('web_path'); ?>/logout.php">[<?php echo T_('Log out'); ?>]</a></span>
+            <?php UI::show_box_bottom(); ?>
+        </div> <!-- End headerbox -->
+    </div><!-- End header -->
+    <div id="sidebar"><!-- This is the sidebar -->
+        <?php require_once Config::get('prefix') . '/templates/sidebar.inc.php'; ?>
+    </div><!-- End sidebar -->
+    <div id="rightbar"><!-- This is the rightbar -->
+        <?php require_once Config::get('prefix') . '/templates/rightbar.inc.php'; ?>
+    </div><!-- End rightbar -->
+<!-- Tiny little iframe, used to cheat the system -->
+<div id="ajax-loading">Loading . . .</div>
+<iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
+<div id="content">
+		
+<?php } ?>	
+
+<?php if (Config::get('int_config_version') != Config::get('config_version') AND $GLOBALS['user']->has_access(100)) { ?>
+<div class="fatalerror">
+    <?php echo T_('Error Config File Out of Date'); ?>
+    <a href="<?php echo Config::get('web_path'); ?>/admin/system.php?action=generate_config"><?php echo T_('Generate New Config'); ?></a>
+</div>
+<?php } ?>

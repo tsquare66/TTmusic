@@ -1,0 +1,67 @@
+<?php
+/* vim:set softtabstop=4 shiftwidth=4 expandtab: */
+/**
+ *
+ * LICENSE: GNU General Public License, version 2 (GPLv2)
+ * Copyright 2001 - 2013 Ampache.org
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License v2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ */
+?>
+<td class="cel_add">
+    <?php echo Ajax::button('?action=basket&type=song&id=' . $song->id,'add', T_('Add'),'add_' . $song->id); ?>
+</td>
+<?php if (true == $GLOBALS['isMobile']) { ?>
+   <td class="cel_song"><a href="<?php echo Song::play_url($song->id); ?>" title="<?php echo scrub_out($song->title); ?>"><?php echo $song->f_title. "<br>" . $song->f_artist; ?></a></td>
+<?php
+}
+else 
+{ ?>
+	<td class="cel_song"><?php echo $song->f_link; ?></td>
+	<td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
+	<td class="cel_album"><?php echo $song->f_album_link; ?></td>
+	<td class="cel_tags"><?php echo $song->f_tags; ?></td>
+	<td class="cel_track"><?php echo $song->f_track; ?></td>
+	<td class="cel_time"><?php echo $song->f_time; ?></td>
+	<?php if (Config::get('ratings')) { ?>
+		<td class="cel_rating" id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?></td>
+	<?php } ?>
+<?php } ?>
+<td class="cel_action">
+<?php
+	echo Ajax::button('?page=song&action=show_song&song_id=' . $song->id,'preferences', T_('Song Information'),'show_song_pref_id' . $song->id);
+		
+	if (false == $GLOBALS['isMobile'])
+	{
+		if (Config::get('shoutbox')) 
+		{ 
+			echo '<a href="'.Config::get('web_path').'/shout.php?action=show_add_shout&type=song&id='.$song->id.'">';
+            echo UI::get_icon('comment',T_('Post Shout')).'</a>';
+		} 
+		if (Access::check_function('download')) 
+		{ 
+			echo '<a href="'.Config::get('web_path').'/stream.php?action=download&song_id='.$song->id.'">';
+            echo UI::get_icon('comment',T_('Download')).'</a>';
+		} ?>
+    <?php if (Access::check('interface','75')) { ?>
+        <?php echo Ajax::button('?action=show_edit_object&type=song_row&id=' . $song->id,'edit', T_('Edit'),'edit_song_' . $song->id); ?>
+        <?php $icon = $song->enabled ? 'disable' : 'enable'; ?>
+        <?php $button_flip_state_id = 'button_flip_state_' . $song_id; ?>
+        <span id="<?php echo($button_flip_state_id); ?>">
+        <?php echo Ajax::button('?page=song&action=flip_state&song_id=' . $song->id,$icon, T_(ucfirst($icon)),'flip_song_' . $song->id); ?>
+        </span>
+    <?php } ?>
+ <?php } ?>
+</td>
