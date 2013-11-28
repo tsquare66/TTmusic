@@ -33,15 +33,15 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
     <dd class="<?php echo UI::flip_class(); ?>">
         <?php echo Ajax::button('?action=basket&type=song&id=' . $song->id,'add', T_('Add'),'add_song_' . $song->id); ?>
         <?php if (Access::check_function('download')) { ?>
-			<a href="<?php echo Song::play_url($song->id); ?>"><?php echo get_user_icon('link', T_('Link')); ?></a>
-			<a href="<?php echo Config::get('web_path'); ?>/stream.php?action=download&amp;song_id=<?php echo $song->id; ?>"><?php echo get_user_icon('download', T_('Download')); ?></a>
-		<?php } ?>
-		<?php if (Access::check('interface','75')) { ?>
-			<span id="<?php echo($button_flip_state_id); ?>">
-			<?php echo Ajax::button('?page=song&action=flip_state&song_id=' . $song->id,$icon, T_(ucfirst($icon)),'flip_song_' . $song->id); ?>
-			</span>
-		<?php } ?>
-	</dd>
+            <a href="<?php echo Song::play_url($song->id); ?>"><?php echo UI::get_icon('link', T_('Link')); ?></a>
+            <a href="<?php echo Config::get('web_path'); ?>/stream.php?action=download&amp;song_id=<?php echo $song->id; ?>"><?php echo UI::get_icon('download', T_('Download')); ?></a>
+        <?php } ?>
+        <?php if (Access::check('interface','75')) { ?>
+            <span id="<?php echo($button_flip_state_id); ?>">
+            <?php echo Ajax::button('?page=song&action=flip_state&song_id=' . $song->id,$icon, T_(ucfirst($icon)),'flip_song_' . $song->id); ?>
+            </span>
+        <?php } ?>
+    </dd>
 <?php
   $songprops[gettext_noop('Title')]   = scrub_out($song->title);
   $songprops[gettext_noop('Artist')]  = $song->f_artist_link;
@@ -55,9 +55,9 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Catalog Number')]   = scrub_out($song->catalog_number);
   if (false == $GLOBALS['isMobile'])
   {
-	  $songprops[gettext_noop('Bitrate')]   = scrub_out($song->f_bitrate);
-	  if (Access::check('interface','75')) {
-	    $songprops[gettext_noop('Filename')]   = scrub_out($song->file) . " " . $song->f_size;
+  $songprops[gettext_noop('Bitrate')]   = scrub_out($song->f_bitrate);
+  if (Access::check('interface','75')) {
+	    $songprops[gettext_noop('Filename')]   = scrub_out(utf8_encode($song->file)) . " " . $song->f_size;
 	  }
   }
   if ($song->update_time) {

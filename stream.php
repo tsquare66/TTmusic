@@ -22,12 +22,6 @@
 
 require_once 'lib/init.php';
 
-debug_event('stream.php' ,
-'Action:'.$_REQUEST['action'].
-' Playlist method:'. $_REQUEST['playlist_method'].
-' Play type:'. Config::get('play_type'),
-'5');
-
 /* If we are running a demo, quick while you still can! */
 if (Config::get('demo_mode') || !Access::check('interface','25')) {
     UI::access_denied();

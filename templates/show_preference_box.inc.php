@@ -33,69 +33,68 @@ if ((Access::check('interface','100') OR !Config::get('use_auth')) AND $_REQUEST
   <col id="col_preference" />
   <?php if (false == $GLOBALS['isMobile']) {?>
   <col id="col_value" />
-  <?php if ($is_admin) { ?>
+    <?php if ($is_admin) { ?>
   <col id="col_applytoall" />
   <col id="col_level" />
-  <?php } ?>
+    <?php } ?>
   <?php } ?>
 </colgroup>
 <tr class="th-top">
-	<th class="cel_preference"><?php echo T_('Preference'); ?></th>
+    <th class="cel_preference"><?php echo T_('Preference'); ?></th>
 	<?php if (false == $GLOBALS['isMobile']) {?>
-	<th class="cel_value"><?php echo T_('Value'); ?></th>
-	<?php if ($is_admin) { ?>
-	<th class="cel_applytoall"><?php echo T_('Apply to All'); ?></th>
-	<th class="cel_level"><?php echo T_('Access Level'); ?></th>
-	<?php } ?>
+    <th class="cel_value"><?php echo T_('Value'); ?></th>
+    <?php if ($is_admin) { ?>
+    <th class="cel_applytoall"><?php echo T_('Apply to All'); ?></th>
+    <th class="cel_level"><?php echo T_('Access Level'); ?></th>
+    <?php } ?>
 	<?php } ?>
 </tr>
 <?php foreach ($preferences['prefs'] as $pref) { ?>
     <tr class="<?php echo UI::flip_class(); ?>">
-		<td class="cel_preference"><?php echo T_($pref['description']); ?></td>
+        <td class="cel_preference"><?php echo T_($pref['description']); ?></td>
 		<?php if (true == $GLOBALS['isMobile']) 
 		{ 
 			echo '</tr><tr class="'.UI::flip_class().'">';
 		}?>
-		<td class="cel_value">
-			<?php create_preference_input($pref['name'], $pref['value']); ?>
-		</td>
+        <td class="cel_value">
+            <?php create_preference_input($pref['name'], $pref['value']); ?>
+        </td>
 		<?php if (true == $GLOBALS['isMobile']) 
 		{ 
 			echo '</tr><tr class="'.UI::flip_class().'">';
 		}?>
-		<?php if ($is_admin) { ?>
-			<td class="cel_applytoall"><input type="checkbox" name="check_<?php echo $pref['name']; ?>" value="1" /></td>
+        <?php if ($is_admin) { ?>
+            <td class="cel_applytoall"><input type="checkbox" name="check_<?php echo $pref['name']; ?>" value="1" /></td>
 		<?php if (true == $GLOBALS['isMobile']) 
 		{ 
 			echo '</tr><tr class="'.UI::flip_class().'">';
 		}?>
-			<td class="cel_level">
-				<?php $name = 'on_' . $pref['level']; ${$name} = 'selected="selected"';  ?>
-				<select name="level_<?php echo $pref['name']; ?>">
-					<option value="5" <?php echo $on_5; ?>><?php echo T_('Guest'); ?></option>
-					<option value="25" <?php echo $on_25; ?>><?php echo T_('User'); ?></option>
-					<option value="50" <?php echo $on_50; ?>><?php echo T_('Content Manager'); ?></option>
-					<option value="75" <?php echo $on_75; ?>><?php echo T_('Catalog Manager'); ?></option>
-					<option value="100" <?php echo $on_100; ?>><?php echo T_('Admin'); ?></option>
-				</select>
-				<?php unset(${$name}); ?>
-			</td>
-		<?php } ?>
-	</tr>
+            <td class="cel_level">
+                <?php $name = 'on_' . $pref['level']; ${$name} = 'selected="selected"';  ?>
+                <select name="level_<?php echo $pref['name']; ?>">
+                    <option value="5" <?php echo $on_5; ?>><?php echo T_('Guest'); ?></option>
+                    <option value="25" <?php echo $on_25; ?>><?php echo T_('User'); ?></option>
+                    <option value="50" <?php echo $on_50; ?>><?php echo T_('Content Manager'); ?></option>
+                    <option value="75" <?php echo $on_75; ?>><?php echo T_('Catalog Manager'); ?></option>
+                    <option value="100" <?php echo $on_100; ?>><?php echo T_('Admin'); ?></option>
+                </select>
+                <?php unset(${$name}); ?>
+            </td>
+        <?php } ?>
+    </tr>
 	<?php if (true == $GLOBALS['isMobile']) 
 	{ 
 			echo '<tr><td><br><br></td></tr>';
 	}?>
-	
 <?php } // End foreach ($preferences['prefs'] as $pref) ?>
 <tr class="th-bottom">
-	<th class="cel_preference"><?php echo T_('Preference'); ?></th>
+    <th class="cel_preference"><?php echo T_('Preference'); ?></th>
 	<?php if (false == $GLOBALS['isMobile']) {?>
-	<th class="cel_value"><?php echo T_('Value'); ?></th>
-	<?php if ($is_admin) { ?>
-	<th class="cel_applytoall"><?php echo T_('Apply to All'); ?></th>
-	<th class="cel_level"><?php echo T_('Access Level'); ?></th>
-	<?php } ?>
+    <th class="cel_value"><?php echo T_('Value'); ?></th>
+    <?php if ($is_admin) { ?>
+    <th class="cel_applytoall"><?php echo T_('Apply to All'); ?></th>
+    <th class="cel_level"><?php echo T_('Access Level'); ?></th>
+    <?php } ?>
 	<?php } ?>
 </tr>
 </table>

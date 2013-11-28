@@ -40,7 +40,6 @@ ob_start();
 require_once Config::get('prefix') . '/stats.php';
 $results[$target] = ob_get_clean();
 
-
 // We always do this
 echo xml_from_array($results);
 ?>

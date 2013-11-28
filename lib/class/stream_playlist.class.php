@@ -99,7 +99,7 @@ class Stream_Playlist {
     private static function _media_to_urlarray($media) {
         $urls = array();
         foreach($media as $medium) {
-            debug_event('stream_playlist', 'Adding ' . json_encode($media), 5);
+            debug_event('stream_playlist', 'Adding ' . json_encode($medium), 5);
             $url = array();
 
             $type = $medium['object_type'];
@@ -156,6 +156,7 @@ class Stream_Playlist {
 
         $ext = $type;
         switch($type) {
+            case 'download':
             case 'democratic':
             case 'localplay':
             case 'html5_player':
@@ -286,18 +287,20 @@ class Stream_Playlist {
      */
     public function create_asx() {
 
-        echo '<ASX version = "3.0" BANNERBAR="AUTO">' . "\n";
-        echo "<TITLE>Ampache ASX Playlist</TITLE>";
+        echo '<ASX VERSION="3.0" BANNERBAR="auto">' . "\n";
+        echo "<TITLE>Ampache ASX Playlist</TITLE>\n";
+        echo '<PARAM NAME="Encoding" VALUE="utf-8" />' . "\n";
 
         foreach ($this->urls as $url) {
             echo "<ENTRY>\n";
-            echo '<TITLE>' . $url->title . "</TITLE>\n";
-            echo '<AUTHOR>' . $url->author . "</AUTHOR>\n";
+            echo '<TITLE>' . scrub_out($url->title) . "</TITLE>\n";
+            echo '<AUTHOR>' . scrub_out($url->author) . "</AUTHOR>\n";
+            //FIXME: duration looks hacky and wrong
             echo "\t\t" . '<DURATION VALUE="00:00:' . $url->time . '" />' . "\n";
-            echo "\t\t" . '<PARAM NAME="Album" Value="' . $url->album . '" />' . "\n";
-            echo "\t\t" . '<PARAM NAME="Composer" Value="' . $url->author . '" />' . "\n";
+            echo "\t\t" . '<PARAM NAME="Album" Value="' . scrub_out($url->album) . '" />' . "\n";
+            echo "\t\t" . '<PARAM NAME="Composer" Value="' . scrub_out($url->author) . '" />' . "\n";
             echo "\t\t" . '<PARAM NAME="Prebuffer" Value="false" />' . "\n";
-            echo '<REF HREF = "' . $url->url . '" />' . "\n";
+            echo '<REF HREF="' . $url->url . '" />' . "\n";
             echo "</ENTRY>\n";
         }
 
@@ -374,17 +377,23 @@ class Stream_Playlist {
     } // create_localplay
 
     /**
-      * create_democratic
-     * This 'votes' on the songs it inserts them into
-     * a tmp_playlist with user of -1 (System)
+     * create_democratic
+     *
+     * This 'votes' on the songs; it inserts them into a tmp_playlist with user
+     * set to -1.
      */
     public function create_democratic() {
-
         $democratic = Democratic::get_current_playlist();
         $democratic->set_parent();
-        $democratic->add_vote($this->media);
+        $items = array();
 
-    } // create_democratic
+        foreach ($this->urls as $url) {
+            $data = Stream_URL::parse($url->url);
+            $items[] = array($data['type'], $data['id']);
+        }
+
+        $democratic->add_vote($items);
+    }
 
     /**
      * create_download

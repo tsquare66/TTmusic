@@ -29,15 +29,15 @@
 }
 else 
 { ?>
-	<td class="cel_song"><?php echo $song->f_link; ?></td>
-	<td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
-	<td class="cel_album"><?php echo $song->f_album_link; ?></td>
-	<td class="cel_tags"><?php echo $song->f_tags; ?></td>
-	<td class="cel_track"><?php echo $song->f_track; ?></td>
-	<td class="cel_time"><?php echo $song->f_time; ?></td>
-	<?php if (Config::get('ratings')) { ?>
-		<td class="cel_rating" id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?></td>
-	<?php } ?>
+<td class="cel_song"><?php echo $song->f_link; ?></a></td>
+<td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
+<td class="cel_album"><?php echo $song->f_album_link; ?></td>
+<td class="cel_tags"><?php echo $song->f_tags; ?></td>
+<td class="cel_track"><?php echo $song->f_track; ?></td>
+<td class="cel_time"><?php echo $song->f_time; ?></td>
+<?php if (Config::get('ratings')) { ?>
+<td class="cel_rating" id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?></td>
+<?php } ?>
 <?php } ?>
 <td class="cel_action">
 <?php
@@ -45,16 +45,16 @@ else
 		
 	if (false == $GLOBALS['isMobile'])
 	{
-		if (Config::get('shoutbox')) 
-		{ 
-			echo '<a href="'.Config::get('web_path').'/shout.php?action=show_add_shout&type=song&id='.$song->id.'">';
-            echo UI::get_icon('comment',T_('Post Shout')).'</a>';
-		} 
-		if (Access::check_function('download')) 
-		{ 
-			echo '<a href="'.Config::get('web_path').'/stream.php?action=download&song_id='.$song->id.'">';
-            echo UI::get_icon('comment',T_('Download')).'</a>';
-		} ?>
+    <?php if (Config::get('shoutbox')) { ?>
+                <a href="<?php echo Config::get('web_path'); ?>/shout.php?action=show_add_shout&amp;type=song&amp;id=<?php echo $song->id; ?>">
+                <?php echo UI::get_icon('comment', T_('Post Shout')); ?>
+                </a>
+    <?php } ?>
+    <?php if (Access::check_function('download')) { ?>
+    <a href="<?php echo Config::get('web_path'); ?>/stream.php?action=download&amp;song_id=<?php echo $song->id; ?>">
+        <?php echo UI::get_icon('download', T_('Download')); ?>
+    </a>
+    <?php } ?>
     <?php if (Access::check('interface','75')) { ?>
         <?php echo Ajax::button('?action=show_edit_object&type=song_row&id=' . $song->id,'edit', T_('Edit'),'edit_song_' . $song->id); ?>
         <?php $icon = $song->enabled ? 'disable' : 'enable'; ?>

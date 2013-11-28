@@ -41,28 +41,28 @@ class Core {
 
     /**
      * autoload
-    * This function automatically loads any missing classes as they are
-    * needed so that we don't use a million include statements which load
-    *  more than we need.
+     *
+     * This function automatically loads any missing classes as they are
+     * needed so that we don't use a million include statements which load
+     * more than we need.
      */
     public static function autoload($class) {
-            // Lowercase the class
-            $class = strtolower($class);
+        $file = Config::get('prefix') . '/lib/class/' .
+            strtolower($class) . '.class.php';
 
-            $file = Config::get('prefix') . "/lib/class/$class.class.php";
+        if (Core::is_readable($file)) {
+            require_once $file;
 
-            // See if it exists
-            if (is_readable($file)) {
-                    require $file;
-                    if (is_callable($class . '::_auto_init')) {
-                            $class::_auto_init();
-                    }
+            // Call _auto_init if it exists
+            $autocall = array($class, '_auto_init');
+            if (is_callable($autocall)) {
+                call_user_func($autocall);
             }
-            // Else log this as a fatal error
-            else {
-                    debug_event('autoload', "'$class' not found!", 1);
-            }
-    } // autoload
+        }
+        else {
+            debug_event('autoload', "'$class' not found!", 1);
+        }
+    }
 
     /**
      * form_register
@@ -163,6 +163,30 @@ class Core {
         return array('width'=>$width,'height'=>$height);
 
     } // image_dimensions
+
+    /*
+     * is_readable
+     *
+     * Replacement function because PHP's is_readable is buggy:
+     * https://bugs.php.net/bug.php?id=49620
+     */
+    public static function is_readable($path) {
+        if (is_dir($path)) {
+            $handle = opendir($path);
+            if ($handle === false) {
+                return false;
+            }
+            closedir($handle);
+            return true;
+        }
+
+        $handle = fopen($path, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+        fclose($handle);
+        return true;
+    }
 
 } // Core
 ?>

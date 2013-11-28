@@ -22,13 +22,9 @@
 
 $object_ids = Stats::get_newest('album');
 $browse = new Browse();
-debug_event('show_stats_newest.inc.php' , 'New Browse' ,'5');
-
 $browse->set_type('album');
 $browse->show_objects($object_ids);
 $browse->store();
-
-debug_event('show_stats_newest.inc.php' , 'New Browse' ,'5');
 
 $object_ids = Stats::get_newest('artist');
 $browse = new Browse();

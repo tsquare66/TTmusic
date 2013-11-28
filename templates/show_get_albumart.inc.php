@@ -24,40 +24,40 @@
 <form method="post" id="coverart" action="javascript.void(0);">
 <table>
 <tr>
-	<td>
-		<?php echo T_('Artist'); ?>&nbsp;
-	</td>
+    <td>
+        <?php echo T_('Artist'); ?>&nbsp;
+    </td>
 	<?php if (true == $GLOBALS['isMobile'])  { echo '<tr></tr>';}?>
-	<td>
-		<input type="text" size="20" id="artist_name" name="artist_name" value="<?php echo scrub_out(unhtmlentities($artistname)); ?>" />
-	</td>
+    <td>
+        <input type="text" size="20" id="artist_name" name="artist_name" value="<?php echo scrub_out(unhtmlentities($artistname)); ?>" />
+    </td>
 </tr>
 <tr>
-	<td>
-	 	<?php echo T_('Album'); ?>&nbsp;
-	</td>
+    <td>
+         <?php echo T_('Album'); ?>&nbsp;
+    </td>
 	<?php if (true == $GLOBALS['isMobile'])  { echo '<tr></tr>';}?>
-	<td>
-		<input type="text" size="20" id="album_name" name="album_name" value="<?php echo $albumname; ?>" />
-	</td>
+    <td>
+        <input type="text" size="20" id="album_name" name="album_name" value="<?php echo scrub_out(unhtmlentities($albumname)); ?>" />
+    </td>
 </tr>
 <tr>
-	<td>
-		<?php echo T_('Direct URL to Image'); ?>
-	</td>
+    <td>
+        <?php echo T_('Direct URL to Image'); ?>
+    </td>
 	<?php if (true == $GLOBALS['isMobile'])  { echo '<tr></tr>';}?>
-	<td>
+    <td>
 		<input type="text" size="40" id="id_url_cover" name="url_cover" value="" />
-	</td>
+    </td>
 </tr>
 <tr>
-	<td>
-		<?php echo T_('Local Image'); ?>
-	</td>
+    <td>
+        <?php echo T_('Local Image'); ?>
+    </td>
 	<?php if (true == $GLOBALS['isMobile'])  { echo '<tr></tr>';}?>
-	<td>
-		<input type="file" size="40" id="file" name="file" value="" />
-	</td>
+    <td>
+        <input type="file" size="40" id="file" name="file" value="" />
+    </td>
 </tr>
 </table>
 	<input type="button" id="id_submit" value="<?php echo _('Get Art'); ?>" />

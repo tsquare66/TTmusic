@@ -69,6 +69,28 @@ class User extends database_object {
     } // Constructor
 
     /**
+     * count
+     *
+     * This returns the number of user accounts that exist.
+     */
+    public static function count() {
+        $sql = 'SELECT COUNT(`id`) FROM `user`';
+        $db_results = Dba::read($sql);
+        $data = Dba::fetch_row($db_results);
+        $results['users'] = $data[0];
+
+        $time = time();
+        $last_seen = $time - 1200;
+        $sql = 'SELECT COUNT(DISTINCT `session`.`username`) FROM `session` ' .
+            'INNER JOIN `user` ON `session`.`username` = `user`.`username` ' .
+            'WHERE `session`.`expire` > ? and `user`.`last_seen` > ?';
+        $db_results = Dba::read($sql, array($time, $last_seen));
+        $data = Dba::fetch_row($db_results);
+        $results['connected'] = $data[0];
+        return $results;
+    }
+
+    /**
      * _get_info
      * This function returns the information for this object
      */
@@ -396,7 +418,6 @@ class User extends database_object {
      * good stuff
      */
     public function update($data) {
-
         if (empty($data['username'])) {
             Error::add('username', T_('Error Username Required'));
         }
@@ -409,14 +430,20 @@ class User extends database_object {
             return false;
         }
 
-        foreach ($data as $name=>$value) {
+        foreach ($data as $name => $value) {
+            if ($name == 'password1') {
+                $name = 'password';
+            }
+            else {
+                $value = scrub_in($value);
+            }
+
             switch ($name) {
-                case 'password1';
-                    $name = 'password';
+                case 'password';
                 case 'access':
                 case 'email':
                 case 'username':
-                case 'fullname';
+                case 'fullname':
                     if ($this->$name != $value) {
                         $function = 'update_' . $name;
                         $this->$function($value);
@@ -425,13 +452,11 @@ class User extends database_object {
                 default:
                     // Rien a faire
                 break;
-            } // end switch on field
-
-        } // end foreach
+            }
+        }
 
         return true;
-
-    } // update
+    }
 
     /**
      * update_username

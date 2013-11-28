@@ -355,29 +355,7 @@ class Tag extends database_object {
 
     } // tag_map_exists
 
-	/**
-	 */
-	public static function update_tag_map($type,$object_id,$tag_id) {
-	
-		$object_id = Dba::escape($object_id);
-		$tag_id = Dba::escape($tag_id);
-		$type = Dba::escape($type);
-	
-		$sql = "UPDATE `tag_map` SET `tag_id`='$tag_id' WHERE `object_id`='$object_id' AND `object_type`='$type'";
-		$db_results = Dba::write($sql);
-	
-		$sql = "SELECT * FROM `tag_map` WHERE `tag_id`='$tag_id' AND `object_id`='$object_id' AND `object_type`='$type'";
-		$db_results = Dba::read($sql);
-
-		$results = Dba::fetch_assoc($db_results);
-			
-		parent::add_to_cache('tag_map_' . $type,$results['id'],$results);
-	
-		return $results['id'];
-	
-	} // 
-	
-	/**
+    /**
      * get_top_tags
      * This gets the top tags for the specified object using limit
      */
@@ -439,15 +417,19 @@ class Tag extends database_object {
      * get_tag_objects
      * This gets the objects from a specified tag and returns an array of object ids, nothing more
      */
-    public static function get_tag_objects($type,$tag_id) {
+    public static function get_tag_objects($type,$tag_id,$count='',$offset='') {
 
         if (!self::validate_type($type)) { return array(); }
-
-        $tag_id = Dba::escape($tag_id);
+        
+        if ($count) {
+            $limit_sql = "LIMIT ";
+            if ($offset) $limit_sql .= intval($offset) . ',';
+            $limit_sql .= intval($count);
+        }
 
         $sql = "SELECT DISTINCT `tag_map`.`object_id` FROM `tag_map` " .
-            "WHERE `tag_map`.`tag_id`='$tag_id' AND `tag_map`.`object_type`='$type'";
-        $db_results = Dba::read($sql);
+            "WHERE `tag_map`.`tag_id` = ? AND `tag_map`.`object_type` = ? $limit_sql";
+        $db_results = Dba::read($sql, array($tag_id, $type));
 
         $results = array();
 
@@ -465,12 +447,15 @@ class Tag extends database_object {
      * This is a non-object non type depedent function that just returns tags
      * we've got, it can take filters (this is used by the tag cloud)
      */
-    public static function get_tags($limit,$filters=array()) {
+    public static function get_tags($limit = 0,$filters=array()) {
 
         $sql = "SELECT `tag_map`.`tag_id`,COUNT(`tag_map`.`object_id`) AS `count` " .
             "FROM `tag_map` " .
             "LEFT JOIN `tag` ON `tag`.`id`=`tag_map`.`tag_id` " .
-			"GROUP BY `tag`.`name` ORDER BY `name` ASC ";
+            "GROUP BY `tag`.`name` ORDER BY `name` ASC ";
+        if ($limit >0) {
+            $sql .= " LIMIT $limit";
+        }
         $db_results = Dba::read($sql);
 
         $results = array();
@@ -489,151 +474,132 @@ class Tag extends database_object {
     } // get_tags
 
     /**
- 	 * get_tags
-	 * This is a non-object non type depedent function that just returns tags
-	 * we've got, it can take filters (this is used by the tag cloud)
-	 */
-	public static function get_tag_names($filters=array()) {
+     * get_display
+     * This returns a human formated version of the tags that we are given
+     * it also takes a type so that it knows how to return it, this is used
+     * by the formating functions of the different objects
+     */
+    public static function get_display($tags,$element_id,$type='song') {
 
-		$sql = "SELECT `id`,`name` FROM `tag` ORDER BY `name` ASC ";
-		$db_results = Dba::read($sql);
+        if (!is_array($tags)) { return ''; }
 
-		$results = array();
-		while ($row = Dba::fetch_assoc($db_results)) {
-			$results[] = $row;
-		}
-		
-		return $results;
+        $results = '';
 
-	} // get_tags
-	
-	/**
-	 * get_display
-	 * This returns a human formated version of the tags that we are given
-	 * it also takes a type so that it knows how to return it, this is used
-	 * by the formating functions of the different objects
-	 */
-	public static function get_display($tags,$element_id,$type='song') {
+        // Iterate through the tags, format them according to type and element id
+        foreach ($tags as $tag_id=>$value) {
+            $tag = new Tag($tag_id);
+            $tag->format($type,$element_id);
+            $results .= $tag->f_name . ', ';
+        }
 
-		if (!is_array($tags)) { return ''; }
+        $results = rtrim($results,', ');
 
-		$results = '';
+        return $results;
 
-		// Itterate through the tags, format them according to type and element id
-		foreach ($tags as $tag_id=>$value) {
-			$tag = new Tag($tag_id);
-			$tag->format($type,$element_id);
-			$results .= $tag->f_name . ', ';
-		}
+    } // get_display
 
-		$results = rtrim($results,', ');
+    /**
+     * count
+     * This returns the count for the all objects associated with this tag
+     * If a type is specific only counts for said type are returned
+     */
+    public function count($type='') {
 
-		return $results;
+        if ($type) {
+            $filter_sql = " AND `object_type`='" . Dba::escape($type) . "'";
+        }
 
-	} // get_display
+        $results = array();
 
-	/**
-	 * count
-	 * This returns the count for the all objects associated with this tag
-	 * If a type is specific only counts for said type are returned
-	 */
-	public function count($type='') {
+        $sql = "SELECT COUNT(`id`) AS `count`,`object_type` FROM `tag_map` WHERE `tag_id`='" . Dba::escape($this->id) . "'" .  $filter_sql . " GROUP BY `object_type`";
+        $db_results = Dba::read($sql);
 
-		if ($type) {
-			$filter_sql = " AND `object_type`='" . Dba::escape($type) . "'";
-		}
+        while ($row = Dba::fetch_assoc($db_results)) {
+            $results[$row['object_type']] = $row['count'];
+        }
 
-		$results = array();
+        return $results;
 
-		$sql = "SELECT COUNT(`id`) AS `count`,`object_type` FROM `tag_map` WHERE `tag_id`='" . Dba::escape($this->id) . "'" .  $filter_sql . " GROUP BY `object_type`";
-		$db_results = Dba::read($sql);
+    } // count
 
-		while ($row = Dba::fetch_assoc($db_results)) {
-			$results[$row['object_type']] = $row['count'];
-		}
+    /**
+      * filter_with_prefs
+     * This filters the tags based on the users preference
+     */
+    public static function filter_with_prefs($l) {
 
-		return $results;
+        $colors = array('#0000FF',
+            '#00FF00', '#FFFF00', '#00FFFF','#FF00FF','#FF0000');
+        $prefs = 'tag company';
+//        $prefs = Config::get('tags_userlist');
 
-	} // count
+        $ulist = explode(' ', $prefs);
+        $req = '';
 
-	/**
- 	 * filter_with_prefs
-	 * This filters the tags based on the users preference
-	 */
-	public static function filter_with_prefs($l) {
+        foreach($ulist as $i) {
+            $req .= "'" . Dba::escape($i) . "',";
+        }
+        $req = rtrim($req, ',');
 
-		$colors = array('#0000FF',
-			'#00FF00', '#FFFF00', '#00FFFF','#FF00FF','#FF0000');
-		$prefs = 'tag company';
-//		$prefs = Config::get('tags_userlist');
+        $sql = 'SELECT `id`,`username` FROM `user` WHERE ';
 
-		$ulist = explode(' ', $prefs);
-		$req = '';
+        if ($prefs=='all') {
+            $sql .= '1';
+        }
+        else {
+            $sql .= 'username in ('.$req.')';
+        }
 
-		foreach($ulist as $i) {
-			$req .= "'" . Dba::escape($i) . "',";
-		}
-		$req = rtrim($req, ',');
+        $db_results = Dba::read($sql);
 
-		$sql = 'SELECT `id`,`username` FROM `user` WHERE ';
+        $uids=array();
+        $usernames = array();
+        $p = 0;
+        while ($r = Dba::fetch_assoc($db_results)) {
+            $usernames[$r['id']] = $r['username'];
+            $uids[$r['id']] = $colors[$p];
+            $p++;
+            if ($p == sizeof($colors)) {
+                $p = 0;
+            }
+        }
 
-		if ($prefs=='all') {
-			$sql .= '1';
-		}
-		else {
-			$sql .= 'username in ('.$req.')';
-		}
+        $res = array();
 
-		$db_results = Dba::read($sql);
+        foreach ($l as $i) {
+            if ($GLOBALS['user']->id == $i['user']) {
+                $res[] = $i;
+            }
+            elseif (isset($uids[$i['user']])) {
+                $i['color'] = $uids[$i['user']];
+                $i['username'] = $usernames[$i['user']];
+                $res[] = $i;
+            }
+        }
 
-		$uids=array();
-		$usernames = array();
-		$p = 0;
-		while ($r = Dba::fetch_assoc($db_results)) {
-			$usernames[$r['id']] = $r['username'];
-			$uids[$r['id']] = $colors[$p];
-			$p++;
-			if ($p == sizeof($colors)) {
-				$p = 0;
-			}
-		}
+        return $res;
 
-		$res = array();
+    } // filter_with_prefs
 
-		foreach ($l as $i) {
-			if ($GLOBALS['user']->id == $i['user']) {
-				$res[] = $i;
-			}
-			elseif (isset($uids[$i['user']])) {
-				$i['color'] = $uids[$i['user']];
-				$i['username'] = $usernames[$i['user']];
-				$res[] = $i;
-			}
-		}
+    /**
+     * remove_map
+     * This will only remove tag maps for the current user
+     */
+    public function remove_map($type,$object_id) {
 
-		return $res;
+        if (!self::validate_type($type)) { return false; }
 
-	} // filter_with_prefs
+        $type = Dba::escape($type);
+        $tag_id = Dba::escape($this->id);
+        $object_id = Dba::escape($object_id);
+        $user_id = Dba::escape($GLOBALS['user']->id);
 
-	/**
-	 * remove_map
-	 * This will only remove tag maps for the current user
-	 */
-	public function remove_map($type,$object_id) {
+        $sql = "DELETE FROM `tag_map` WHERE `tag_id`='$tag_id' AND `object_type`='$type' AND `object_id`='$object_id' AND `user`='$user_id'";
+        $db_results = Dba::write($sql);
 
-		if (!self::validate_type($type)) { return false; }
+        return true;
 
-		$type = Dba::escape($type);
-		$tag_id = Dba::escape($this->id);
-		$object_id = Dba::escape($object_id);
-		$user_id = Dba::escape($GLOBALS['user']->id);
-
-		$sql = "DELETE FROM `tag_map` WHERE `tag_id`='$tag_id' AND `object_type`='$type' AND `object_id`='$object_id' AND `user`='$user_id'";
-		$db_results = Dba::write($sql);
-
-		return true;
-
-	} // remove_map
+    } // remove_map
 
     /**
      * validate_type

@@ -43,35 +43,38 @@ class Query {
      * constructor
      * This should be called
      */
-    public function __construct($id = null) {
-        $sid = Dba::escape(session_id());
-
-        
+    public function __construct($id = null, $cached = true) {
+        $sid = session_id();
         
         if (is_null($id)) {
             $this->reset();
-            $data = Dba::escape(serialize($this->_state));
+            if ($cached) {
+                $data = serialize($this->_state);
 
-            $sql = "INSERT INTO `tmp_browse` (`sid`, `data`) " .
-                "VALUES('$sid', '$data')";
-            $db_results = Dba::write($sql);
-            $this->id = Dba::insert_id();
+                $sql = 'INSERT INTO `tmp_browse` (`sid`, `data`) ' .
+                    'VALUES(?, ?)';
+                $db_results = Dba::write($sql, array($sid, $data));
+                $this->id = Dba::insert_id();
             
+            }
+            else {
+                $this->id = 'nocache';
+            }
             return true;
         }
 
         $this->id = $id;
 
-        $sql = "SELECT `data` FROM `tmp_browse` " .
-            "WHERE `id`='$id' AND `sid`='$sid'";
+        $sql = 'SELECT `data` FROM `tmp_browse` ' .
+            'WHERE `id` = ? AND `sid` = ?';
 
-        $db_results = Dba::read($sql);
+        $db_results = Dba::read($sql, array($id, $sid));
 
         if ($results = Dba::fetch_assoc($db_results)) {
             $this->_state = unserialize($results['data']);
             return true;
         }
-        
+
         Error::add('browse', T_('Browse not found or expired, try reloading the page'));
         return false;
     }
@@ -216,10 +219,70 @@ class Query {
      * This cleans old data out of the table
      */
     public static function gc() {
-        $sql = "DELETE FROM `tmp_browse` USING `tmp_browse` LEFT JOIN ".
-            "`session` ON `session`.`id`=`tmp_browse`.`sid` " .
-                "WHERE `session`.`id` IS NULL";
+        $sql = 'DELETE FROM `tmp_browse` USING `tmp_browse` LEFT JOIN ' .
+            '`session` ON `session`.`id` = `tmp_browse`.`sid` ' .
+            'WHERE `session`.`id` IS NULL';
         $db_results = Dba::write($sql);
+    }
+
+    /**
+     * _serialize
+     *
+     * Attempts to produce a more compact representation for large result
+     * sets by collapsing ranges.
+     */
+    private static function _serialize($data) {
+        if (count($data) > 1000) {
+            $last = -17;
+            $in_range = false;
+            $idx = -1;
+            $cooked = array();
+            foreach ($data as $id) {
+                if ($id == ($last + 1)) {
+                    if ($in_range) {
+                        $cooked[$idx][1] = $id;
+                    }
+                    else {
+                        $in_range = true;
+                        $cooked[$idx] = array($last, $id);
+                    }
+                }
+                else {
+                    $in_range = false;
+                    $idx++;
+                    $cooked[$idx] = $id;
+                }
+                $last = $id;
+            }
+            $data = json_encode($cooked);
+            debug_event('Query', 'cooked serialize length: ' . strlen($data), 5);
+        }
+        else {
+            $data = json_encode($data);
+        }
+        
+        return $data;
+    }
+
+    /*
+     * _unserialize
+     *
+     * Reverses serialization.
+     */
+    private static function _unserialize($data) {
+        $raw = array();
+        $cooked = json_decode($data);
+        foreach ($cooked as $grain) {
+            if (is_array($grain)) {
+                foreach(range($grain[0], $grain[1]) as $id) {
+                    $raw[] = $id;
+                }
+            }
+            else {
+                $raw[] = $grain;
+            }
+        }
+        return $raw;
     }
 
     /**
@@ -469,8 +532,6 @@ class Query {
             case 'live_stream':
             case 'democratic':
                 // Set it
-            	debug_event('query.class.php' , 'Set type:'.$type ,'5');
-            	 
                 $this->_state['type'] = $type;
                 $this->set_base_sql(true);
             break;
@@ -644,14 +705,13 @@ class Query {
         }
 
         if (!$this->is_simple()) {
-            $sid = Dba::escape(session_id());
-            $id = Dba::escape($this->id);
-            $sql = "SELECT `object_data` FROM `tmp_browse` WHERE `sid`='$sid' AND `id`='$id'";
-            $db_results = Dba::read($sql);
+            $sql = 'SELECT `object_data` FROM `tmp_browse` ' .
+                'WHERE `sid` = ? AND `id` = ?';
+            $db_results = Dba::read($sql, array(session_id(), $this->id));
 
             $row = Dba::fetch_assoc($db_results);
 
-            $this->_cache = unserialize($row['object_data']);
+            $this->_cache = self::_unserialize($row['object_data']);
             return $this->_cache;
         }
         else {
@@ -1355,6 +1415,7 @@ class Query {
             $sql = $this->get_sql(true);
         }
         else {
+            // FIXME: this is fragile for large browses
             // First pull the objects
             $objects = $this->get_saved();
 
@@ -1404,13 +1465,15 @@ class Query {
      * This saves the current state to the database
      */
     public function store() {
-        $sid = Dba::escape(session_id());
-        $id = Dba::escape($this->id);
-        $data = Dba::escape(serialize($this->_state));
+        $id = $this->id;
+        if ($id != 'nocache') {
+            $data = serialize($this->_state);
 
-        $sql = "UPDATE `tmp_browse` SET `data`='$data' " .
-            "WHERE `sid`='$sid' AND `id`='$id'";
-        $db_results = Dba::write($sql);
+            $sql = 'UPDATE `tmp_browse` SET `data` = ? ' .
+                'WHERE `sid` = ? AND `id` = ?';
+            $db_results = Dba::write($sql,
+                array($data, session_id(), $id));
+        }
     }
 
     /**
@@ -1424,18 +1487,20 @@ class Query {
         // a local variable and then second holds it in a row in the 
         // tmp_browse table
 
-        // Only do this if it's a not a simple browse
-        if (!$this->is_simple()) {
+        // Only do this if it's not a simple browse
+        if (!$this->is_simple()) { 
             $this->_cache = $object_ids;
             $this->set_total(count($object_ids));
-            $sid = Dba::escape(session_id());
-            $id = Dba::escape($this->id);
-            $data = Dba::escape(serialize($this->_cache));
+            $id = $this->id;
+            if ($id != 'nocache') {
+                $data = self::_serialize($this->_cache);
 
-            $sql = "UPDATE `tmp_browse` SET `object_data`='$data' " .
-                "WHERE `sid`='$sid' AND `id`='$id'";
-            $db_results = Dba::write($sql);
-        } // save it
+                $sql = 'UPDATE `tmp_browse` SET `object_data` = ? ' .
+                    'WHERE `sid` = ? AND `id` = ?';
+                $db_results = Dba::write($sql,
+                    array($data, session_id(), $id));
+            }
+        }
 
         return true;
 

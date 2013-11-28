@@ -63,10 +63,10 @@ switch ($_REQUEST['action'])
         $button = $song->enabled ? 'disable' : 'enable';
         $results[$id] = Ajax::button('?page=song&action=flip_state&song_id=' . $song->id,$button, T_(ucfirst($button)),'flip_state_' . $song->id);
 
-	break;
-	default:
-		$results['rfc3514'] = '0x1';
-	break;
+    break;
+    default:
+        $results['rfc3514'] = '0x1';
+    break;
 } // switch on action;
 
 // We always do this

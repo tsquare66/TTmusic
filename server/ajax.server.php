@@ -189,6 +189,10 @@ switch ($_REQUEST['action']) {
         ob_end_clean();
     break;
     case 'edit_object':
+        // Scrub the data
+        foreach ($_POST as $key => $data) {
+            $_POST[$key] = scrub_in($data);
+        }
 
         $level = '50';
 

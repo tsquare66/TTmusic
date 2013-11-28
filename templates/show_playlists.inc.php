@@ -28,25 +28,25 @@
   <col id="col_type" />
   <col id="col_songs" />
   <?php if (false == $GLOBALS['isMobile']) { ?>
-  	<col id="col_owner" />
+  <col id="col_owner" />
   <?php } ?>
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
   <th class="cel_add"><?php echo T_('Add'); ?></th>
-	<th class="cel_playlist"><?php echo Ajax::text('?page=browse&action=set_sort&type=playlist&sort=name', T_('Playlist Name'),'playlist_sort_name'); ?></th>
-	<th class="cel_type">&nbsp;</th>
-	<th class="cel_songs"><?php echo T_('# Songs'); ?></th>
+    <th class="cel_playlist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=playlist&sort=name', T_('Playlist Name'),'playlist_sort_name'); ?></th>
+    <th class="cel_type">&nbsp;</th>
+    <th class="cel_songs"><?php echo T_('# Songs'); ?></th>
 	<?php if (false == $GLOBALS['isMobile']) { ?>
-	<th class="cel_owner"><?php echo Ajax::text('?page=browse&action=set_sort&type=playlist&sort=user', T_('Owner'),'playlist_sort_owner'); ?></th>
+    <th class="cel_owner"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=playlist&sort=user', T_('Owner'),'playlist_sort_owner'); ?></th>
 	<?php } ?>
 	<th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 <?php
 foreach ($object_ids as $playlist_id) {
-	$playlist = new Playlist($playlist_id);
-	$playlist->format();
-	$count = $playlist->get_song_count();
+    $playlist = new Playlist($playlist_id);
+    $playlist->format();
+    $count = $playlist->get_song_count();
 ?>
 <tr class="<?php echo UI::flip_class(); ?>" id="playlist_row_<?php echo $playlist->id; ?>">
     <?php require Config::get('prefix') . '/templates/show_playlist_row.inc.php'; ?>
@@ -59,13 +59,13 @@ foreach ($object_ids as $playlist_id) {
 <?php } ?>
 <tr class="th-bottom">
   <th class="cel_add"><?php echo T_('Add'); ?></th>
-    <th class="cel_playlist"><?php echo Ajax::text('?page=browse&action=set_sort&type=playlist&sort=name', T_('Playlist Name'),'playlist_sort_name_bottom'); ?></th>
+    <th class="cel_playlist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=playlist&sort=name', T_('Playlist Name'),'playlist_sort_name_bottom'); ?></th>
     <th class="cel_type">&nbsp;</th>
     <th class="cel_songs"><?php echo T_('# Songs'); ?></th>
 	<?php if (false == $GLOBALS['isMobile']) { ?>
-	<th class="cel_owner"><?php echo Ajax::text('?page=browse&action=set_sort&type=playlist&sort=user', T_('Owner'),'playlist_sort_owner_bottom'); ?></th>
+    <th class="cel_owner"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=playlist&sort=user', T_('Owner'),'playlist_sort_owner_bottom'); ?></th>
 	<?php } ?>
-	<th class="cel_action"><?php echo T_('Actions'); ?></th>
+    <th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 </table>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php' ?>

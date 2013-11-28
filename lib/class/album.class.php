@@ -41,7 +41,8 @@ class Album extends database_object {
     public $full_name; // Prefix + Name, generated
 
     // cached information
-    public $_songs=array();
+    public $_songs = array();
+    private static $_mapcache = array();
 
     /**
      * __construct
@@ -120,6 +121,7 @@ class Album extends database_object {
         if ($extra) {
             $sql = "SELECT COUNT(DISTINCT(`song`.`artist`)) AS `artist_count`, " .
                 "COUNT(`song`.`id`) AS `song_count`, " .
+                "SUM(`song`.`time`) as `total_duration`," .
                 "`artist`.`name` AS `artist_name`, " .
                 "`artist`.`prefix` AS `artist_prefix`, " .
                 "`artist`.`id` AS `artist_id`, `song`.`album`" .
@@ -156,14 +158,15 @@ class Album extends database_object {
         $sql = "SELECT " .
             "COUNT(DISTINCT(`song`.`artist`)) AS `artist_count`, " .
             "COUNT(`song`.`id`) AS `song_count`, " .
+            "SUM(`song`.`time`) as `total_duration`," .
             "`artist`.`name` AS `artist_name`, " .
             "`artist`.`prefix` AS `artist_prefix`, " .
             "`artist`.`id` AS `artist_id` " .
             "FROM `song` INNER JOIN `artist` " . 
             "ON `artist`.`id`=`song`.`artist` " .
-            "WHERE `song`.`album`='$this->id' " .
+            "WHERE `song`.`album` = ? " .
             "GROUP BY `song`.`album`";
-        $db_results = Dba::read($sql);
+        $db_results = Dba::read($sql, array($this->id));
 
         $results = Dba::fetch_assoc($db_results);
 
@@ -179,6 +182,78 @@ class Album extends database_object {
     } // _get_extra_info
 
     /**
+     * check
+     *
+     * Searches for an album; if none is found, insert a new one.
+     */
+    public static function check($name, $year = 0, $disk = 0, $mbid = null,
+        $readonly = false) {
+        
+        $trimmed = Catalog::trim_prefix(trim($name));
+        $name = $trimmed['string'];
+        $prefix = $trimmed['prefix'];
+
+        // Not even sure if these can be negative, but better safe than llama.
+        $year = abs(intval($year));
+        $disk = abs(intval($disk));
+
+        if (!$name) {
+            $name = T_('Unknown (Orphaned)');
+            $year = 0;
+            $disk = 0;
+        }
+
+        if (isset(self::$_mapcache[$name][$year][$disk][$mbid])) {
+            return self::$_mapcache[$name][$year][$disk][$mbid];
+        }
+
+        $sql = 'SELECT `id` FROM `album` WHERE `name` = ? AND `disk` = ? AND ' .
+            '`year` = ? AND `mbid` ';
+        $params = array($name, $disk, $year);
+
+        if ($mbid) {
+            $sql .= '= ? ';
+            $params[] = $mbid;
+        }
+        else {
+            $sql .= 'IS NULL ';
+        }
+
+        $sql .= 'AND `prefix` ';
+        if ($prefix) {
+            $sql .= '= ?';
+            $params[] = $prefix;
+        }
+        else {
+            $sql .= 'IS NULL';
+        }
+
+        $db_results = Dba::read($sql, $params);
+
+        if ($row = Dba::fetch_assoc($db_results)) {
+            $id = $row['id'];
+            self::$_mapcache[$name][$year][$disk][$mbid] = $id;
+            return $id;
+        }
+
+        if ($readonly) {
+            return null;
+        }
+
+        $sql = 'INSERT INTO `album` (`name`, `prefix`, `year`, `disk`, `mbid`) '.
+            'VALUES (?, ?, ?, ?, ?)';
+
+        $db_results = Dba::write($sql, array($name, $prefix, $year, $disk, $mbid));
+        if (!$db_results) {
+            return null;
+        }
+
+        $id = Dba::insert_id();
+        self::$_mapcache[$name][$year][$disk][$mbid] = $id;
+        return $id;
+    }
+
+    /**
      * get_songs
      * gets the songs for this album takes an optional limit
      * and an optional artist, if artist is passed it only gets
@@ -188,17 +263,17 @@ class Album extends database_object {
 
         $results = array();
 
-        $artist = Dba::escape($artist);
-
-        $sql = "SELECT `id` FROM `song` WHERE `album`='$this->id' ";
+        $sql = "SELECT `id` FROM `song` WHERE `album` = ? ";
+        $params = array($this->id);
         if ($artist) {
-            $sql .= "AND `artist`='$artist'";
+            $sql .= "AND `artist` = ?";
+            $params[] = $artist;
         }
         $sql .= "ORDER BY `track`, `title`";
         if ($limit) {
-            $sql .= " LIMIT $limit";
+            $sql .= " LIMIT " . intval($limit);
         }
-        $db_results = Dba::read($sql);
+        $db_results = Dba::read($sql, $params);
 
         while ($r = Dba::fetch_assoc($db_results)) {
             $results[] = $r['id'];
@@ -214,10 +289,8 @@ class Album extends database_object {
      */
     public function has_track($title) {
 
-        $title = Dba::escape($title);
-
-        $sql = "SELECT `id` FROM `song` WHERE `album`='$this->id' AND `title`='$title'";
-        $db_results = Dba::read($sql);
+        $sql = "SELECT `id` FROM `song` WHERE `album` = ? AND `title` = ?";
+        $db_results = Dba::read($sql, array($this->id, $title));
 
         $data = Dba::fetch_assoc($db_results);
 
@@ -275,8 +348,8 @@ class Album extends database_object {
      */
     function get_random_songs() {
 
-        $sql = "SELECT `id` FROM `song` WHERE `album`='$this->id' ORDER BY RAND()";
-        $db_results = Dba::read($sql);
+        $sql = "SELECT `id` FROM `song` WHERE `album` = ? ORDER BY RAND()";
+        $db_results = Dba::read($sql, array($this->id));
 
         while ($r = Dba::fetch_row($db_results)) {
             $results[] = $r['0'];
@@ -311,7 +384,7 @@ class Album extends database_object {
             Artist::gc();
         }
 
-        $album_id = Catalog::check_album($name,$year,$disk,$mbid);
+        $album_id = self::check($name, $year, $disk, $mbid);
         if ($album_id != $this->id) {
             if (!is_array($songs)) { $songs = $this->get_songs(); }
             foreach ($songs as $song_id) {
@@ -339,6 +412,34 @@ class Album extends database_object {
     } // update
 
     /**
+     * get_random
+     *
+     * This returns a number of random albums.
+     */
+    public static function get_random($count = 1, $with_art = false) {
+        $results = false;
+
+        if ($with_art) {
+            $sql = 'SELECT `album`.`id` FROM `album` LEFT JOIN `image` ' .
+                "ON (`image`.`object_type` = 'album' AND " .
+                '`image`.`object_id` = `album`.`id`) ' .
+                'WHERE `image`.`id` IS NOT NULL ';
+        }
+        else {
+            $sql = 'SELECT `id` FROM `album` ';
+        }
+        
+        $sql .= 'ORDER BY RAND() LIMIT ' . intval($count);
+        $db_results = Dba::read($sql);
+
+        while ($row = Dba::fetch_assoc($db_results)) {
+            $results[] = $row['id'];
+        }
+
+        return $results;
+    }
+    
+   /**
 	 * update_art
 	 */
 	public function update_art($new_image,$mime) {
@@ -386,31 +487,6 @@ class Album extends database_object {
 	
 	} // update_art
 	
-	/**
-     * get_random_albums
-     * This returns a random number of albums from the catalogs
-     * this is used by the index to return some 'potential' albums to play
-     */
-    public static function get_random_albums($count=6) {
-
-        $sql = 'SELECT `id` FROM `album` ORDER BY RAND() LIMIT ' . ($count*2);
-        $db_results = Dba::read($sql);
-
-        while ($row = Dba::fetch_assoc($db_results)) {
-            $art = new Art($row['id'], 'album');
-            $art->get_db();
-            if ($art->raw) {
-                $results[] = $row['id'];
-            }
-        }
-
-        if (count($results) < $count) { return false; }
-
-        $results = array_slice($results, 0, $count);
-
-        return $results;
-
-    } // get_random_albums
 
 } //end of album class
 

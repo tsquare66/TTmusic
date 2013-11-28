@@ -38,10 +38,19 @@ $oid         = $_REQUEST['oid']
             ? scrub_in($_REQUEST['oid'])
             : scrub_in($_REQUEST['song']);
 $sid         = scrub_in($_REQUEST['ssid']);
-$xml_rpc    = scrub_in($_REQUEST['xml_rpc']);
 $video        = make_bool($_REQUEST['video']);
 $type        = scrub_in($_REQUEST['type']);
 $transcode_to	= scrub_in($_REQUEST['transcode_to']);
+
+if ($video) {
+    // FIXME: Compatibility hack, should eventually be removed
+    $type = 'video';
+}
+
+if (!$type) {
+    // FIXME: Compatibility hack, should eventually be removed
+    $type = 'song';
+}
 
 if ($type == 'playlist') {
     $playlist_type = scrub_in($_REQUEST['playlist_type']);
@@ -57,11 +66,6 @@ if (empty($oid) && empty($demo_id) && empty($random)) {
     debug_event('play', 'No object UID specified, nothing to play', 2);
     header('HTTP/1.1 400 Nothing To Play');
     exit;
-}
-
-// If we're XML-RPC and it's enabled, use system user
-if ($xml_rpc == 1 && Config::get('xml_rpc') && empty($uid)) {
-    $uid = '-1';
 }
 
 if (empty($uid)) {
@@ -165,7 +169,7 @@ if ($demo_id) {
  */
 if ($random) {
     if ($start < 1) {
-        $oid = Random::get_single_song($_REQUEST['type']);
+        $oid = Random::get_single_song($_REQUEST['random_type']);
         // Save this one in case we do a seek
         $_SESSION['random']['last'] = $oid;
     }
@@ -174,7 +178,7 @@ if ($random) {
     }
 } // if random
 
-if (!$video) {
+if ($type == 'song') {
     /* Base Checks passed create the song object */
     $media = new Song($oid);
     $media->format();
@@ -202,36 +206,34 @@ if (Config::get('lock_songs')) {
     }
 }
 
-/* Check to see if this is a 'remote' catalog */
 if ($catalog->catalog_type == 'remote') {
-
-    preg_match("/(.+)\/play\/index.+/",$media->file,$match);
-
-    $token = xmlRpcClient::ampache_handshake($match['1'],$catalog->key);
+    $remote_handle = $catalog->connect();
 
     // If we don't get anything back we failed and should bail now
-    if (!$token) {
-        debug_event('xmlrpc-stream','Error Unable to get Token from ' . $match['1'] . ' check target servers logs','1');
+    if (!$remote_handle) {
+        debug_event('play', 'Connection to remote server failed', 1);
         exit;
     }
 
-    $sid   = xmlRpcClient::ampache_create_stream_session($match['1'],$token);
+    $handshake = $remote_handle->info();
+    $url = $media->file . '&ssid=' . $handshake['auth'];
 
-    $extra_info = "&xml_rpc=1&sid=$sid";
-    header('Location: ' . $media->file . $extra_info);
-    debug_event('xmlrpc-stream',"Start XML-RPC Stream - " . $media->file . $extra_info,'5');
+    header('Location: ' . $url);
+    debug_event('play', 'Started remote stream - ' . $url, 5);
 
-    /* If this is a voting tmp playlist remove the entry, we do this regardless of play amount */
-    if ($demo_id) { $democratic->delete_from_oid($oid,'song'); } // if democratic
+    // Handle democratic removal 
+    if ($demo_id) {
+        $democratic->delete_from_oid($oid, 'song');
+    }
 
     exit;
-} // end if remote catalog
+}
 
 /* If we don't have a file, or the file is not readable */
-if (!$media->file OR !is_readable($media->file)) {
+if (!$media->file || !Core::is_readable($media->file)) {
 
-    // We need to make sure this isn't democratic play, if it is then remove the song
-    // from the vote list
+    // We need to make sure this isn't democratic play, if it is then remove
+    // the song from the vote list
     if (is_object($tmp_playlist)) {
         $tmp_playlist->delete_track($oid);
     }
@@ -338,6 +340,9 @@ if ($transcode_cfg != 'never' && in_array('transcode', $valid_types)) {
     else {
         debug_event('play', 'Decided not to transcode', 5);
     }
+}
+else if ($transcode_to) {
+    debug_event('play', 'Transcoding is impossible but we received an explicit request for ' . $transcode_to, 2);
 }
 
 if ($transcode) {
@@ -462,8 +467,10 @@ else {
 if ($demo_id) { $democratic->delete_from_oid($oid,'song'); }
 
 if ($transcode) {
-    $stderr = fread($transcoder['stderr'], 8192);
-    fclose($transcoder['stderr']);
+    if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        $stderr = fread($transcoder['stderr'], 8192);
+        fclose($transcoder['stderr']);
+    }
     fclose($fp);
     proc_close($transcoder['process']);
     debug_event('transcode_cmd', $stderr, 5);

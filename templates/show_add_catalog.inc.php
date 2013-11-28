@@ -29,18 +29,18 @@ $default_sort = "%a/%A";
 <form name="update_catalog" method="post" id="add_catalog_form" action="javascript.void(0);" enctype="multipart/form-data">
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <tr>
-	<td><?php echo T_('Catalog Name'); ?>: </td>
-	<td><input size="60" type="text" name="name" value="<?php echo scrub_out($_POST['name']); ?>" /></td>
-	<td style="vertical-align:top; font-family: monospace;" rowspan="6" id="patterns_example">
-		<strong><?php echo T_('Auto-inserted Fields'); ?>:</strong><br />
-		%A = <?php echo T_('album name'); ?><br />
-		%a = <?php echo T_('artist name'); ?><br />
-		%c = <?php echo T_('id3 comment'); ?><br />
-		%T = <?php echo T_('track number (padded with leading 0)'); ?><br />
-		%t = <?php echo T_('song title'); ?><br />
-		%y = <?php echo T_('year'); ?><br />
-		%o = <?php echo T_('other'); ?><br />
-	</td>
+    <td><?php echo T_('Catalog Name'); ?>: </td>
+    <td><input size="60" type="text" name="name" value="<?php echo scrub_out($_POST['name']); ?>" /></td>
+    <td style="vertical-align:top; font-family: monospace;" rowspan="6" id="patterns_example">
+        <strong><?php echo T_('Auto-inserted Fields'); ?>:</strong><br />
+        <span class="format-specifier">%A</span> = <?php echo T_('album name'); ?><br />
+        <span class="format-specifier">%a</span> = <?php echo T_('artist name'); ?><br />
+        <span class="format-specifier">%c</span> = <?php echo T_('id3 comment'); ?><br />
+        <span class="format-specifier">%T</span> = <?php echo T_('track number (padded with leading 0)'); ?><br />
+        <span class="format-specifier">%t</span> = <?php echo T_('song title'); ?><br />
+        <span class="format-specifier">%y</span> = <?php echo T_('year'); ?><br />
+        <span class="format-specifier">%o</span> = <?php echo T_('other'); ?><br />
+    </td>
 </tr>
 
 <tr>

@@ -33,15 +33,14 @@
 <?php show_preference_box($preferences[$_REQUEST['tab']]);  ?>
 <div class="formValidation">
 	<input class="button" type="button" id="update_preference_button" value="<?php echo T_('Update Preferences'); ?>" />
-	<?php echo Core::form_register('update_preference'); ?>
-	<input type="hidden" name="tab" value="<?php echo scrub_out($_REQUEST['tab']); ?>" />
-	<input type="hidden" name="method" value="<?php echo scrub_out($_REQUEST['action']); ?>" />
-	<?php if (Access::check('interface','100')) { ?>
-		<input type="hidden" name="user_id" value="<?php echo scrub_out($_REQUEST['user_id']); ?>" />
-	<?php } ?>
+    <?php echo Core::form_register('update_preference'); ?>
+    <input type="hidden" name="tab" value="<?php echo scrub_out($_REQUEST['tab']); ?>" />
+    <input type="hidden" name="method" value="<?php echo scrub_out($_REQUEST['action']); ?>" />
+    <?php if (Access::check('interface','100')) { ?>
+        <input type="hidden" name="user_id" value="<?php echo scrub_out($_REQUEST['user_id']); ?>" />
+    <?php } ?>
 </div>
 <?php echo Ajax::observe('update_preference_button','click',Ajax::action('?page=preferences&action=update_preferences','update_preference_button','update_preference_form'),'1'); ?>
-
 <?php
 }  // end if not account
 if ($_REQUEST['tab'] == 'account') {

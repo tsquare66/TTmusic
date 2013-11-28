@@ -21,10 +21,10 @@
  */
 
 if ($playlist) {
-	$logic_operator = $playlist->logic_operator;
+    $logic_operator = $playlist->logic_operator;
 }
 else {
-	$logic_operator = $_REQUEST['operator'];
+    $logic_operator = $_REQUEST['operator'];
 }
 $logic_operator = strtolower($logic_operator);
 ?>

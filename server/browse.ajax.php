@@ -244,6 +244,5 @@ switch ($_REQUEST['action']) {
 $browse->store();
 
 // We always do this
-
 echo xml_from_array($results);
 ?>

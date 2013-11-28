@@ -73,9 +73,9 @@ else
 <?php if (false == $GLOBALS['isMobile']) { ?>
   <li><h4><?php echo T_('Playlist'); ?></h4>
     <ul class="sb3" id="sb_home_info">
-      <li id="sb_home_info_CurrentlyPlaying"><a href="<?php echo $web_path; ?>/index.php"><?php echo _('Currently Playing'); ?></a></li>
+      <li id="sb_home_info_CurrentlyPlaying"><a href="<?php echo $web_path; ?>/index.php"><?php echo T_('Currently Playing'); ?></a></li>
 <?php if (Config::get('allow_democratic_playback')) { ?>
-      <li id="sb_home_democratic_playlist"><a href="<?php echo $web_path; ?>/democratic.php?action=show_playlist"><?php echo _('Democratic'); ?></a></li>
+      <li id="sb_home_democratic_playlist"><a href="<?php echo $web_path; ?>/democratic.php?action=show_playlist"><?php echo T_('Democratic'); ?></a></li>
 <?php } ?>
 <?php if ($server_allow = Config::get('allow_localplay_playback') AND $controller = Config::get('localplay_controller') AND $access_check = Access::check('localplay','5')) { ?>
 <?php
@@ -84,29 +84,37 @@ else
         $current_instance = $localplay->current_instance();
         $class = $current_instance ? '' : ' class="active_instance"';
 ?>
-        <li id="sb_localplay_info_show"><a href="<?php echo $web_path; ?>/localplay.php?action=show_playlist"><?php echo _('Localplay'); ?></a></li>
+        <li id="sb_localplay_info_show"><a href="<?php echo $web_path; ?>/localplay.php?action=show_playlist"><?php echo T_('Localplay'); ?></a></li>
 <?php } ?>
-      <li id="sb_browse_bb_Playlist"><a href="<?php echo $web_path; ?>/playlist.php?action=show_import_playlist"><?php echo _('Import'); ?></a></li>
+      <li id="sb_browse_bb_Playlist"><a href="<?php echo $web_path; ?>/playlist.php?action=show_import_playlist"><?php echo T_('Import'); ?></a></li>
     </ul>
   </li>
   <li><h4><?php echo T_('Random'); ?></h4>
     <ul class="sb3" id="sb_home_random">
-      <li id="sb_home_random_album"><?php echo Ajax::text('?page=random&action=album',_('Album'),'home_random_album'); ?></li>
-      <li id="sb_home_random_artist"><?php echo Ajax::text('?page=random&action=artist',_('Artist'),'home_random_artist'); ?></li>
-      <li id="sb_home_random_playlist"><?php echo Ajax::text('?page=random&action=playlist',_('Playlist'),'home_random_playlist'); ?></li>
-      <li id="sb_home_random_advanced"><a href="<?php echo $web_path; ?>/random.php?action=advanced&type=song"><?php echo _('Advanced'); ?></a></li>
+      <li id="sb_home_random_album"><?php echo Ajax::text('?page=random&action=album', T_('Album'),'home_random_album'); ?></li>
+      <li id="sb_home_random_artist"><?php echo Ajax::text('?page=random&action=artist', T_('Artist'),'home_random_artist'); ?></li>
+      <li id="sb_home_random_playlist"><?php echo Ajax::text('?page=random&action=playlist', T_('Playlist'),'home_random_playlist'); ?></li>
+      <li id="sb_home_random_advanced"><a href="<?php echo $web_path; ?>/random.php?action=advanced&type=song"><?php echo T_('Advanced'); ?></a></li>
     </ul>
   </li>
 <?php } ?>
-  <li><h4><?php echo _('Information'); ?></h4>
+  <li><h4><?php echo T_('Information'); ?></h4>
     <ul class="sb3" id="sb_home_info">
-	  <li id="sb_home_info_Statistics"> <?php echo Ajax::text("?page=stats&action=song",    _('Statistics'),	'sb_home_info_Statistics'); ?></li>
-      <li id="sb_home_info_Newest">		<?php echo Ajax::text("?page=stats&action=newest",	_('Newest'),		'sb_home_info_Newest'); ?></li>
-      <li id="sb_home_info_Popular">	<?php echo Ajax::text("?page=stats&action=popular",	_('Popular'),		'sb_home_info_Popular'); ?></li>
+	  <li id="sb_home_info_Statistics"> <?php echo Ajax::text("?page=stats&action=song",   T _('Statistics'),	'sb_home_info_Statistics'); ?></li>
+      <li id="sb_home_info_Newest">		<?php echo Ajax::text("?page=stats&action=newest",	T_('Newest'),		'sb_home_info_Newest'); ?></li>
+      <li id="sb_home_info_Popular">	<?php echo Ajax::text("?page=stats&action=popular",	T_('Popular'),		'sb_home_info_Popular'); ?></li>
     </ul>
   </li>
 <?php 
 if (false == $GLOBALS['isMobile']) 
+  <li><h4><?php echo T_('Search'); ?></h4>
+    <ul class="sb3" id="sb_home_search">
+      <li id="sb_home_search_song"><a href="<?php echo $web_path; ?>/search.php?type=song"><?php echo T_('Songs'); ?></a></li>
+      <li id="sb_home_search_album"><a href="<?php echo $web_path; ?>/search.php?type=album"><?php echo T_('Albums'); ?></a></li>
+      <li id="sb_home_search_artist"><a href="<?php echo $web_path; ?>/search.php?type=artist"><?php echo T_('Artists'); ?></a></li>
+      <li id="sb_home_search_video"><a href="<?php echo $web_path; ?>/search.php?type=video"><?php echo T_('Videos'); ?></a></li>
+    </ul>
+  </li>
  	echo '</ul>';
 else
 	echo '</div>';

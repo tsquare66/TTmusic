@@ -33,7 +33,7 @@
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
-	<th class="cel_catalog"><?php echo T_('Name'); ?></th>
+    <th class="cel_catalog"><?php echo T_('Name'); ?></th>
  	<?php if (false == $GLOBALS['isMobile'])  { ?>
     <th class="cel_path"><?php echo T_('Path'); ?></th>
     <th class="cel_lastverify"><?php echo T_('Last Verify'); ?></th>

@@ -1,11 +1,9 @@
 <?php
-/* vim:set tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab: */
+/* vim:set softtabstop=4 shiftwidth=4 expandtab: */
 /**
- * Show Random Albums
- *
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright (c) 2001 - 2011 Ampache.org All Rights Reserved
+ * Copyright 2001 - 2013 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,28 +18,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @package	Ampache
- * @copyright	2001 - 2011 Ampache.org
- * @license	http://opensource.org/licenses/gpl-2.0 GPLv2
- * @link	http://www.ampache.org/
  */
 
 $web_path = Config::get('web_path');
 $button = Ajax::button('?page=index&action=random_albums','random', T_('Refresh'),'random_refresh');
 ?>
-<?php show_box_top(T_('Albums of the Moment') . ' ' . $button, 'box box_random_albums'); ?>
+<?php UI::show_box_top(T_('Albums of the Moment') . ' ' . $button, 'box box_random_albums'); ?>
 
 	<table>
 	<tr>
-	<?php
-	if ($albums) {
-		foreach ($albums as $album_id) {
-			$album = new Album($album_id);
-			$album->format();
-			$name = '[' . $album->f_artist . '] ' . scrub_out($album->full_name);
+    <?php
+    if ($albums) {
+        foreach ($albums as $album_id) {
+            $album = new Album($album_id);
+            $album->format();
+            $name = '[' . $album->f_artist . '] ' . scrub_out($album->full_name);
         ?>
         <td>
-    	<div class="random_album">
+        <div class="random_album">
         <?php 
 	        	$action = '?page=album&action=show&album='.$album_id;
 	        	if (Art::is_enabled()) 
@@ -62,7 +56,7 @@ $button = Ajax::button('?page=index&action=random_albums','random', T_('Refresh'
                 }
                 ?>
         </div>
-        <span class="play_album"><?php echo Ajax::button('?action=basket&type=album&id=' . $album->id,'add', T_('Play Album'),'play_full_' . $album->id); ?></span>
+                  <span class="play_album"><?php echo Ajax::button('?action=basket&type=album&id=' . $album->id,'add', T_('Play Album'),'play_full_' . $album->id); ?></span>
         </td>
         	<?php } // end foreach ?>
 	<?php } // end if albums ?>
@@ -70,4 +64,4 @@ $button = Ajax::button('?page=index&action=random_albums','random', T_('Refresh'
 	</table>
 	
 	
-<?php show_box_bottom(); ?>
+<?php UI::show_box_bottom(); ?>

@@ -80,7 +80,7 @@ class Session {
         $sql = 'UPDATE `session` SET `value` = ?, `expire` = ? WHERE `id` = ?';
         $db_results = Dba::read($sql, array($value, $expire, $key));
 
-        debug_event('session', 'Writing to ' . $key . ' with expire ' . $expire . ' [' . Dba::error() . ']', 6);
+        debug_event('session', 'Writing to ' . $key . ' with expiration ' . $expire, 6);
 
         return true;
     }
@@ -156,7 +156,7 @@ class Session {
      * This returns the username associated with a session ID, if any
      */
     public static function username($key) {
-        return self::_read($key, 'user');
+        return self::_read($key, 'username');
     }
 
     /**
@@ -336,6 +336,10 @@ class Session {
             array('Session', 'write'),
             array('Session', 'destroy'),
             array('Session', 'gc'));
+
+        // Make sure session_write_close is called during the early part of
+        // shutdown, to avoid issues with object destruction.
+        register_shutdown_function('session_write_close');
     }
 
     /**

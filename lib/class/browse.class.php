@@ -121,7 +121,7 @@ class Browse extends Query {
         }
 
         $type = $this->get_type();
-        
+
         // Set the correct classes based on type
         $class = "box browse_" . $type;
 

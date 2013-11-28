@@ -39,6 +39,7 @@ class Dba {
     public static $stats = array('query'=>0);
 
     private static $_sql;
+    private static $_error;
     private static $config;
 
     /**
@@ -59,6 +60,16 @@ class Dba {
         // care about here.
         debug_event('Query', $sql . ' ' . @json_encode($params), 6);
 
+        // Be aggressive, be strong, be dumb
+        $tries = 0;
+        do {
+            $stmt = self::_query($sql, $params);
+        } while (!$stmt && $tries++ < 3);
+
+        return $stmt;
+    }
+
+    private static function _query($sql, $params) {
         $dbh = self::dbh();
         if (!$dbh) {
             debug_event('Dba', 'Error: failed to get database handle', 1);
@@ -79,10 +90,14 @@ class Dba {
         self::$stats['query']++;
 
         if (!$stmt) {
+            self::$_error = json_encode($dbh->errorInfo());
             debug_event('Dba', 'Error: ' . json_encode($dbh->errorInfo()), 1);
+            self::disconnect();
         }
         else if ($stmt->errorCode() && $stmt->errorCode() != '00000') {
+            self::$_error = json_encode($stmt->errorInfo());
             debug_event('Dba', 'Error: ' . json_encode($stmt->errorInfo()), 1);
+            self::disconnect();
             return false;
         }
 
@@ -219,11 +234,24 @@ class Dba {
         $username = Config::get('database_username');
         $hostname = Config::get('database_hostname');
         $password = Config::get('database_password');
+        $port = Config::get('database_port');
+
+        // Build the data source name
+        if (strpos($hostname, '/') === 0) {
+            $dsn = 'mysql:unix_socket=' . $hostname;
+        }
+        else {
+            $dsn = 'mysql:host=' . $hostname ?: 'localhost';
+        }
+        if ($port) {
+            $dsn .= ';port=' . intval($port);
+        }
 
         try {
-            $dbh = new PDO('mysql:host=' . $hostname, $username, $password);
+            $dbh = new PDO($dsn, $username, $password);
         }
         catch (PDOException $e) {
+            self::$_error = $e->getMessage();
             debug_event('Dba', 'Connection failed: ' . $e->getMessage(), 1);
             return null;
         }
@@ -243,6 +271,7 @@ class Dba {
         }
 
         if ($dbh->exec('USE `' . $database . '`') === false) {
+            self::$_error = json_encode($dbh->errorInfo());
             debug_event('Dba', 'Unable to select database ' . $database . ': ' . json_encode($dbh->errorInfo()), 1);
         }
 
@@ -262,18 +291,13 @@ class Dba {
         $dbh = self::_connect();
 
         if (!$dbh || $dbh->errorCode()) {
+            if ($dbh) {
+                self::$_error = json_encode($dbh->errorInfo());
+            }
             return false;
         }
 
         return true;
-    }
-
-    public static function check_database_exists() {
-        $dbh = self::_connect();
-        if ($dbh) {
-            return $dbh->exec('USE `' . Config::get('database_name') . '`');
-        }
-        return false;
     }
 
     /**
@@ -374,11 +398,7 @@ class Dba {
      * this returns the error of the db
      */
     public static function error() {
-        $dbh = self::dbh();
-        if ($dbh) {
-            return $dbh->errorCode();
-        }
-        return false;
+        return self::$_error;
     }
 
     /**

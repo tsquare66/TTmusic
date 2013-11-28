@@ -20,58 +20,53 @@
  *
  */
 
-/**
- * check_php_ver
- * checks the php version and makes
- * sure that it's good enough
- */
-function check_php_ver($level=0) {
+function check_php() {
+    if (
+        check_php_version() &&
+        check_php_hash() &&
+        check_php_hash_algo() &&
+        check_php_pdo() &&
+        check_php_pdo_mysql() &&
+        check_php_session() &&
+        check_php_json() &&
+        check_php_safemode()
+    ) {
+        return true;
+    }
 
+    return false;
+}
+
+function check_php_version() {
     if (floatval(phpversion()) < 5.3) {
         return false;
     }
-
-    // Make sure that they have the sha256() algo installed
-    if (!function_exists('hash_algos')) { return false; }
-    $algos = hash_algos();
-
-    if (!in_array('sha256',$algos)) {
-        return false;
-    }
-
     return true;
+}
 
-} // check_php_ver
+function check_php_hash() {
+    return function_exists('hash_algos');
+}
 
-/**
- * check_php_session
- * checks to make sure the needed functions
- * for sessions exist
-*/
+function check_php_hash_algo() {
+    return function_exists('hash_algos') ? in_array('sha256', hash_algos()) : false;
+}
+
+function check_php_json() {
+    return function_exists('json_encode');
+}
+
 function check_php_session() {
+    return function_exists('session_set_save_handler');
+}
 
-    if (!function_exists('session_set_save_handler')) {
-        return false;
-    }
+function check_php_pdo() {
+    return class_exists('PDO');
+}
 
-    return true;
-
-} // check_php_session
-
-/**
- * check_php_pcre
- * This makes sure they have pcre (preg_???) support
- * compiled into PHP this is required!
- */
-function check_php_pcre() {
-
-    if (!function_exists('preg_match')) {
-        return false;
-    }
-
-    return true;
-
-} // check_php_pcre
+function check_php_pdo_mysql() {
+    return class_exists('PDO') ? in_array('mysql', PDO::getAvailableDrivers()) : false;
+}
 
 /**
  * check_config_values
@@ -148,7 +143,7 @@ function check_php_timelimit() {
  * check_safe_mode
  * Checks to make sure we aren't in safe mode
  */
-function check_safemode() {
+function check_php_safemode() {
     if (ini_get('safe_mode')) {
         return false;
     }
@@ -196,34 +191,6 @@ function check_override_exec_time() {
 }
 
 /**
- * check_gettext
- * This checks to see if you've got gettext installed
- */
-function check_gettext() {
-
-    if (!function_exists('gettext')) {
-        return false;
-    }
-
-    return true;
-
-} // check_gettext
-
-/**
- * check_mbstring
- * This checks for mbstring support
- */
-function check_mbstring() {
-
-    if (!function_exists('mb_check_encoding')) {
-        return false;
-    }
-
-    return true;
-
-} // check_mbstring
-
-/**
  * check_config_writable
  * This checks whether we can write the config file
  */
@@ -235,76 +202,18 @@ function check_config_writable() {
 }
 
 /**
- * generate_config
- * This takes an array of results and re-generates the config file
- * this is used by the installer and by the admin/system page
+ * debug_result
+ *
+ * Convenience function to format the output.
  */
-function generate_config($current) {
-
-    /* Start building the new config file */
-    $distfile = Config::get('prefix') . '/config/ampache.cfg.php.dist';
-    $handle = fopen($distfile,'r');
-    $dist = fread($handle,filesize($distfile));
-    fclose($handle);
-
-    $data = explode("\n",$dist);
-
-    /* Run throught the lines and set our settings */
-    foreach ($data as $line) {
-
-        /* Attempt to pull out Key */
-        if (preg_match("/^;?([\w\d]+)\s+=\s+[\"]{1}(.*?)[\"]{1}$/",$line,$matches)
-            || preg_match("/^;?([\w\d]+)\s+=\s+[\']{1}(.*?)[\']{1}$/", $line, $matches)
-            || preg_match("/^;?([\w\d]+)\s+=\s+[\'\"]{0}(.*)[\'\"]{0}$/",$line,$matches)) {
-
-            $key    = $matches[1];
-            $value  = $matches[2];
-
-            /* Put in the current value */
-            if ($key == 'config_version') {
-                $line = $key . ' = ' . escape_ini($value);
-            }
-            elseif (isset($current[$key])) {
-                $line = $key . ' = "' . escape_ini($current[$key]) . '"';
-                unset($current[$key]);
-            } // if set
-
-        } // if key
-
-        $final .= $line . "\n";
-
-    } // end foreach line
-
-    return $final;
-
-} // generate_config
-
-/**
- * escape_ini
- * Escape a value used for inserting into an ini file. 
- * Won't quote ', like addslashes does.
- */
-function escape_ini($str) {
-
-    return str_replace('"', '\"', $str);
-
-}
-
-
-/**
- * debug_ok
- * Return an "OK" with the specified string
- */
-function debug_result($comment,$status=false,$value=false) {
-
+function debug_result($status = false, $value = null, $comment = '') {
     $class = $status ? 'ok' : 'notok';
+
     if (!$value) {
         $value = $status ? 'OK' : 'ERROR';
     }
 
-    $final = '<span class="' . $class . '">' . scrub_out($value) . '</span> <em>' . $comment . '</em>';
-
-    return $final;
-
-} // debug_ok
+    return '[ <span class="' . $class . '">' . scrub_out($value) .
+        '</span> <em>' . $comment . '</em> ]';
+}
 ?>

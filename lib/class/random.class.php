@@ -45,21 +45,6 @@ class Random implements media {
     } // constructor
 
     /**
-     * album
-     * This returns the ID of a random album, nothing special
-     */
-    public static function album() {
-
-        $sql = "SELECT `id` FROM `album` ORDER BY RAND() LIMIT 1";
-        $db_results = Dba::read($sql);
-
-        $results = Dba::fetch_assoc($db_results);
-
-        return $results['id'];
-
-    } // album
-
-    /**
      * artist
      * This returns the ID of a random artist, nothing special here for now
      */
@@ -94,18 +79,18 @@ class Random implements media {
 
     /**
      * play_url
+     *
      * This generates a random play url based on the passed type
      * and returns it
      */
-    public static function play_url($id,$sid='',$force_http='') {
-
+    public static function play_url($id) {
         if (!$type = self::get_id_type($id)) {
             return false;
         }
 
         $uid = $GLOBALS['user']->id;
 
-        $url = Stream::get_base_url() . "random=1&type=$type&uid=$uid";
+        $url = Stream::get_base_url() . "type=song&random=1&random_type=$type&uid=$uid";
 
         return $url;
 

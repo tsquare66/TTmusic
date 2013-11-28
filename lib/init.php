@@ -54,7 +54,7 @@ else {
 
 // Verify that a few important but commonly disabled PHP functions exist and
 // that we're on a usable version
-if (!function_exists('hash') || !function_exists('inet_pton') || (floatval(phpversion()) < 5.3)) {
+if (!check_php()) {
     $link = $path . '/test.php';
 }
 
@@ -65,7 +65,7 @@ if ($link) {
 }
 
 /** This is the version.... fluf nothing more... **/
-$results['version']        = '3.6-Alpha4-DEV';
+$results['version']        = '3.6-alpha6+FUTURE';
 $results['int_config_version']    = '12';
 
 if ($results['force_ssl']) {
@@ -93,7 +93,7 @@ $results['cookie_secure']    = $results['session_cookiesecure'];
 require_once $prefix . '/modules/getid3/getid3.php';
 require_once $prefix . '/modules/phpmailer/class.phpmailer.php';
 require_once $prefix . '/modules/phpmailer/class.smtp.php';
-require_once $prefix . '/modules/infotools/Snoopy.class.php';
+require_once $prefix . '/modules/snoopy/Snoopy.class.php';
 require_once $prefix . '/modules/infotools/AmazonSearchEngine.class.php';
 require_once $prefix . '/modules/infotools/lastfm.class.php';
 require_once $prefix . '/modules/php_musicbrainz/mbQuery.php';
@@ -122,8 +122,10 @@ if (substr($post_size,strlen($post_size)-1,strlen($post_size)) != 'M') {
 // In case the local setting is 0
 ini_set('session.gc_probability','5');
 
-if (! isset($results['memory_limit']) || $results['memory_limit'] < 24) {
-    $results['memory_limit'] = 24;
+if (!isset($results['memory_limit']) || 
+    (UI::unformat_bytes($results['memory_limit']) < UI::unformat_bytes('32M'))
+) {
+    $results['memory_limit'] = '32M';
 }
 
 set_memory_limit($results['memory_limit']);

@@ -34,7 +34,6 @@ $_SESSION['catalog'] = 0;
  * refresh_javascript include. Must be greater then 5, I'm not
  * going to let them break their servers
  */
-
 if (Config::get('refresh_limit') > 5) {
     $refresh_limit = Config::get('refresh_limit');
     $ajax_url = '?page=index&action=reloadnp';

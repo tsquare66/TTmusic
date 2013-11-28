@@ -46,8 +46,8 @@
                         <?php echo UI::get_icon('batch_download', T_('Batch Download')); ?>
                 </a>
         <?php } ?>
-	<?php if ($playlist->has_access()) { ?>
-		<?php echo Ajax::button('?action=show_edit_object&type=playlist_row&id=' . $playlist->id,'edit', T_('Edit'),'edit_playlist_' . $playlist->id); ?>
-		<?php echo Ajax::button('?page=browse&action=delete_object&type=playlist&id=' . $playlist->id,'delete', T_('Delete'),'delete_playlist_' . $playlist->id); ?>
-	<?php } ?>
+    <?php if ($playlist->has_access()) { ?>
+        <?php echo Ajax::button('?action=show_edit_object&type=playlist_row&id=' . $playlist->id,'edit', T_('Edit'),'edit_playlist_' . $playlist->id); ?>
+        <?php echo Ajax::button('?page=browse&action=delete_object&type=playlist&id=' . $playlist->id,'delete', T_('Delete'),'delete_playlist_' . $playlist->id); ?>
+    <?php } ?>
 </td>

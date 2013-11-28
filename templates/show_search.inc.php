@@ -24,7 +24,7 @@ UI::show_box_top(T_('Search Ampache') . "...", 'box box_advanced_search');
 ?>
 <form id="search" name="search" method="post" action="javascript.void(0);" enctype="multipart/form-data" style="Display:inline">
 <table class="tabledata" cellpadding="3" cellspacing="0">
-	<tr id="search_location">
+    <tr id="search_location">
 	<td><?php if ($_REQUEST['type'] != 'song') {echo Ajax::text('?page=search&type=song',T_('Songs'),'search_songs');} else { echo '<b>'.T_('Songs').'</b>'; }?></td>
 	<td><?php if ($_REQUEST['type'] != 'album') {echo Ajax::text('?page=search&type=album',T_('Albums'),'search_albums');} else { echo '<b>'.T_('Albums').'</b>'; }?></td>
 	<td><?php if ($_REQUEST['type'] != 'artist') {echo Ajax::text('?page=search&type=artist',T_('Artists'),'search_artists');} else { echo '<b>'.T_('Artists').'</b>'; }?></td>

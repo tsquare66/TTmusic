@@ -32,24 +32,24 @@ debug_event('stream.ajax.php' ,
 			'5');
 
 switch ($_REQUEST['action']) {
-	case 'set_play_type':
-		// Make sure they have the rights to do this
-		if (!Preference::has_access('play_type')) {
-			$results['rfc3514'] = '0x1';
-			break;
-		}
+    case 'set_play_type':
+        // Make sure they have the rights to do this
+        if (!Preference::has_access('play_type')) {
+            $results['rfc3514'] = '0x1';
+            break;
+        }
 
-		switch ($_POST['type']) {
-			case 'stream':
-			case 'localplay':
-			case 'democratic':
-				$key = 'allow_' . $_POST['type'] . '_playback';
-				if (!Config::get($key)) {
-					$results['rfc3514'] = '0x1';
-					break 2;
-				}
-				$new = $_POST['type'];
-			break;
+        switch ($_POST['type']) {
+            case 'stream':
+            case 'localplay':
+            case 'democratic':
+                $key = 'allow_' . $_POST['type'] . '_playback';
+                if (!Config::get($key)) {
+                    $results['rfc3514'] = '0x1';
+                    break 2;
+                }
+                $new = $_POST['type'];
+            break;
 			case 'jplayer':
             case 'html5_player':
                 $new = $_POST['type'];
@@ -61,22 +61,22 @@ switch ($_REQUEST['action']) {
             break 2;
         } // end switch
 
-		$current = Config::get('play_type');
+        $current = Config::get('play_type');
 
-		// Go ahead and update their preference
-		if (Preference::update('play_type',$GLOBALS['user']->id,$new)) {
+        // Go ahead and update their preference
+        if (Preference::update('play_type',$GLOBALS['user']->id,$new)) {
             Config::set('play_type', $new, true);
-		}
+        }
 
 
-		if (($new == 'localplay' AND $current != 'localplay') OR ($current == 'localplay' AND $new != 'localplay')) {
+        if (($new == 'localplay' AND $current != 'localplay') OR ($current == 'localplay' AND $new != 'localplay')) {
             $results['rightbar'] = UI::ajax_include('rightbar.inc.php');
-		}
+        }
 
-		$results['rfc3514'] = '0x0';
+        $results['rfc3514'] = '0x0';
 
-	break;
-	case 'basket':
+    break;
+    case 'basket':
         // Go ahead and see if we should clear the playlist here or not,
         // we might not actually clear it in the session.
         if ( ($_REQUEST['playlist_method'] == 'clear' || 

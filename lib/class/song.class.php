@@ -50,29 +50,93 @@ class Song extends database_object implements media {
 
     /**
      * Constructor
+     *
      * Song class, for modifing a song.
      */
-    public function __construct($id='') {
+    public function __construct($id = null) {
 
         if (!$id) { return false; }
 
-        /* Assign id for use in get_info() */
         $this->id = intval($id);
 
-        /* Get the information from the db */
         if ($info = $this->_get_info()) {
-
-            foreach ($info as $key=>$value) {
+            foreach ($info as $key => $value) {
                 $this->$key = $value;
             }
             $data = pathinfo($this->file);
             $this->type = strtolower($data['extension']);
             $this->mime = self::type_to_mime($this->type);
         }
+        else {
+            $this->id = null;
+            return false;
+        }
 
         return true;
 
     } // constructor
+
+    /**
+     * insert
+     *
+     * This inserts the song described by the passed array
+     */
+    public static function insert($results) {
+        $catalog = $results['catalog'];
+        $file = $results['file'];
+        $title = trim($results['title']) ?: $file;
+        $artist = $results['artist'];
+        $album = $results['album'];
+        $bitrate = $results['bitrate'];
+        $rate = $results['rate'] ?: 0;
+        $mode = $results['mode'];
+        $size = $results['size'] ?: 0;
+        $time = $results['time'] ?: 0;
+        $track = $results['track'];
+        $track_mbid = $results['mb_trackid'];
+        $album_mbid = $results['mb_albumid'];
+        $artist_mbid = $results['mb_artistid'];
+        $disk = $results['disk'] ?: 0;
+        $year = $results['year'] ?: 0;
+        $comment = $results['comment'];
+        $tags = $results['genre']; // multiple genre support makes this an array
+        $lyrics = $results['lyrics'];
+
+        $artist_id = Artist::check($artist, $artist_mbid);
+        $album_id = Album::check($album, $year, $disk, $album_mbid);
+
+        $sql = 'INSERT INTO `song` (`file`, `catalog`, `album`, `artist`, ' .
+            '`title`, `bitrate`, `rate`, `mode`, `size`, `time`, `track`, ' .
+            '`addition_time`, `year`, `mbid`) ' .
+            'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+        $db_results = Dba::write($sql, array(
+            $file, $catalog, $album_id, $artist_id,
+            $title, $bitrate, $rate, $mode, $size, $time, $track,
+            time(), $year, $track_mbid));
+
+        if (!$db_results) {
+            debug_event('song', 'Unable to insert' . $file, 2);
+            return false;
+        }
+
+        $song_id = Dba::insert_id();
+
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                $tag = trim($tag);
+                Tag::add('song', $song_id, $tag, false);
+                Tag::add('album', $album_id, $tag, false);
+                Tag::add('artist', $artist_id, $tag, false);
+            }
+        }
+
+        $sql = 'INSERT INTO `song_data` (`song_id`, `comment`, `lyrics`) ' .
+            'VALUES(?, ?, ?)';
+        Dba::write($sql, array($song_id, $comment, $lyrics));
+
+        return true;
+    }
 
     /**
      * gc
@@ -145,32 +209,30 @@ class Song extends database_object implements media {
 
     /**
      * _get_info
-     * get's the vars for $this out of the database
-     * Taken from the object
      */
     private function _get_info() {
 
-        $id = intval($this->id);
+        $id = $this->id;
 
-        if (parent::is_cached('song',$id)) {
-            return parent::get_from_cache('song',$id);
+        if (parent::is_cached('song', $id)) {
+            return parent::get_from_cache('song', $id);
         }
 
-        /* Grab the basic information from the catalog and return it */
-        $sql = "SELECT song.id,file,catalog,album,year,artist,".
-            "title,bitrate,rate,mode,size,time,track,played,song.enabled,update_time,".
-            "mbid,".
-            "addition_time FROM `song` WHERE `song`.`id` = '$id'";
-        $db_results = Dba::read($sql);
+        $sql = 'SELECT `id`, `file`, `catalog`, `album`, `year`, `artist`,' .
+            '`title`, `bitrate`, `rate`, `mode`, `size`, `time`, `track`, ' .
+            '`played`, `enabled`, `update_time`, `mbid`, `addition_time` ' .
+            'FROM `song` WHERE `id` = ?';
+        $db_results = Dba::read($sql, array($id));
 
         $results = Dba::fetch_assoc($db_results);
-		$results['file'] = utf8_decode($results['file']);
+        if (isset($results['id'])) {
+            parent::add_to_cache('song', $id, $results);
+	    $results['file'] = utf8_decode($results['file']);
+            return $results;
+        }
 
-        parent::add_to_cache('song',$id,$results);
-
-        return $results;
-
-    } // _get_info
+        return false;
+    }
 
     /**
       * _get_ext_info
@@ -248,6 +310,9 @@ class Song extends database_object implements media {
             case 'mp4':
             case 'm4a':
                 return 'audio/mp4';
+            break;
+            case 'aacp':
+                return 'audio/aacp';
             break;
             case 'mpc':
                 return 'audio/x-musepack';
@@ -441,7 +506,7 @@ class Song extends database_object implements media {
         } // end foreach
 
         if ($array['change']) {
-            debug_event('song-diff', json_encode($array['element']), 5, 'ampache-catalog');
+            debug_event('song-diff', json_encode($array['element']), 5);
         }
 
         return $array;
@@ -934,35 +999,11 @@ class Song extends database_object implements media {
 
         $song_name = rawurlencode($song->get_artist_name() . " - " . $song->title . "." . $type);
 
-        $url = Stream::get_base_url() . "oid=$song->id&uid=$user_id&name=/$song_name";
+        $url = Stream::get_base_url() . "type=song&oid=$song->id&uid=$user_id&name=/$song_name";
 
         return $url;
 
     } // play_url
-
-    /**
-     * parse_song_url
-     * Takes a URL from this ampache install and returns the song that the url represents
-     * used by the API, and used to parse out stream urls for localplay
-     * right now just gets song id might do more later, hence the complexity
-     */
-    public static function parse_song_url($url) {
-
-        // We only care about the question mark stuff
-        $query = parse_url($url,PHP_URL_QUERY);
-
-        $elements = explode("&",$query);
-
-        foreach ($elements as $items) {
-            list($key,$value) = explode("=",$items);
-            if ($key == 'oid') {
-                return $value;
-            }
-        } // end foreach
-
-        return false;
-
-    } // parse_song_url
 
     /**
      * get_recently_played

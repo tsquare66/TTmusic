@@ -27,7 +27,12 @@
  */
 function set_memory_limit($new_limit) {
 
-    $current_limit = UI::unformat_bytes(ini_get('memory_limit'));
+    $current_limit = ini_get('memory_limit');
+    if ($current_limit == -1) {
+        return;
+    }
+
+    $current_limit = UI::unformat_bytes($current_limit);
     $new_limit = UI::unformat_bytes($new_limit);
 
     if ($current_limit < $new_limit) {
@@ -70,7 +75,7 @@ function generate_password($length) {
 function scrub_in($input) {
 
     if (!is_array($input)) {
-        return stripslashes(htmlspecialchars(strip_tags($input)));
+        return stripslashes(htmlspecialchars(strip_tags($input), ENT_QUOTES, Config::get('site_charset')));
     }
     else {
         $results = array();
@@ -260,5 +265,54 @@ function translate_pattern_code($code) {
     return false;
 
 } // translate_pattern_code
+
+/**
+ * generate_config
+ *
+ * This takes an array of results and re-generates the config file
+ * this is used by the installer and by the admin/system page
+ */
+function generate_config($current) {
+    // Start building the new config file
+    $distfile = Config::get('prefix') . '/config/ampache.cfg.php.dist';
+    $handle = fopen($distfile,'r');
+    $dist = fread($handle,filesize($distfile));
+    fclose($handle);
+
+    $data = explode("\n",$dist);
+
+    foreach ($data as $line) {  
+        if (preg_match("/^;?([\w\d]+)\s+=\s+[\"]{1}(.*?)[\"]{1}$/",$line,$matches)            
+            || preg_match("/^;?([\w\d]+)\s+=\s+[\']{1}(.*?)[\']{1}$/", $line, $matches)       
+            || preg_match("/^;?([\w\d]+)\s+=\s+[\'\"]{0}(.*)[\'\"]{0}$/",$line,$matches)) {
+
+            $key    = $matches[1];
+            $value  = $matches[2];
+
+            // Put in the current value
+            if ($key == 'config_version') {
+                $line = $key . ' = ' . escape_ini($value);
+            }
+            elseif (isset($current[$key])) {
+                $line = $key . ' = "' . escape_ini($current[$key]) . '"';
+                unset($current[$key]);
+            } 
+        }
+
+        $final .= $line . "\n";
+    }
+    
+    return $final;
+}
+
+/**
+ * escape_ini
+ *
+ * Escape a value used for inserting into an ini file. 
+ * Won't quote ', like addslashes does.
+ */
+function escape_ini($str) {
+    return str_replace('"', '\"', $str);
+}
 
 ?>

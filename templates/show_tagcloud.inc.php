@@ -51,6 +51,3 @@ $web_path = Config::get('web_path');
 <span class="fatalerror"><?php echo T_('Not Enough Data'); ?></span>
 <?php } ?>
 <?php Ajax::end_container(); ?>
-
-
-
