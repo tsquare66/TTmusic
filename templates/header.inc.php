@@ -40,15 +40,20 @@ if (Config::get('use_rss')) { ?>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=<?php echo Config::get('site_charset'); ?>" />
 <title><?php echo scrub_out(Config::get('site_title')); ?> - <?php echo $location['title']; ?></title>
 <?php require_once Config::get('prefix') . '/templates/stylesheets.inc.php'; ?>
-<?php  if (true == $GLOBALS['isMobile']) { ?>
+<?php  if (true == $GLOBALS['isMobile']) 
+{ ?>
    <link rel="apple-touch-icon" href="<?php echo $web_path; ?>/tt-mobile/favicon.png" />
    <meta name="apple-mobile-web-app-capable" content="yes">
    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
    <meta name="viewport" content="width=320, user-scalable = no" />
    <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/mobile.playlist.css" type="text/css" media="screen" />
-<?php } else { ?>
+<?php 
+} 
+else 
+{ ?>
    <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/jplayer.blue.monday.css" type="text/css" media="screen" />
-<?php } ?>
+<?php 
+} ?>
 
 
 
@@ -75,7 +80,8 @@ if (Config::get('use_rss')) { ?>
 <div id="rfc3514" style="display:none;">0x0</div>
 <div id="maincontainer">
 
-<?php if (true == $GLOBALS['isMobile']){ ?>
+<?php if (true == $GLOBALS['isMobile'])
+{ ?>
 	<div id="header"><!-- This is the header -->
 	<table>
 	<tr>
@@ -93,11 +99,14 @@ if (Config::get('use_rss')) { ?>
 	
 	</table>
 	</div><!-- End header -->
-<?php } else { ?>
+<?php 
+} 
+else 
+{ ?>
 	<div id="header"><!-- This is the header -->
         <h1 id="headerlogo">
           <a href="<?php echo Config::get('web_path'); ?>">
-            <img src="<?php echo $web_path; ?><?php echo Config::get('theme_path'); ?>/images/ampache.png" title="<?php echo Config::get('site_title'); ?>" alt="<?php echo Config::get('site_title'); ?>" />
+            <img src="<?php echo $web_path; echo Config::get('theme_path'); ?>/images/ampache.png" title="<?php echo Config::get('site_title'); ?>" alt="<?php echo Config::get('site_title'); ?>" />
           </a>
         </h1>
         <div id="headerbox">
@@ -114,13 +123,16 @@ if (Config::get('use_rss')) { ?>
     <div id="rightbar"><!-- This is the rightbar -->
         <?php require_once Config::get('prefix') . '/templates/rightbar.inc.php'; ?>
     </div><!-- End rightbar -->
-<!-- Tiny little iframe, used to cheat the system -->
-<div id="ajax-loading">Loading . . .</div>
-<iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
-<div id="content">
-<?php if (Config::get('int_config_version') != Config::get('config_version') AND $GLOBALS['user']->has_access(100)) { ?>
-<div class="fatalerror">
-    <?php echo T_('Error Config File Out of Date'); ?>
-    <a href="<?php echo Config::get('web_path'); ?>/admin/system.php?action=generate_config"><?php echo T_('Generate New Config'); ?></a>
-</div>
-<?php } ?>
+
+	<!-- Tiny little iframe, used to cheat the system -->
+	<div id="ajax-loading">Loading . . .</div>
+	<iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
+
+	<div id="content">
+	<?php if (Config::get('int_config_version') != Config::get('config_version') AND $GLOBALS['user']->has_access(100)) { ?>
+	<div class="fatalerror">
+    	<?php echo T_('Error Config File Out of Date'); ?>
+    	<a href="<?php echo Config::get('web_path'); ?>/admin/system.php?action=generate_config"><?php echo T_('Generate New Config'); ?></a>
+	</div>
+	<?php }  ?>
+<?php }  ?>
