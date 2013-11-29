@@ -115,9 +115,12 @@ if (false == $GLOBALS['isMobile'])  ?>
       <li id="sb_home_search_video"><a href="<?php echo $web_path; ?>/search.php?type=video"><?php echo T_('Videos'); ?></a></li>
     </ul>
   </li>
+<?php 
+if (false == $GLOBALS['isMobile']) 
  	echo '</ul>';
 else
 	echo '</div>';
 ?>
+ 
         
   
