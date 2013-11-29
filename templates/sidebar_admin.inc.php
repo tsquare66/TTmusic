@@ -37,10 +37,10 @@
   </li>
   
   <?php if (false == $GLOBALS['isMobile'])  { ?>
-  <li><h4><?php echoT_('Access Control'); ?></h4>
+  <li><h4><?php echo T_('Access Control'); ?></h4>
     <ul class="sb3" id="sb_admin_acl">
-      <li id="sb_admin_acl_AddAccess"><a href="<?php echo $web_path; ?>/admin/access.php?action=show_add_advanced"><?php echo _('Add ACL'); ?></a></li>
-      <li id="sb_admin_acl_ShowAccess"><a href="<?php echo $web_path; ?>/admin/access.php"><?php echo _('Show ACL(s)'); ?></a></li>
+      <li id="sb_admin_acl_AddAccess"><a href="<?php echo Config::get('web_path'); ?>/admin/access.php?action=show_add_advanced"><?php echo T_('Add ACL'); ?></a></li>
+      <li id="sb_admin_acl_ShowAccess"><a href="<?php echo Config::get('web_path'); ?>/admin/access.php"><?php echo T_('Show ACL(s)'); ?></a></li>
     </ul>
   </li>
   <?php } ?>
@@ -49,11 +49,11 @@
   <?php if (false == $GLOBALS['isMobile'])  { ?>
   <li><h4><?php echo T_('Other Tools'); ?></h4>
     <ul class="sb3" id="sb_admin_ot">
-      <li id="sb_admin_ot_Debug"><a href="<?php echo $web_path; ?>/admin/system.php?action=show_debug"><?php echo T_('Ampache Debug'); ?></a></li>
-      <li id="sb_admin_ot_ClearNowPlaying"><a href="<?php echo $web_path; ?>/admin/catalog.php?action=clear_now_playing"><?php echo T_('Clear Now Playing'); ?></a></li>
-      <li id="sb_admin_ot_ExportCatalog"><a href="<?php echo $web_path; ?>/admin/export.php"><?php echo T_('Export Catalog'); ?></a></li>
+      <li id="sb_admin_ot_Debug"><a href="<?php echo Config::get('web_path'); ?>/admin/system.php?action=show_debug"><?php echo T_('Ampache Debug'); ?></a></li>
+      <li id="sb_admin_ot_ClearNowPlaying"><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=clear_now_playing"><?php echo T_('Clear Now Playing'); ?></a></li>
+      <li id="sb_admin_ot_ExportCatalog"><a href="<?php echo Config::get('web_path'); ?>/admin/export.php"><?php echo T_('Export Catalog'); ?></a></li>
       <?php if (Config::get('shoutbox')) { ?>
-      <li id="sb_admin_ot_ManageShoutbox"><a href="<?php echo $web_path; ?>/admin/shout.php"><?php echo T_('Manage Shoutbox'); ?></a></li>
+      <li id="sb_admin_ot_ManageShoutbox"><a href="<?php echo Config::get('web_path'); ?>/admin/shout.php"><?php echo T_('Manage Shoutbox'); ?></a></li>
       <?php } ?>
     </ul>
   </li>
