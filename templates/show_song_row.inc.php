@@ -44,7 +44,7 @@ else
 	echo Ajax::button('?page=song&action=show_song&song_id=' . $song->id,'preferences', T_('Song Information'),'show_song_pref_id' . $song->id);
 		
 	if (false == $GLOBALS['isMobile'])
-	{
+	{ ?>
     <?php if (Config::get('shoutbox')) { ?>
                 <a href="<?php echo Config::get('web_path'); ?>/shout.php?action=show_add_shout&amp;type=song&amp;id=<?php echo $song->id; ?>">
                 <?php echo UI::get_icon('comment', T_('Post Shout')); ?>
