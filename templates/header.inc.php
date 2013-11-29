@@ -43,7 +43,7 @@ if (Config::get('use_rss')) { ?>
 <?php  if (true == $GLOBALS['isMobile']) 
 { ?>
    <link rel="apple-touch-icon" href="<?php echo $web_path; ?>/tt-mobile/favicon.png" />
-   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
    <meta name="viewport" content="width=320, user-scalable = no" />
    <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/mobile.playlist.css" type="text/css" media="screen" />
