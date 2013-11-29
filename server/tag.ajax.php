@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
     break;
     case 'add_filter':
         $browse = new Browse($_GET['browse_id']);
-        $browse->set_filter('tag', $_GET['tag_id']);
+        $browse->set_filter('tag', $_POST['tag_id']);
         $object_ids = $browse->get_objects();
         ob_start();
         $browse->show_objects($object_ids);
@@ -60,6 +60,15 @@ switch ($_REQUEST['action']) {
         $browse->store();
         // Retrieve current objects of type based on combined filters
     break;
+	case 'save_tag':
+		$new_tag = new Tag($_POST['tag_id']);
+		$new_tag->update_tag_map('song',$_GET['song_id'],$new_tag->id);		
+		$song = new Song($_GET['song_id']);
+		$song->format();
+		$id3 = new vainfo($song->file);
+		$data['genre'] = $new_tag->name;
+		$id3->write_id3($data);					
+		break;
     default:
         $results['rfc3514'] = '0x1';
     break;
