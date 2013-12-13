@@ -37,7 +37,7 @@ class mbXmlParser {
     }
 
     private function parseResults(XMLNode $node, array $list, $func, $type) {
-        for ($i = 0; $i < $node->nChildNodes(); $i++) {
+    	for ($i = 0; $i < $node->nChildNodes(); $i++) {
             $cnode = $node->getChildNode($i);
             $object = call_user_func(array($this, $func), $cnode);
             $score = $cnode->getAttribute("ext:score");
@@ -236,6 +236,43 @@ class mbXmlParser {
         return $artist;
     }
 
+    private function createReleaseList(mbTrack $track, XMLNode $node) {
+    	for ($i = 0; $i < $node->nChildNodes(); $i++) {
+    		$cnode = $node->getChildNode($i);
+    		switch (strtolower($cnode->getName())) {
+       			case "release":
+    				$new_release = $this->createRelease($cnode);
+    				$track->addRelease($new_release);
+    				break;
+    		}
+    	}
+    }
+    
+    private function createTrackList(mbRelease $release, XMLNode $node) {
+    	for ($i = 0; $i < $node->nChildNodes(); $i++) {
+    		$cnode = $node->getChildNode($i);
+    		switch (strtolower($cnode->getName())) {
+    		    case "track":
+    				$new_track = $this->createTrack($cnode);
+    				$release->addTracklist($new_track);
+    				break;
+    		}
+    	}
+    }
+    
+    private function createReleaseEventList(mbRelease $release, XMLNode $node) {
+    	for ($i = 0; $i < $node->nChildNodes(); $i++) {
+    		$cnode = $node->getChildNode($i);
+    		$tmp = strtolower($cnode->getName());
+    		switch ($tmp) {
+    			case "event":
+    				$new_event = $this->createReleaseEvent($cnode);
+    				$release->addReleaseEvent($new_event);
+    				break;
+    		}
+    	}
+    }
+    
     private function createTrack(XMLNode $node) {
         $track = $this->factory->newTrack();
         $track->setId($node->getAttribute("id"));
@@ -252,10 +289,11 @@ class mbXmlParser {
                     $track->setDuration($cnode->getText());
                 break;
                 case "release-list":
-                    $pRel = $track->getReleases();
+                    /*$pRel = $track->getReleases();
                     $track->setReleasesOffset($cnode->getAttribute("offset"));
                     $track->setReleasesCount($cnode->getAttribute("count"));
-                    $this->parseList($cnode, $pRel, 'createRelease');
+                    $this->parseList($cnode, $pRel, 'createRelease');*/
+                    $this->createReleaseList($track,$cnode);            
                 break;
                 case "relation-list":
                     $this->parseRelations($cnode, $track);
@@ -298,19 +336,21 @@ class mbXmlParser {
                     $release->setArtist($this->createArtist($cnode));
                 break;
                 case "release-event-list":
-                    $pRelEv = $release->getReleaseEvents();
-                    $this->parseList($cnode, $pRelEv, 'createReleaseEvent');
+                    //$pRelEv = $release->getReleaseEvents();
+                    //$this->parseList($cnode, $pRelEv, 'createReleaseEvent');
+                    $this->createReleaseEventList($release, $cnode);
                 break;
                 case "disc-list":
                     $pDisc = $release->getDiscs();
                     $this->parseList($cnode, $pDisc, 'createDisc');
                 break;
                 case "track-list":
-                    $pTrack = $release->getTracks();
-                    $release->setTracksOffset($cnode->getAttribute("offset"));
-                    $release->setTracksCount($cnode->getAttribute("count"));
-                    $this->parseList($cnode, $pTrack, 'createTrack');
-                break;
+                    //$pTrack = $release->getTracks();
+                    //$release->setTracksOffset($cnode->getAttribute("offset"));
+                    //$release->setTracksCount($cnode->getAttribute("count"));
+                    //$this->parseList($cnode, $pTrack, 'createTrack');
+                	$this->createTrackList($release,$cnode);
+                    break;
                 case "relation-list":
                     $this->parseRelations($cnode, $release);
                 break;
@@ -404,8 +444,12 @@ class mbXmlParser {
                     $this->parseResults($node, $pArt, 'createArtist', 'Artist');
                 break;
                 case "track-list":
-                    $pTrack = $md->getTrackResults();
-                    $this->parseResults($node, $pTrack, 'createTrack', 'Track');
+                   for ($i = 0; $i < $node->nChildNodes(); $i++) {
+                    	$cnode = $node->getChildNode($i);
+                    	$track = $this->createTrack($cnode);
+                    	$md->addTracklist($track);
+                    }
+                    
                 break;
                 case "release-list":
                     $pRel = $md->getReleaseResults();

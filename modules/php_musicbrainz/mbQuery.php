@@ -127,7 +127,7 @@ class MusicBrainzQuery {
 		return $rating;
     }
 
-    protected function getFromWebService($entity, $id, $includes=null, $filters=null) {
+    public function getFromWebService($entity, $id, $includes=null, $filters=null) {
         $includeList = $includes ? $includes->createIncludeTags() : null;
         $filterList  = $filters  ? $filters->createParameters()  : null;
         $content = $this->ws->get($entity, $id, $includeList, $filterList);

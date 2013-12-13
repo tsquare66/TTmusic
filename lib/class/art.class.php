@@ -678,15 +678,18 @@ class Art extends database_object {
      * This function retrieves art based on MusicBrainz' Advanced
      * Relationships
      */
-    public function gather_musicbrainz($limit = 5) {
+    public function gather_musicbrainz($limit = 5, Album $album) {
         $images    = array();
         $num_found = 0;
 
-        if ($this->type == 'album') {
-            $album = new Album($this->uid);
-        }
-        else {
-            return $images;
+        if (!isset($album))
+        {
+	        if ($this->type == 'album') {
+	            $album = new Album($this->uid);
+	        }
+	        else {
+	            return $images;
+	        }
         }
 
         if ($album->mbid) {

@@ -65,7 +65,14 @@ class mbRelease extends MusicBrainzEntity {
     public function setTextScript($tscript) { $this->textScript = $tscript; }
     public function getAsin() { return $this->asin; }
     public function setAsin($asin) { $this->asin = $asin; }
-
+    
+    public function addTracklist(mbTrack $track) {
+    	$this->tracks[] = $track;
+    }
+    public function addReleaseEvent(mbReleaseEvent $event) {
+    	$this->releaseEvents[] = $event;
+    }
+    
     public function getArtist() {
         return $this->artist;
     }

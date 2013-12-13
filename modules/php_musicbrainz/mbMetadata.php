@@ -41,7 +41,10 @@ class mbMetadata {
     public function setRating(mbRating $rating) { $this->rating = $rating; }
     public function setRelease(mbRelease $release) { $this->release = $release; }
     public function setLabel(mbLabel $label) { $this->label = $label; }
-
+    public function addTracklist(mbTrack $track) {
+    	$this->trackList[] = $track;
+    }
+    
     public function getArtist($remove=false) {
         $a = $this->artist;
         if ($remove)

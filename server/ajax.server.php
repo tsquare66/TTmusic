@@ -115,7 +115,11 @@ switch ($page) {
 		require_once Config::get('prefix') . '/radio.php';
 		exit;
 	break;
-    default:
+	case 'musicbrainz':
+		require_once Config::get('prefix') . '/server/musicbrainz.php';
+		exit;
+	break;
+	default:
         // A taste of compatibility
     break;
 } // end switch on page

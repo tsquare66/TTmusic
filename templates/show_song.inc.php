@@ -94,6 +94,16 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
       }
     }
   }
+  
+  if (Access::check('interface','75')) {
+	  echo "<dt class=" . UI::flip_class() .">" . "Search" . "</dt>";
+	  echo "<dd>" .  Ajax::text('?page=musicbrainz&action=search_song&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "</dd>";
+  }
+  
 ?>
 </dl>
+
 <?php UI::show_box_bottom(); ?>
+
+<div id="MusicbrainzContent"></div>
+

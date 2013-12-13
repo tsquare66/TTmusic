@@ -223,7 +223,7 @@ class mbWebService implements IWebService {
             }
         }
 
-        $uri = $this->pathPrefix . "/" . $version . "/" . $entity . "/" . $uid . "?" . $this->build_query($params);
+        $uri = " http://musicbrainz.org/" .  $this->pathPrefix . "/" . $version . "/" . $entity . "/" . $uid . "?" . $this->build_query($params);
 
 
         return $this->runRequest("GET", $uri);
