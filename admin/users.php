@@ -92,6 +92,7 @@ switch ($_REQUEST['action']) {
         show_confirmation(T_('User Updated'), $client->fullname . "(" . $client->username . ")" . T_('updated'), Config::get('web_path'). '/admin/users.php');
     break;
     case 'add_user':
+        ob_start();
         if (Config::get('demo_mode')) { break; }
 
         if (!Core::form_verify('add_user','post')) {
@@ -136,7 +137,12 @@ switch ($_REQUEST['action']) {
         elseif ($access == 100){ $access = T_('Admin');}
 
         /* HINT: %1 Username, %2 Access num */
-        show_confirmation(T_('New User Added'),sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access), Config::get('web_path').'/admin/users.php');
+        //show_confirmation(T_('New User Added'),sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access), Config::get('web_path').'/admin/users.php');
+		$url	= '?page=users';
+        $title    = T_('New User Added');
+        $body    = sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access);
+        show_confirmation($title,$body,$url);
+        $results[$target] = ob_get_clean();
     break;
     case 'enable':
         $client = new User($_REQUEST['user_id']);
@@ -174,6 +180,10 @@ switch ($_REQUEST['action']) {
     case 'delete':
         if (Config::get('demo_mode')) { break; }
         $client = new User($_REQUEST['user_id']);
+		$url	= '?page=users';
+        $title    = T_('New User Added');
+        $body    = sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access);
+        show_confirmation($title,$body,$url);
         show_confirmation(T_('Deletion Request'),
             sprintf(T_('Are you sure you want to permanently delete %s?'), $client->fullname),
             Config::get('web_path')."/admin/users.php?action=confirm_delete&amp;user_id=" . $_REQUEST['user_id'],1,'delete_user');
@@ -192,8 +202,10 @@ switch ($_REQUEST['action']) {
         require Config::get('prefix') . '/templates/show_ip_history.inc.php';
     break;
     case 'show_add_user':
-            if (Config::get('demo_mode')) { break; }
+		ob_start();
+    	if (Config::get('demo_mode')) { break; }
         require_once Config::get('prefix') . '/templates/show_add_user.inc.php';
+        $results[$target] = ob_get_clean();
     break;
     case 'show_preferences':
         $client = new User($_REQUEST['user_id']);

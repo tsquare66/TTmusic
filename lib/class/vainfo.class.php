@@ -240,6 +240,19 @@ class vainfo {
 				else
 					$TagData['genre'][0] = $data['genre'];
 			}
+			if(isset($data['album']))
+			{
+				$TagData['album'][0] = $data['album'];
+			}
+			if(isset($data['mb_albumid']))
+			{
+				$TagData['mb_albumid'][0] = $data['mb_albumid'];
+			}
+			if(isset($data['year']))
+			{
+				$TagData['year'][0] = $data['year'];
+			}
+				
 			if(isset($TagData['track_number']))
 			{
 				$TagData['track'][0] = $TagData['track_number'][0];
