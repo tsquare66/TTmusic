@@ -22,17 +22,7 @@
 
 require_once 'lib/init.php';
 
-debug_event('search.ajax.php' , 'Action:'.$_REQUEST['action'].' Type:'.$_REQUEST['type'].' rule_1_input:'.$_REQUEST['rule_1_input'], '5');
-
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-if (!defined('AJAX_INCLUDE')) { exit; }
-
-ob_start();
+UI::show_header();
 
 /**
  * action switch
@@ -46,7 +36,6 @@ switch ($_REQUEST['action']) {
         $browse->set_type($_REQUEST['type']);
         $browse->show_objects($results);
         $browse->store();
-		$results[$target] = ob_get_clean();
     break;
     case 'save_as_track':
         $playlist_id = save_search($_REQUEST);
@@ -59,7 +48,6 @@ switch ($_REQUEST['action']) {
         $playlist->save();
     default:
         require_once Config::get('prefix') . '/templates/show_search.inc.php';
-		$results[$target] = ob_get_clean();
     break;
     case 'descriptor':
         // This is a little special we don't want header/footers so trash what we've got in the OB
@@ -69,5 +57,6 @@ switch ($_REQUEST['action']) {
     break;
 }
 
-echo xml_from_array($results);
+/* Show the Footer */
+UI::show_footer();
 ?>

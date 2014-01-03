@@ -22,13 +22,13 @@
 
 UI::show_box_top(T_('Search Ampache') . "...", 'box box_advanced_search');
 ?>
-<form id="search" name="search" method="post" action="javascript.void(0);" enctype="multipart/form-data" style="Display:inline">
+<form id="search" name="search" method="post" action="<?php echo Config::get('web_path'); ?>/search.php?type=<?php echo $_REQUEST['type'] ? scrub_out($_REQUEST['type']) : 'song'; ?>" enctype="multipart/form-data" style="Display:inline">
 <table class="tabledata" cellpadding="3" cellspacing="0">
     <tr id="search_location">
-	<td><?php if ($_REQUEST['type'] != 'song') {echo Ajax::text('?page=search&type=song',T_('Songs'),'search_songs');} else { echo '<b>'.T_('Songs').'</b>'; }?></td>
-	<td><?php if ($_REQUEST['type'] != 'album') {echo Ajax::text('?page=search&type=album',T_('Albums'),'search_albums');} else { echo '<b>'.T_('Albums').'</b>'; }?></td>
-	<td><?php if ($_REQUEST['type'] != 'artist') {echo Ajax::text('?page=search&type=artist',T_('Artists'),'search_artists');} else { echo '<b>'.T_('Artists').'</b>'; }?></td>
-	<td><?php if ($_REQUEST['type'] != 'video') {echo Ajax::text('?page=search&type=video',T_('Videos'),'search_video');} else { echo '<b>'.T_('Videos').'</b>'; }?></td>
+        <td><?php if ($_REQUEST['type'] != 'song') { ?><a href="<?php echo Config::get('web_path'); ?>/search.php?type=song"><?php echo T_('Songs'); ?></a><?php } else { echo T_('Songs'); } ?></td>
+        <td><?php if ($_REQUEST['type'] != 'album') { ?><a href="<?php echo Config::get('web_path'); ?>/search.php?type=album"><?php echo T_('Albums'); ?></a><?php } else { echo T_('Albums'); } ?></td>
+        <td><?php if ($_REQUEST['type'] != 'artist') { ?><a href="<?php echo Config::get('web_path'); ?>/search.php?type=artist"><?php echo T_('Artists'); ?></a><?php } else { echo T_('Artists'); } ?></td>
+        <td><?php if ($_REQUEST['type'] != 'video') { ?><a href="<?php echo Config::get('web_path'); ?>/search.php?type=video"><?php echo T_('Videos'); ?></a><?php } else { echo T_('Videos'); } ?></td>
     </tr>
     <tr id="search_blank_line"><td>&nbsp;</td></tr>
 </table>
@@ -50,17 +50,11 @@ UI::show_box_top(T_('Search Ampache') . "...", 'box box_advanced_search');
 <?php require Config::get('prefix') . '/templates/show_rules.inc.php'; ?>
 
 <div class="formValidation">
-  <input class="button" type="button" id="id_search_button" value="<?php echo T_('Search'); ?>" />
+            <input class="button" type="submit" value="<?php echo T_('Search'); ?>" />&nbsp;&nbsp;
 <?php if ($_REQUEST['type'] == 'song' || ! $_REQUEST['type']) { ?>
-		<input id="savesearchbutton" class="button" type="button" value="<?php echo T_('Save as Smart Playlist'); ?>" onClick="$('hiddenaction').setValue('save_as_smartplaylist');" />&nbsp;&nbsp;
+        <input id="savesearchbutton" class="button" type="submit" value="<?php echo T_('Save as Smart Playlist'); ?>" onClick="$('hiddenaction').setValue('save_as_smartplaylist');" />&nbsp;&nbsp;
 <?php } ?>
             <input type="hidden" id="hiddenaction" name="action" value="search" />
 </div>
 </form>
-<?php 
-$type = $_REQUEST['type'] ? $_REQUEST['type'] : 'song';
-echo Ajax::observe('id_search_button','click',Ajax::action('?page=search&type='. $type,'id_search_button','search'),'1'); 
-echo Ajax::observe('savesearchbutton','click',Ajax::action('?page=search&type='. $type,'savesearchbutton','search'),'1'); 
-?>
-
 <?php UI::show_box_bottom(); ?>

@@ -47,17 +47,23 @@ UI::show_box_top('<div id="playlist_row_' . $playlist->id . '">' . $title .
     </li>
         <?php } ?>
     <li>
-		<?php echo Ajax::textbutton('?action=basket&type=playlist&id=' . $playlist->id,'add', T_('Add All'),'play_playlist'); ?>
+        <?php echo Ajax::button('?action=basket&type=playlist&id=' . $playlist->id,'add', T_('Add All'),'play_playlist'); ?>
+        <?php echo T_('Add All'); ?>
     </li>
     <li>
-        <?php echo Ajax::textbutton('?action=basket&type=playlist_random&id=' . $playlist->id,'random', T_('Add Random'),'play_playlist_random'); ?>
+        <?php echo Ajax::button('?action=basket&type=playlist_random&id=' . $playlist->id,'random', T_('Add Random'),'play_playlist_random'); ?>
+        <?php echo T_('Add Random'); ?>
     </li>
     <?php if ($playlist->has_access()) { ?>
     <li>
-		<?php echo Ajax::textbutton('?action=show_edit_object&type=playlist_title&id=' . $playlist->id,'edit', T_('Edit'),'edit_playlist_' . $playlist->id); ?>
+        <?php echo Ajax::button('?action=show_edit_object&type=playlist_title&id=' . $playlist->id,'edit', T_('Edit'),'edit_playlist_' . $playlist->id); ?>
+        <?php echo T_('Edit'); ?>
     </li>
     <li>
-		<?php echo Ajax::textbutton('?page=playlist&action=delete_playlist&&playlist_id==' . $playlist->id,'delete', T_('Delete'),'delete_playlist_' . $playlist->id); ?>
+        <a href="<?php echo Config::get('web_path'); ?>/playlist.php?action=delete_playlist&playlist_id=<?php echo $playlist->id; ?>">
+            <?php echo UI::get_icon('delete'); ?>
+        </a>
+        <?php echo T_('Delete'); ?>
     </li>
     <?php } ?>
 </ul>

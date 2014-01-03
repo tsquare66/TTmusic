@@ -23,54 +23,43 @@
 // Because this is a reset of the persons password make the form a little more secure
 ?>
 <?php Error::display('general'); ?>
-<form method="post" name="preferences" id="update_account_form" action="javascript.void(0);"  enctype="multipart/form-data">
+<form method="post" name="preferences" action="<?php echo Config::get('web_path'); ?>/preferences.php?action=update_user" enctype="multipart/form-data">
 <table class="tabledata">
 <tr>
-	<td><?php echo T_('Name'); ?>:</td>
+    <td><?php echo T_('Name'); ?>:</td>
+    <td>
+        <input type="text" name="fullname" size="27" value="<?php echo scrub_out($client->fullname); ?>" />
+    </td>
 </tr>
 <tr>
-	<td>
-		<input type="text" name="fullname" size="27" value="<?php echo scrub_out($client->fullname); ?>" />
-	</td>
+    <td><?php echo T_('E-mail'); ?>:</td>
+    <td>
+        <input type="text" name="email" size="27" value="<?php echo scrub_out($client->email); ?>" />
+    </td>
 </tr>
 <tr>
-	<td><?php echo T_('E-mail'); ?>:</td>
+    <td><?php echo T_('New Password'); ?>:</td>
+    <td>
+        <?php Error::display('password'); ?>
+        <input type="password" name="password1" size="27" />
+    </td>
 </tr>
 <tr>
-	<td>
-		<input type="text" name="email" size="27" value="<?php echo scrub_out($client->email); ?>" />
-	</td>
+    <td><?php echo T_('Confirm Password'); ?>:</td>
+    <td>
+        <input type="password" name="password2" size="27" />
+    </td>
 </tr>
 <tr>
-	<td><?php echo T_('New Password'); ?>:</td>
-</tr>
-<tr>
-	<td>
-		<?php Error::display('password'); ?>
-		<input type="password" name="password1" size="27" />
-	</td>
-</tr>
-<tr>
-	<td><?php echo T_('Confirm Password'); ?>:</td>
-</tr>
-<tr>
-	<td>
-		<input type="password" name="password2" size="27" />
-	</td>
-</tr>
-<tr>
-	<td><?php echo T_('Clear Stats'); ?>:</td>
-	<td>
-		<input type="checkbox" name="clear_stats" value="1" />
-	</td>
+    <td><?php echo T_('Clear Stats'); ?>:</td>
+    <td>
+        <input type="checkbox" name="clear_stats" value="1" />
+    </td>
 </tr>
 </table>
 <div class="formValidation">
-		<input type="hidden" name="user_id" value="<?php echo scrub_out($client->id); ?>" />
-		<?php echo Core::form_register('update_user'); ?>
-		<input type="hidden" name="tab" value="<?php echo scrub_out($_REQUEST['tab']); ?>" />
-		<input class="button" type="button" id="update_account_button" value="<?php echo T_('Update Account'); ?>" />
+        <input type="hidden" name="user_id" value="<?php echo scrub_out($client->id); ?>" />
+        <?php echo Core::form_register('update_user'); ?>
+        <input type="hidden" name="tab" value="<?php echo scrub_out($_REQUEST['tab']); ?>" />
+        <input class="button" type="submit" value="<?php echo T_('Update Account'); ?>" />
 </div>
-
-<?php echo Ajax::observe('update_account_button','click',Ajax::action('?page=preferences&action=update_user','update_account_button','update_account_form'),'1'); ?>
-

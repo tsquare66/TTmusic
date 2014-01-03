@@ -39,20 +39,20 @@ else
 ?>
 
   <?php
-	// Build the selected dealie
-	if (isset($_REQUEST['action'])) {
-		$text = scrub_in($_REQUEST['action']) . '_ac';
-		${$text} = ' selected="selected"';
-	}
+    // Build the selected dealie
+    if (isset($_REQUEST['action'])) {
+        $text = scrub_in($_REQUEST['action']) . '_ac';
+        ${$text} = ' selected="selected"';
+    }
   ?>
-<li id="sb_browse_bb_SongTitle"> 	 <?php echo Ajax::text("?page=browse&action=song",       	T_('Song Titles'),		'sb_browse_bb_SongTitle'); ?></li>
-<li id="sb_browse_bb_Artist"> 	 	 <?php echo Ajax::text("?page=browse&action=artist",  		T_('Artists'),    		'sb_browse_bb_Artist'); ?></li>
-<li id="sb_browse_bb_Album"> 	 	 <?php echo Ajax::text("?page=browse&action=album",   		T_('Albums'),     		'sb_browse_bb_Album'); ?></li>
-<li id="sb_browse_bb_Playlist">  	 <?php echo Ajax::text("?page=browse&action=playlist",		T_('Playlists'),  		'sb_browse_bb_Playlist'); ?></li>
-<li id="sb_browse_bb_Tags">		 	 <?php echo Ajax::text("?page=browse&action=tag",     		T_('Tag Cloud'),  		'sb_browse_bb_Tags'); ?></li>
-<li id="sb_browse_bb_SmartPlaylist"> <?php echo Ajax::text("?page=browse&action=smartplaylist", T_('Smart Playlists'),  'sb_browse_bb_SmartPlaylist'); ?></li>
-<li id="sb_browse_bb_RadioStation">  <?php echo Ajax::text("?page=browse&action=live_stream", 	T_('Radio Stations'),  	'sb_browse_bb_RadioStation'); ?></li>
-<li id="sb_browse_bb_Video">  		 <?php echo Ajax::text("?page=browse&action=video", 		T_('Videos'),  			'sb_browse_bb_Video'); ?></li>
+      <li id="sb_browse_bb_SongTitle"><a href="<?php echo $web_path; ?>/browse.php?action=song"><?php echo T_('Song Titles'); ?></a></li>
+      <li id="sb_browse_bb_Album"><a href="<?php echo $web_path; ?>/browse.php?action=album"><?php echo T_('Albums'); ?></a></li>
+      <li id="sb_browse_bb_Artist"><a href="<?php echo $web_path; ?>/browse.php?action=artist"><?php echo T_('Artists'); ?></a></li>
+      <li id="sb_browse_bb_Tags"><a href="<?php echo $web_path; ?>/browse.php?action=tag"><?php echo T_('Tag Cloud'); ?></a></li>
+      <li id="sb_browse_bb_Playlist"><a href="<?php echo $web_path; ?>/browse.php?action=playlist"><?php echo T_('Playlists'); ?></a></li>
+      <li id="sb_browse_bb_SmartPlaylist"><a href="<?php echo $web_path; ?>/browse.php?action=smartplaylist"><?php echo T_('Smart Playlists'); ?></a></li>
+      <li id="sb_browse_bb_RadioStation"><a href="<?php echo $web_path; ?>/browse.php?action=live_stream"><?php echo T_('Radio Stations'); ?></a></li>
+      <li id="sb_browse_bb_Video"><a href="<?php echo $web_path; ?>/browse.php?action=video"><?php echo T_('Videos'); ?></a></li>
 
 <?php 
 if (false == $GLOBALS['isMobile']) 
@@ -100,9 +100,9 @@ else
 <?php } ?>
   <li><h4><?php echo T_('Information'); ?></h4>
     <ul class="sb3" id="sb_home_info">
-	  <li id="sb_home_info_Statistics"> <?php echo Ajax::text("?page=stats&action=song",   T_('Statistics'),	'sb_home_info_Statistics'); ?></li>
-      <li id="sb_home_info_Newest">		<?php echo Ajax::text("?page=stats&action=newest",	T_('Newest'),		'sb_home_info_Newest'); ?></li>
-      <li id="sb_home_info_Popular">	<?php echo Ajax::text("?page=stats&action=popular",	T_('Popular'),		'sb_home_info_Popular'); ?></li>
+      <li id="sb_home_info_Statistics"><a href="<?php echo $web_path; ?>/stats.php?action=show"><?php echo T_('Statistics'); ?></a></li>
+      <li id="sb_home_info_Newest"><a href="<?php echo $web_path; ?>/stats.php?action=newest"><?php echo T_('Newest'); ?></a></li>
+      <li id="sb_home_info_Popular"><a href="<?php echo $web_path; ?>/stats.php?action=popular"><?php echo T_('Popular'); ?></a></li>
     </ul>
   </li>
 <?php 

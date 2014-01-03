@@ -26,7 +26,7 @@ $default_sort = "%a/%A";
 <?php UI::show_box_top(T_('Add a Catalog'), 'box box_add_catalog'); ?>
 <p><?php echo T_("In the form below enter either a local path (i.e. /data/music) or the URL to a remote Ampache installation (i.e http://theotherampache.com)"); ?></p>
 <?php Error::display('general'); ?>
-<form name="update_catalog" method="post" id="add_catalog_form" action="javascript.void(0);" enctype="multipart/form-data">
+<form name="update_catalog" method="post" action="<?php echo Config::get('web_path'); ?>/admin/catalog.php" enctype="multipart/form-data">
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <tr>
     <td><?php echo T_('Catalog Name'); ?>: </td>
@@ -44,52 +44,49 @@ $default_sort = "%a/%A";
 </tr>
 
 <tr>
-	<td><?php echo T_('Path'); ?>: </td>
-	<td><input size="60" type="text" name="path" value="<?php echo scrub_out($_POST['path']); ?>" /></td>
+    <td><?php echo T_('Path'); ?>: </td>
+    <td><input size="60" type="text" name="path" value="<?php echo scrub_out($_POST['path']); ?>" /></td>
 </tr>
 <tr>
-	<td><?php echo T_('Catalog Type'); ?>: </td>
-	<td>
-		<select name="type">
-			<option value="local"><?php echo T_('Local'); ?></option>
-			<option value="remote"><?php echo T_('Remote'); ?></option>
-		</select>
-	</td>
+    <td><?php echo T_('Catalog Type'); ?>: </td>
+    <td>
+        <select name="type">
+            <option value="local"><?php echo T_('Local'); ?></option>
+            <option value="remote"><?php echo T_('Remote'); ?></option>
+        </select>
+    </td>
 </tr>
 <tr>
-	<td><?php echo T_('Remote Catalog Username'); ?>: </td>
-	<td><input size="30" type="text" name="remote_username" value="<?php echo scrub_out($_POST['remote_username']); ?>" /><span class="error">*<?php echo T_('Required for Remote Catalogs'); ?></span></td>
+    <td><?php echo T_('Remote Catalog Username'); ?>: </td>
+    <td><input size="30" type="text" name="remote_username" value="<?php echo scrub_out($_POST['remote_username']); ?>" /><span class="error">*<?php echo T_('Required for Remote Catalogs'); ?></span></td>
 </tr>
 <tr>
-	<td><?php echo T_('Remote Catalog Password'); ?>: </td>
-	<td><input size="30" type="password" name="remote_password" value="" /><span class="error">*<?php echo T_('Required for Remote Catalogs'); ?></span></td>
+    <td><?php echo T_('Remote Catalog Password'); ?>: </td>
+    <td><input size="30" type="password" name="remote_password" value="" /><span class="error">*<?php echo T_('Required for Remote Catalogs'); ?></span></td>
 </tr>
 <tr>
-	<td><?php echo T_('Filename Pattern'); ?>: </td>
-	<td><input size="60" type="text" name="rename_pattern" value="<?php echo $default_rename; ?>" /></td>
-</tr>
-
-<tr>
-	<td><?php echo T_('Folder Pattern'); ?>:<br /><?php echo T_("(no leading or ending '/')"); ?></td>
-	<td valign="top"><input size="60" type="text" name="sort_pattern" value="<?php echo $default_sort; ?>" /></td>
+    <td><?php echo T_('Filename Pattern'); ?>: </td>
+    <td><input size="60" type="text" name="rename_pattern" value="<?php echo $default_rename; ?>" /></td>
 </tr>
 
 <tr>
-	<td valign="top"><?php echo T_('Gather Album Art'); ?>:</td>
-	<td><input type="checkbox" name="gather_art" value="1" /></td>
+    <td><?php echo T_('Folder Pattern'); ?>:<br /><?php echo T_("(no leading or ending '/')"); ?></td>
+    <td valign="top"><input size="60" type="text" name="sort_pattern" value="<?php echo $default_sort; ?>" /></td>
+</tr>
+
+<tr>
+    <td valign="top"><?php echo T_('Gather Album Art'); ?>:</td>
+    <td><input type="checkbox" name="gather_art" value="1" /></td>
 </tr>
 <tr>
-	<td valign="top"><?php echo T_('Build Playlists from m3u Files'); ?>:</td>
-	<td><input type="checkbox" name="parse_m3u" value="1" /></td>
+    <td valign="top"><?php echo T_('Build Playlists from m3u Files'); ?>:</td>
+    <td><input type="checkbox" name="parse_m3u" value="1" /></td>
 </tr>
 </table>
 <div class="formValidation">
   <input type="hidden" name="action" value="add_catalog" />
   <?php echo Core::form_register('add_catalog'); ?>
-  <input class="button" type="button" id="add_catalog_button" value="<?php echo T_('Add Catalog'); ?>" />
+  <input class="button" type="submit" value="<?php echo T_('Add Catalog'); ?>" />
 </div>
-
-<?php echo Ajax::observe('add_catalog_button','click',Ajax::action('?page=catalog&action=add_catalog','add_catalog_button','add_catalog_form'),'1'); ?>
-
 </form>
 <?php UI::show_box_bottom(); ?>

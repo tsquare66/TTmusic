@@ -21,7 +21,7 @@
  */
 ?>
 <?php UI::show_box_top(T_('Customize Search'), 'box box_get_albumart'); ?>
-<form method="post" id="coverart" action="javascript.void(0);">
+<form enctype="multipart/form-data" name="coverart" method="post" action="<?php echo Config::get('web_path'); ?>/albums.php?action=find_art&amp;album_id=<?php echo $album->id; ?>&amp;artist_name=<?php echo urlencode($_REQUEST['artist_name']);?>&amp;album_name=<?php echo urlencode($_REQUEST['album_name']); ?>&amp;cover=<?php echo urlencode($_REQUEST['cover']); ?>" style="Display:inline;">
 <table>
 <tr>
     <td>
@@ -47,7 +47,7 @@
     </td>
 	<?php if (true == $GLOBALS['isMobile'])  { echo '<tr></tr>';}?>
     <td>
-		<input type="text" size="40" id="id_url_cover" name="url_cover" value="" />
+        <input type="text" size="40" id="cover" name="cover" value="" />
     </td>
 </tr>
 <tr>
@@ -60,8 +60,11 @@
     </td>
 </tr>
 </table>
-	<input type="button" id="id_submit" value="<?php echo _('Get Art'); ?>" />
-	<?php echo  Ajax::observe('id_submit','click',Ajax::action('?page=album&action=find_art&album_id=' . $album->id ,'url_cover','coverart'),'1'); ?>
-	
+<div class="formValidation">
+        <input type="hidden" name="action" value="find_art" />
+        <input type="hidden" name="album_id" value="<?php echo $album->id; ?>" />
+    <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo Config::get('max_upload_size'); ?>" />
+        <input type="submit" value="<?php echo T_('Get Art'); ?>" />
+</div>
 </form>
 <?php UI::show_box_bottom(); ?>

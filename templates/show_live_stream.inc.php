@@ -24,7 +24,7 @@
 <div id="information_actions">
 <ul>
 <li>
-	<?php echo Ajax::textbutton('?page=radio&action=show_create','add',T_('Add Radio Station'),'add_radio_Station'); ?>
+    <a href="<?php echo Config::get('web_path'); ?>/radio.php?action=show_create"><?php echo UI::get_icon('add', T_('Add')); ?></a> <?php echo T_('Add Radio Station'); ?>
 </li>
 </ul>
 </div>

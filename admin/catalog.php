@@ -27,16 +27,7 @@ if (!Access::check('interface','100')) {
     exit;
 }
 
-debug_event('catalog.ajax.php' , 'Action:'.$_REQUEST['action'].' Catalog ID:'. json_encode($_REQUEST['catalog_id']), '5');
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-ob_start();
-$results[$target] = "";
-
+UI::show_header();
 
 /* Big switch statement to handle various actions */
 switch ($_REQUEST['action']) {
@@ -49,8 +40,8 @@ switch ($_REQUEST['action']) {
     case 'add_to_all_catalogs':
         $_REQUEST['catalogs'] = Catalog::get_catalogs();
     case 'add_to_catalog':
-		make_visible('ajax-loading');
-		Ajax::flush();
+        toggle_visible('ajax-loading');
+        ob_end_flush();
         if (Config::get('demo_mode')) { break; }
         if ($_REQUEST['catalogs'] ) {
             foreach ($_REQUEST['catalogs'] as $catalog_id) {
@@ -58,19 +49,17 @@ switch ($_REQUEST['action']) {
                 $catalog->add_to_catalog();
             }
         }
-		$url 	= '?page=catalog';
+        $url = Config::get('web_path') . '/admin/catalog.php';
         $title = T_('Catalog Updated');
         $body = '';
         show_confirmation($title, $body, $url);
-		make_invisible('ajax-loading');
-		Ajax::flush();
-		return;
+        toggle_visible('ajax-loading');
     break;
     case 'update_all_catalogs':
         $_REQUEST['catalogs'] = Catalog::get_catalogs();
     case 'update_catalog':
-		make_visible('ajax-loading');
-		Ajax::flush();
+        toggle_visible('ajax-loading');
+        ob_end_flush();
             /* If they are in demo mode stop here */
             if (Config::get('demo_mode')) { break; }
 
@@ -80,17 +69,15 @@ switch ($_REQUEST['action']) {
                 $catalog->verify_catalog();
             }
         }
-		$url	= '?page=catalog';
+        $url    = Config::get('web_path') . '/admin/catalog.php';
         $title    = T_('Catalog Updated');
         $body    = '';
         show_confirmation($title,$body,$url);
-		make_invisible('ajax-loading');
-		Ajax::flush();
-		return;
+        toggle_visible('ajax-loading');
     break;
     case 'full_service':
-		make_visible('ajax-loading');
-		Ajax::flush();
+        toggle_visible('ajax-loading');
+        ob_end_flush();
         /* Make sure they aren't in demo mode */
         if (Config::get('demo_mode')) { UI::access_denied(); break; }
 
@@ -100,25 +87,19 @@ switch ($_REQUEST['action']) {
 
         /* This runs the clean/verify/add in that order */
         foreach ($_REQUEST['catalogs'] as $catalog_id) {
-			debug_event('catalog.ajax.php' , 'Full service Catalog ID:'.$catalog_id, '5');
             $catalog = new Catalog($catalog_id);
             $catalog->clean_catalog();
-			Ajax::flush();
             $catalog->count = 0;
             $catalog->verify_catalog();
-			Ajax::flush();
             $catalog->count = 0;
             $catalog->add_to_catalog();
-			Ajax::flush();
         }
         Dba::optimize_tables();
-		$url	= '?page=catalog';
+        $url    = Config::get('web_path') . '/admin/catalog.php';
         $title    = T_('Catalog Updated');
         $body    = '';
         show_confirmation($title,$body,$url);
         toggle_visible('ajax-loading');
-		Ajax::flush();
-		return;
     break;
     case 'delete_catalog':
         /* Make sure they aren't in demo mode */
@@ -131,8 +112,14 @@ switch ($_REQUEST['action']) {
 
         /* Delete the sucker, we don't need to check perms as thats done above */
         Catalog::delete($_GET['catalog_id']);
-		$next_url = '?page=catalog';
+        $next_url = Config::get('web_path') . '/admin/catalog.php';
         show_confirmation(T_('Catalog Deleted'), T_('The Catalog and all associated records have been deleted'),$next_url);
+    break;
+    case 'show_delete_catalog':
+        $catalog_id = scrub_in($_GET['catalog_id']);
+
+        $next_url = Config::get('web_path') . '/admin/catalog.php?action=delete_catalog&catalog_id=' . scrub_out($catalog_id);
+        show_confirmation(T_('Catalog Delete'), T_('Confirm Deletion Request'),$next_url,1,'delete_catalog');
     break;
     case 'remove_disabled':
         if (Config::get('demo_mode')) { break; }
@@ -146,7 +133,7 @@ switch ($_REQUEST['action']) {
         else {
             $body = T_('No Songs Removed');
         }
-		$url	= '?page=catalog';
+        $url    = Config::get('web_path') . '/admin/catalog.php';
         $title    = T_ngettext('Disabled Song Processed','Disabled Songs Processed',count($song));
         show_confirmation($title,$body,$url);
     break;
@@ -154,8 +141,8 @@ switch ($_REQUEST['action']) {
         $catalog = new Catalog();
         $_REQUEST['catalogs'] = Catalog::get_catalogs();
     case 'clean_catalog':
-		make_visible('ajax-loading');
-		Ajax::flush();
+        toggle_visible('ajax-loading');
+        ob_end_flush();
             /* If they are in demo mode stop them here */
             if (Config::get('demo_mode')) { break; }
 
@@ -168,13 +155,11 @@ switch ($_REQUEST['action']) {
             Dba::optimize_tables();
         }
 
-		$url 	= '?page=catalog';
+        $url     = Config::get('web_path') . '/admin/catalog.php';
         $title    = T_('Catalog Cleaned');
         $body    = '';
         show_confirmation($title,$body,$url);
-		make_invisible('ajax-loading');
-		Ajax::flush();
-		return;
+        toggle_visible('ajax-loading');
     break;
     case 'update_catalog_settings':
         /* No Demo Here! */
@@ -183,7 +168,7 @@ switch ($_REQUEST['action']) {
         /* Update the catalog */
         Catalog::update_settings($_POST);
 
-		$url 	= '?page=catalog';
+        $url     = Config::get('web_path') . '/admin/catalog.php';
         $title     = T_('Catalog Updated');
         $body    = '';
         show_confirmation($title,$body,$url);
@@ -256,7 +241,7 @@ switch ($_REQUEST['action']) {
             Error::display('catalog_add');
             UI::show_box_bottom();
 
-			show_confirmation('','', '?page=catalog');
+            show_confirmation('','', Config::get('web_path').'/admin/catalog.php');
 
         }
         else {
@@ -266,7 +251,7 @@ switch ($_REQUEST['action']) {
     case 'clear_stats':
         if (Config::get('demo_mode')) { UI::access_denied(); break; }
         Stats::clear();
-		$url	= '?page=catalog';
+        $url    = Config::get('web_path') . '/admin/catalog.php';
         $title    = T_('Catalog statistics cleared');
         $body    = '';
         show_confirmation($title, $body, $url);
@@ -300,8 +285,8 @@ switch ($_REQUEST['action']) {
         if (Config::get('demo_mode')) { UI::access_denied(); break; }
 
         $catalog = new Catalog($_REQUEST['catalog_id']);
-		$nexturl = '?page=catalog&action=delete_catalog&catalog_id=' . scrub_out($_REQUEST['catalog_id']);
-		show_confirmation(T_('Delete Catalog'), T_('Do you really want to delete this catalog?') . " -- $catalog->name ($catalog->path)",$nexturl,1,'delete_catalog');
+        $nexturl = Config::get('web_path') . '/admin/catalog.php?action=delete_catalog&amp;catalog_id=' . scrub_out($_REQUEST['catalog_id']);
+        show_confirmation(T_('Delete Catalog'), T_('Do you really want to delete this catalog?') . " -- $catalog->name ($catalog->path)",$nexturl,1);
     break;
     case 'show_customize_catalog':
         $catalog = new Catalog($_REQUEST['catalog_id']);
@@ -311,26 +296,26 @@ switch ($_REQUEST['action']) {
 		$catalog = new Catalog();
 		$_REQUEST['catalogs'] = Catalog::get_catalog_ids();
     case 'gather_album_art':
-		make_visible('ajax-loading');
-		Ajax::flush();
+        toggle_visible('ajax-loading');
+        ob_end_flush();
 
         $catalogs = $_REQUEST['catalogs'] ? $_REQUEST['catalogs'] : Catalog::get_catalogs();
 
         // Iterate throught the catalogs and gather as needed
         foreach ($catalogs as $catalog_id) {
             $catalog = new Catalog($catalog_id);
+            require Config::get('prefix') . '/templates/show_gather_art.inc.php';
+            flush();
             $catalog->gather_art();
         }
-		$url 	= '?page=catalog';
+        $url     = Config::get('web_path') . '/admin/catalog.php';
         $title     = T_('Album Art Search Finished');
         $body    = '';
         show_confirmation($title,$body,$url);
-		make_invisible('ajax-loading');
-		Ajax::flush();
-		return;
     break;
 } // end switch
 
-$results[$target] = ob_get_clean();
-echo xml_from_array($results);
+/* Show the Footer */
+UI::show_footer();
+
 ?>

@@ -25,13 +25,6 @@
  */
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-debug_event('playlist.ajax.php' , 'Action:'.$_REQUEST['action'].' ID:'.$_REQUEST['playlist_id'], '5');
-
 switch ($_REQUEST['action']) {
     case 'delete_track':
         // Create the object and remove the track

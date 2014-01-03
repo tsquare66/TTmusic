@@ -250,12 +250,12 @@ class Artist extends database_object {
         if ($this->_fake) { return true; }
 
         if ($this->catalog_id) {
-			$this->f_name_link = Ajax::text("?page=artist&action=show&catalog='.$this->catalog_id .'&artist=" . $this->id,$this->f_full_name,"show_artist_id" . $this->id);				
-			$this->f_link = $this->f_name_link;
-		} else {
-			$this->f_name_link = Ajax::text("?page=artist&action=show&artist=" . $this->id,$this->f_full_name,"show_artist_id" . $this->id);				
-			$this->f_link = $this->f_name_link;
-		}
+            $this->f_name_link = "<a href=\"" . Config::get('web_path') . "/artists.php?action=show&amp;catalog=" . $this->catalog_id . "&amp;artist=" . $this->id . "\" title=\"" . $this->f_full_name . "\">" . $name . "</a>";
+            $this->f_link = Config::get('web_path') . '/artists.php?action=show&amp;catalog=' . $this->catalog_id . '&amp;artist=' . $this->id;
+        } else {
+            $this->f_name_link = "<a href=\"" . Config::get('web_path') . "/artists.php?action=show&amp;artist=" . $this->id . "\" title=\"" . $this->f_full_name . "\">" . $name . "</a>";
+            $this->f_link = Config::get('web_path') . '/artists.php?action=show&amp;artist=' . $this->id;
+        }
         // Get the counts
         $extra_info = $this->_get_extra_info($this->catalog_id);
 

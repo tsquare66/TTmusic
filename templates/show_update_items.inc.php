@@ -25,13 +25,5 @@ Catalog::update_single_item($type,$object_id);
 ?>
 <br />
 <strong><?php echo T_('Update from Tags Complete'); ?></strong>&nbsp;&nbsp;
-
-<form method="post" id="update_form" action="javascript.void(0);">
-	<input type="button" id="update_continue" value="<?php echo _('Continue'); ?>" />
-	<?php 
-		echo Ajax::observe('update_continue','click',Ajax::action($next_action,_('Continue'), 'update_continue','update_form')); 
-	?>
-</form>
-
-
+<a class="button" href="<?php echo $target_url; ?>"><?php echo T_('Continue'); ?></a>
 <?php UI::show_box_bottom(); ?>

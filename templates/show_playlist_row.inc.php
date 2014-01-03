@@ -24,17 +24,7 @@
     <?php echo Ajax::button('?action=basket&type=playlist&id=' . $playlist->id,'add', T_('Add'),'add_playlist_' . $playlist->id); ?>
     <?php echo Ajax::button('?action=basket&type=playlist_random&id=' . $playlist->id,'random', T_('Random'),'random_playlist_' . $playlist->id); ?>
 </td>
-<?php if (true == $GLOBALS['isMobile']) 
-{ 
-	echo '<td class="cel_playlis">';
-	$action = "?page=playlist&action=show_playlist&playlist_id=" . $playlist->id;
-	$text = $playlist->f_name;
-	$source = "show_playlist_id" . $playlist->id;
-	echo Ajax::text($action,$text,$source);
-	echo '</td>';
-} else { ?>
-	<td class="cel_playlist"><?php echo $playlist->f_link; ?></td>
-<?php } ?>
+<td class="cel_playlist"><?php echo $playlist->f_link; ?></td>
 <td class="cel_type"><?php echo $playlist->f_type; ?></td>
 <td class="cel_songs"><?php echo $count; ?></td>
 <?php if (false == $GLOBALS['isMobile']) { ?>

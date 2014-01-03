@@ -67,7 +67,8 @@ switch ($_REQUEST['action']) {
 				// This one's a doozy
 				$browse->set_simple_browse(false);
 				ob_start();
-				$browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
+				//$browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
+				$browse->save_objects(Tag::get_tags(0,array()));
 				$object_ids = $browse->get_saved();
 				$keys = array_keys($object_ids);
 				Tag::build_cache($keys);			

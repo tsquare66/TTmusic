@@ -25,12 +25,9 @@ $confirmation = Core::form_register($form_name);
 <?php UI::show_box_top(scrub_out($title), 'box box_confirmation'); ?>
 <?php echo $text; ?>
 <br />
-	<form method="post" id="confirmation_form" action="javascript.void(0);">
-	<input type="button" id="confirmation_continue" value="<?php echo T_('Continue'); ?>" />
-	<?php 
-		echo $confirmation; 
-		echo Ajax::observe('confirmation_continue','click',Ajax::action($path, 'confirmation_continue','confirmation_form'),'1'); 
-	?>
+    <form method="post" action="<?php echo $path; ?>" style="display:inline;">
+    <input type="submit" value="<?php echo T_('Continue'); ?>" />
+    <?php echo $confirmation; ?>
     </form>
 <?php if ($cancel) { ?>
     <form method="post" action="<?php echo Config::get('web_path') . '/' . return_referer(); ?>" style="display:inline;">

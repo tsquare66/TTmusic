@@ -1,6 +1,6 @@
 <?php 
-debug_event('is_mobile.php' , 'Hello', '5');
-$GLOBALS['isMobile'] = false;
+
+$GLOBALS['isMobile'] = true;
 if (isset($_SESSION['mobile']))
 {
 	debug_event('is_mobile.php' , 'Session:'.$_SESSION['mobile'], '5');

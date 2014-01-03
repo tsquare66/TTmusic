@@ -22,16 +22,6 @@
 
 require_once 'lib/init.php';
 
-debug_event('preferences.php' , 'Action:'.$_REQUEST['action'].' Tab:'. $_REQUEST['tab'], '5');
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-ob_start();
-$results[$target] = "";
-
 // Switch on the action
 switch($_REQUEST['action']) {
     case 'update_preferences':
@@ -88,7 +78,6 @@ switch($_REQUEST['action']) {
             UI::access_denied();
             exit;
         }
-        
         $fullname= T_('Server');
         $preferences = $GLOBALS['user']->get_preferences($_REQUEST['tab'], true);
     break;
@@ -136,7 +125,7 @@ switch($_REQUEST['action']) {
     break;
 } // End Switch Action
 
-//UI::show_header();
+UI::show_header();
 
 /**
  * switch on the view
@@ -151,7 +140,5 @@ switch ($_REQUEST['action']) {
     break;
 } // end switch on action
 
-$results[$target] = ob_get_clean();
-echo xml_from_array($results);
-
+UI::show_footer();
 ?>

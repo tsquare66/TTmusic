@@ -49,22 +49,27 @@ $title .= '&nbsp;-&nbsp;' . $album->f_artist_link;
 <h3><?php echo T_('Actions'); ?>:</h3>
 <ul>
     <li>
-        <?php echo Ajax::textbutton('?action=basket&type=album&id=' . $album->id,'add', T_('Add'),'play_full_' . $album->id); ?>
+        <?php echo Ajax::button('?action=basket&type=album&id=' . $album->id,'add', T_('Add'),'play_full_' . $album->id); ?>
+        <?php echo Ajax::text('?action=basket&type=album&id=' . $album->id, T_('Add Album'), 'play_full_text_' . $album->id); ?>
     </li>
     <li>
-        <?php echo Ajax::textbutton('?action=basket&type=album_random&id=' . $album->id,'random', T_('Random'),'play_random_' . $album->id); ?>
+        <?php echo Ajax::button('?action=basket&type=album_random&id=' . $album->id,'random', T_('Random'),'play_random_' . $album->id); ?>
+        <?php echo Ajax::text('?action=basket&type=album_random&id=' . $album->id, T_('Add Random from Album'), 'play_random_text_' . $album->id); ?>
     </li>
     <?php if (Access::check('interface','75')) { ?>
     <li>
-        <?php echo Ajax::textbutton('?page=album&action=clear_art&album_id='.$album->id,'delete', T_('Reset Album Art'),'reset_album_art_' . $album->id); ?>
+        <a href="<?php echo $web_path; ?>/albums.php?action=clear_art&amp;album_id=<?php echo $album->id; ?>"><?php echo UI::get_icon('delete', T_('Reset Album Art')); ?></a>
+        <a href="<?php echo $web_path; ?>/albums.php?action=clear_art&amp;album_id=<?php echo $album->id; ?>"><?php echo T_('Reset Album Art'); ?></a>
     </li>
     <?php } ?>
     <li>
-	    <?php echo Ajax::textbutton('?page=album&action=find_art&album_id=' . $album->id,'view',T_('Find Album Art'), 'find_album_art_' . $album->id); ?>
+        <a href="<?php echo $web_path; ?>/albums.php?action=find_art&amp;album_id=<?php echo $album->id; ?>"><?php echo UI::get_icon('view', T_('Find Album Art')); ?></a>
+        <a href="<?php echo $web_path; ?>/albums.php?action=find_art&amp;album_id=<?php echo $album->id; ?>"><?php echo T_('Find Album Art'); ?></a>
     </li>
     <?php  if ((Access::check('interface','50'))) { ?>
     <li>
-	    <?php echo Ajax::textbutton('?page=album&action=update_from_tags&album_id=' . $album->id,'cog',T_('Update from tags'), 'Update from tags' . $album->id); ?>
+        <a href="<?php echo $web_path; ?>/albums.php?action=update_from_tags&amp;album_id=<?php echo $album->id; ?>"><?php echo UI::get_icon('cog', T_('Update from tags')); ?></a>
+        <a href="<?php echo $web_path; ?>/albums.php?action=update_from_tags&amp;album_id=<?php echo $album->id; ?>"><?php echo T_('Update from tags'); ?></a>
     </li>
     <?php  } ?>
     <?php if (Access::check_function('batch_download')) { ?>

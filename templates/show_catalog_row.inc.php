@@ -30,10 +30,10 @@ $web_path = Config::get('web_path');
 <td class="cel_lastclean"><?php echo scrub_out($catalog->f_clean); ?></td>
 <?php } ?>
 <td class="cel_action">
-		 <?php echo Ajax::text_update('?page=catalog&action=add_to_catalog&catalogs[]='.$catalog->id, T_('Add'),$catalog->id.'1'); ?>
-	<br> <?php echo Ajax::text_update('?page=catalog&action=update_catalog&catalogs[]='.$catalog->id, T_('Verify'),$catalog->id.'2'); ?>
-    <br> <?php echo Ajax::text_update('?page=catalog&action=clean_catalog&catalogs[]='.$catalog->id, T_('Clean'),$catalog->id.'3'); ?>
-	<br> <?php echo Ajax::text_update('?page=catalog&action=full_service&catalogs[]='.$catalog->id, T_('Update'),$catalog->id.'4'); ?>
-	<br> <?php echo Ajax::text_update('?page=catalog&action=gather_album_art&catalogs[]='.$catalog->id, T_('Gather Art'),$catalog->id.'5'); ?>
-	<br> <?php echo Ajax::text('?page=catalog&action=show_delete_catalog&catalog_id='.$catalog->id, T_('Delete'),$catalog->id.'6'); ?>
+    <a href="<?php echo $web_path; ?>/admin/catalog.php?action=add_to_catalog&amp;catalogs[]=<?php echo $catalog->id; ?>"><?php echo T_('Add'); ?></a>
+    | <a href="<?php echo $web_path; ?>/admin/catalog.php?action=update_catalog&amp;catalogs[]=<?php echo $catalog->id; ?>"><?php echo T_('Verify'); ?></a>
+        | <a href="<?php echo $web_path; ?>/admin/catalog.php?action=clean_catalog&amp;catalogs[]=<?php echo $catalog->id; ?>"><?php echo T_('Clean'); ?></a>
+    | <a href="<?php echo $web_path; ?>/admin/catalog.php?action=full_service&amp;catalogs[]=<?php echo $catalog->id; ?>"><?php echo T_('Update'); ?></a>
+    | <a href="<?php echo $web_path; ?>/admin/catalog.php?action=gather_album_art&amp;catalogs[]=<?php echo $catalog->id; ?>"><?php echo T_('Gather Art'); ?></a>
+    | <a href="<?php echo $web_path; ?>/admin/catalog.php?action=show_delete_catalog&amp;catalog_id=<?php echo $catalog->id; ?>"><?php echo T_('Delete'); ?></a>
 </td>

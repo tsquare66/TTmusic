@@ -27,15 +27,7 @@ if (!Access::check('interface','100')) {
     exit();
 }
 
-if (!defined('AJAX_INCLUDE')) { exit; }
-
-debug_event('user.ajax.php' , 'Action:'.$_REQUEST['action'], '5');
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
+UI::show_header();
 
 // Switch on the actions
 switch ($_REQUEST['action']) {
@@ -92,7 +84,6 @@ switch ($_REQUEST['action']) {
         show_confirmation(T_('User Updated'), $client->fullname . "(" . $client->username . ")" . T_('updated'), Config::get('web_path'). '/admin/users.php');
     break;
     case 'add_user':
-        ob_start();
         if (Config::get('demo_mode')) { break; }
 
         if (!Core::form_verify('add_user','post')) {
@@ -137,12 +128,7 @@ switch ($_REQUEST['action']) {
         elseif ($access == 100){ $access = T_('Admin');}
 
         /* HINT: %1 Username, %2 Access num */
-        //show_confirmation(T_('New User Added'),sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access), Config::get('web_path').'/admin/users.php');
-		$url	= '?page=users';
-        $title    = T_('New User Added');
-        $body    = sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access);
-        show_confirmation($title,$body,$url);
-        $results[$target] = ob_get_clean();
+        show_confirmation(T_('New User Added'),sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access), Config::get('web_path').'/admin/users.php');
     break;
     case 'enable':
         $client = new User($_REQUEST['user_id']);
@@ -180,10 +166,6 @@ switch ($_REQUEST['action']) {
     case 'delete':
         if (Config::get('demo_mode')) { break; }
         $client = new User($_REQUEST['user_id']);
-		$url	= '?page=users';
-        $title    = T_('New User Added');
-        $body    = sprintf(T_('%1$s has been created with an access level of %2$s'), $username, $access);
-        show_confirmation($title,$body,$url);
         show_confirmation(T_('Deletion Request'),
             sprintf(T_('Are you sure you want to permanently delete %s?'), $client->fullname),
             Config::get('web_path')."/admin/users.php?action=confirm_delete&amp;user_id=" . $_REQUEST['user_id'],1,'delete_user');
@@ -202,10 +184,8 @@ switch ($_REQUEST['action']) {
         require Config::get('prefix') . '/templates/show_ip_history.inc.php';
     break;
     case 'show_add_user':
-		ob_start();
-    	if (Config::get('demo_mode')) { break; }
+            if (Config::get('demo_mode')) { break; }
         require_once Config::get('prefix') . '/templates/show_add_user.inc.php';
-        $results[$target] = ob_get_clean();
     break;
     case 'show_preferences':
         $client = new User($_REQUEST['user_id']);
@@ -213,7 +193,6 @@ switch ($_REQUEST['action']) {
         require_once Config::get('prefix') . '/templates/show_user_preferences.inc.php';
     break;
     default:
-		ob_start();
         $browse = new Browse();
         $browse->reset_filters();
         $browse->set_type('user');
@@ -222,9 +201,10 @@ switch ($_REQUEST['action']) {
         $user_ids = $browse->get_objects();
         $browse->show_objects($user_ids);
         $browse->store();
-		$results[$target] = ob_get_clean();
     break;
 } // end switch on action
 
-echo xml_from_array($results);
+/* Show the footer */
+UI::show_footer();
+
 ?>

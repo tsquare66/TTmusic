@@ -20,7 +20,9 @@
  *
  */
 
-require_once Config::get('prefix') . "/lib/init.php";
+require_once 'lib/init.php';
+
+UI::show_header();
 
 /* Switch on the action to be performed */
 switch ($_REQUEST['action']) {
@@ -54,5 +56,6 @@ switch ($_REQUEST['action']) {
     break;
 } // end switch on action
 
+UI::show_footer();
 
 ?>

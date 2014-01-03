@@ -37,12 +37,12 @@
  */
 function show_confirmation($title,$text,$next_url,$cancel=0,$form_name='confirmation') {
 
-    //if (substr_count($next_url,Config::get('web_path'))) {
+    if (substr_count($next_url,Config::get('web_path'))) {
         $path = $next_url;
-    /*}
+    }
     else {
         $path = Config::get('web_path') . "/$next_url";
-    }*/
+    }
 
     require Config::get('prefix') . '/templates/show_confirmation.inc.php';
 

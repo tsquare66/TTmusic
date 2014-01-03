@@ -840,10 +840,9 @@ class Song extends database_object implements media {
         // Create Links for the different objects
         $this->link = Config::get('web_path') . "/song.php?action=show_song&song_id=" . $this->id;
         $this->f_link = "<a href=\"" . scrub_out($this->link) . "\" title=\"" . scrub_out($this->title) . "\"> " . scrub_out($this->f_title) . "</a>";
-		$this->link = Ajax::text("?page=song&action=show_song&song_id=" . $this->id,$this->f_title,"show_song_id" . $this->id);
-		$this->f_album_link = Ajax::text("?page=album&action=show&album=" . $this->album,$this->f_album_full,"show_album_id" . $this->album);
-		$this->f_artist_link = Ajax::text("?page=artist&action=show&artist=" . $this->artist,$this->f_artist,"show_artist_id" . $this->artist);
-				
+        $this->f_album_link = "<a href=\"" . Config::get('web_path') . "/albums.php?action=show&amp;album=" . $this->album . "\" title=\"" . scrub_out($this->f_album_full) . "\"> " . scrub_out($this->f_album) . "</a>";
+        $this->f_artist_link = "<a href=\"" . Config::get('web_path') . "/artists.php?action=show&amp;artist=" . $this->artist . "\" title=\"" . scrub_out($this->f_artist_full) . "\"> " . scrub_out($this->f_artist) . "</a>";
+
         // Format the Bitrate
         $this->f_bitrate = intval($this->bitrate/1000) . "-" . strtoupper($this->mode);
 

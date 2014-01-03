@@ -22,7 +22,7 @@
 ?>
 <?php UI::show_box_top(T_('Adding a New User'), 'box box_add_user'); ?>
 <?php Error::display('general'); ?>
-<form method="post"  id="add_user_form"  enctype="multpart/form-data" action="javascript.void(0);">
+<form name="add_user" enctype="multpart/form-data" method="post" action="<?php echo Config::get('web_path') . "/admin/users.php?action=add_user"; ?>">
 <table class="tabledata" cellspacing="0" cellpadding="0">
 <tr>
     <td>
@@ -73,8 +73,8 @@
                 <select name="access">
                 <option value="5" <?php echo $on_5; ?>><?php echo T_('Guest'); ?></option>
                 <option value="25" <?php echo $on_25; ?>><?php echo T_('User'); ?></option>
-        		<option value="50" <?php echo $on_50; ?>><?php echo T_('Content Manager'); ?></option>
-        		<option value="75" <?php echo $on_75; ?>><?php echo T_('Catalog Manager'); ?></option>
+        <option value="50" <?php echo $on_50; ?>><?php echo T_('Content Manager'); ?></option>
+        <option value="75" <?php echo $on_75; ?>><?php echo T_('Catalog Manager'); ?></option>
                 <option value="100" <?php echo $on_100; ?>><?php echo T_('Admin'); ?></option>
                 </select>
         </td>
@@ -82,10 +82,7 @@
 </table>
 <div class="formValidation">
     <?php echo Core::form_register('add_user'); ?>
-    <input type="button" id="submitt_add_user" value="<?php echo T_('Add User'); ?>" />
+    <input type="submit" value="<?php echo T_('Add User'); ?>" />
 </div>
-<?php 
-		echo Ajax::observe('submitt_add_user','click',Ajax::action('?page=users&action=add_user', 'add_user_form', 'add_user_form'),'1'); 
-?>
 </form>
 <?php UI::show_box_bottom(); ?>

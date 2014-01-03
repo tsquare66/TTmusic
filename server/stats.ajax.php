@@ -23,22 +23,13 @@
 /**
  * Sub-Ajax page, requires AJAX_INCLUDE
  */
-
-require_once("../lib/init.php");
-session_start();
-
-debug_event('stats.ajax.php' , 'Page: '.$page.' Action:'.$_REQUEST['action'], '5');
-
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-ob_start();
-require_once Config::get('prefix') . '/stats.php';
-$results[$target] = ob_get_clean();
+switch ($_REQUEST['action']) {
+    default:
+        $results['rfc3514'] = '0x1';
+    break;
+} // switch on action;
 
 // We always do this
 echo xml_from_array($results);

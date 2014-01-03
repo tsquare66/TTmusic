@@ -125,8 +125,7 @@ class Browse extends Query {
         // Set the correct classes based on type
         $class = "box browse_" . $type;
 
-		echo '<div id="browse_content">';
-		//Ajax::start_container('browse_content');
+        Ajax::start_container('browse_content');
         // Switch on the type of browsing we're doing
         switch ($type) {
             case 'song':
@@ -218,8 +217,7 @@ class Browse extends Query {
         echo Ajax::action('?page=browse&action=get_filters&browse_id=' . $this->id, '');
         echo ';</script>';
 
-		echo '</div>';
-		//Ajax::end_container();
+        Ajax::end_container();
 
     } // show_object
 

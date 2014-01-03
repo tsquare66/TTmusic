@@ -163,7 +163,7 @@ class Ajax {
 	} // button
 
 	/**
-	 * textbutton
+	 * image
 	 */
 	public static function image($action,$img_url,$size,$alt='',$source='',$post='',$class='') {
 

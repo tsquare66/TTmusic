@@ -20,18 +20,9 @@
  *
  */
 
-if (!defined('AJAX_INCLUDE')) { exit; }
+require_once 'lib/init.php';
 
-debug_event('album.ajax.php' , 'Action:'.$_REQUEST['action'].' Album:'.$_REQUEST['album'].' ID:'.$_REQUEST['album_id'], '5');
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	//$target = 'browse_content';
-	$target = 'content';
-
-
-ob_start();
+require_once Config::get('prefix') . '/templates/header.inc.php';
 
 /* Switch on Action */
 switch ($_REQUEST['action']) {
@@ -59,11 +50,11 @@ switch ($_REQUEST['action']) {
         if ($image_data) {
             $art = new Art($album->id,'album'); 
             $art->insert($image_data,$_FILES['file']['type']);
-            show_confirmation(T_('Album Art Inserted'),'',"/?page=album&action=show&album=" . $album->id);
+            show_confirmation(T_('Album Art Inserted'),'',"/albums.php?action=show&amp;album=" . $album->id);
         }
         // Else it failed
         else {
-            show_confirmation(T_('Album Art Not Located'), T_('Album Art could not be located at this time. This may be due to write access error, or the file is not received correctly.'),"/?page=albums&action=show&album=" . $album->id);
+            show_confirmation(T_('Album Art Not Located'), T_('Album Art could not be located at this time. This may be due to write access error, or the file is not received correctly.'),"/albums.php?action=show&amp;album=" . $album->id);
         }
 
     break;
@@ -87,7 +78,7 @@ switch ($_REQUEST['action']) {
 
             if ($image_data) {
                 $art->insert($image_data,$upload['0']['mime']);
-                show_confirmation(T_('Album Art Inserted'),'',"/?page=album&action=show&album=" . $_REQUEST['album_id']);
+                show_confirmation(T_('Album Art Inserted'),'',"/albums.php?action=show&amp;album=" . $_REQUEST['album_id']);
                 break;
 
             } // if image data
@@ -166,7 +157,8 @@ switch ($_REQUEST['action']) {
         $mime    = $_SESSION['form']['images'][$image_id]['mime'];
 
         $art->insert($image,$mime);
-		show_confirmation(_('Album Art Inserted'),'',"/?page=album&action=show&album=" . $album_id);
+
+        header("Location:" . Config::get('web_path') . "/albums.php?action=show&album=" . $art->uid);
     break;
     case 'update_from_tags':
         // Make sure they are a 'power' user at least
@@ -177,7 +169,7 @@ switch ($_REQUEST['action']) {
 
         $type         = 'album';
         $object_id     = intval($_REQUEST['album_id']);
-		$next_action  = '/?page=album&action=show&album=' . $object_id;
+        $target_url    = Config::get('web_path') . '/albums.php?action=show&amp;album=' . $object_id;
         require_once Config::get('prefix') . '/templates/show_update_items.inc.php';
     break;
     // Browse by Album
@@ -190,8 +182,5 @@ switch ($_REQUEST['action']) {
     break;
 } // switch on view
 
-$results[$target] = ob_get_clean();
-
-// We always do this
-echo xml_from_array($results);
+UI::show_footer();
 ?>

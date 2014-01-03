@@ -20,20 +20,14 @@
  *
  */
 
-debug_event('radio.php' , 'Action:'.$_REQUEST['action'], '5');
+require_once 'lib/init.php';
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-ob_start();
-$results[$target] = "";
+UI::show_header();
 
 // Switch on Action
 switch ($_REQUEST['action']) {
     case 'show_create':
-        if (!Access::check('interface','25')) {
+        if (!Access::check('interface', 75)) {
             UI::access_denied();
             exit;
         }
@@ -42,7 +36,7 @@ switch ($_REQUEST['action']) {
 
     break;
     case 'create':
-        if (!Access::check('interface','25') || Config::get('demo_mode')) {
+        if (!Access::check('interface', 75) || Config::get('demo_mode')) {
             UI::access_denied();
             exit;
         }
@@ -61,12 +55,11 @@ switch ($_REQUEST['action']) {
         else {
             $body = T_('Radio Station Added');
             $title = '';
-			show_confirmation($title,$body,'?page=browse&action=live_stream');
-		}
-	break;
+            show_confirmation($title,$body,Config::get('web_path') . '/index.php');
+        }
+    break;
 } // end data collection
 
-$results[$target] = ob_get_clean();
-echo xml_from_array($results);
+UI::show_footer();
 
 ?>

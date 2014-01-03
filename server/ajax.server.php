@@ -99,14 +99,6 @@ switch ($page) {
 		require_once Config::get('prefix') . '/search.php';
 		exit;
 	break;
-	case 'catalog':
-		require_once Config::get('prefix') . '/admin/catalog.php';
-		exit;
-	break;
-	case 'users':
-		require_once Config::get('prefix') . '/admin/users.php';
-		exit;
-	break;
 	case 'preferences':
 		require_once Config::get('prefix') . '/preferences.php';
 		exit;

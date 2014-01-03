@@ -19,16 +19,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-if (!defined('AJAX_INCLUDE')) { exit; }
 
-debug_event('artist.ajax.php' , 'Action:'.$_REQUEST['action'].' Artist:'.$_REQUEST['artist'], '5');
+require_once 'lib/init.php';
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-ob_start();
+UI::show_header();
 
 /**
  * Display Switch
@@ -213,8 +207,5 @@ switch($_REQUEST['action']) {
     break;
 } // end switch
 
-$results[$target] = ob_get_clean();
-
-// We always do this
-echo xml_from_array($results);
+UI::show_footer();
 ?>
