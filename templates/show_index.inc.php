@@ -20,15 +20,12 @@
  *
  */
 ?>
-
-<?php if (true == $GLOBALS['isMobile']) { ?>
-	<div id="sidebar"><!-- This is the sidebar -->
-	<?php require_once Config::get('prefix') . '/tt-mobile/templates/sidebar.inc.php'; ?>
-	</div> <!-- End sidebar -->
-<?php } else { ?>
+<?php if (false == $GLOBALS['isMobile']) { ?>
+	
 <div id="now_playing">
         <?php show_now_playing(); ?>
 </div> <!-- Close Now Playing Div -->
+
 <!-- Randomly selected albums of the moment -->
 <?php
 if (Art::is_enabled()) {
@@ -57,5 +54,6 @@ if (Art::is_enabled()) {
     ?>
 </div>
 <?php } ?>
-<?php } ?>
 
+
+<?php } ?>

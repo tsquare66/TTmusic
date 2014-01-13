@@ -25,27 +25,7 @@
  */
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-debug_event('song.ajax.php' , 'Action:'.$_REQUEST['action'].' Song ID:'.$_REQUEST['song_id'], '5');
-
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
-
-
-// Switch on Action
-switch ($_REQUEST['action']) 
-{
-	default:
-	case 'show_song':
-		ob_start();
-		$song = new Song($_REQUEST['song_id']);
-		$song->format();
-		$song->fill_ext_info();
-		require_once Config::get('prefix') . '/templates/show_song.inc.php';
-		$results[$target] = ob_get_clean();
-	break;
+switch ($_REQUEST['action']) {
     case 'flip_state':
         if (!Access::check('interface','75')) {
             debug_event('DENIED',$GLOBALS['user']->username . ' attempted to change the state of a song','1');

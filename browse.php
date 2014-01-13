@@ -49,6 +49,7 @@ switch ($_REQUEST['action']) {
     case 'song':
         $browse->set_type($_REQUEST['action']);
         $browse->set_simple_browse(true);
+        $browse->set_simple_browse(false);
     break;
 } // end switch
 
@@ -60,34 +61,49 @@ switch($_REQUEST['action']) {
     case 'album':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('name','ASC');
-        $browse->show_objects();
+        $browse->set_simple_browse(false);
+        $object_ids = $browse->get_objects();
+		$browse->show_objects($object_ids);
+        //$browse->show_objects();
     break;
     case 'tag':
         //FIXME: This whole thing is ugly, even though it works.
         $browse->set_sort('count','ASC');
         // This one's a doozy
         $browse->set_simple_browse(false);
-        $browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
+        //$browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
+        $browse->save_objects(Tag::get_tags(0,array()));
         $object_ids = $browse->get_saved();
         $keys = array_keys($object_ids);
         Tag::build_cache($keys);
-        UI::show_box_top(T_('Tag Cloud'), 'box box_tag_cloud');
+        
         $browse2 = new Browse();
         $browse2->set_type('song');
-        $browse2->store();
-        require_once Config::get('prefix') . '/templates/show_tagcloud.inc.php';
+        
+        UI::show_box_top(T_('Tag Cloud'), 'box box_tag_cloud');
+        require_once Config::get('prefix') . '/templates/show_tagcloud.inc.php';      
         UI::show_box_bottom();
-        require_once Config::get('prefix') . '/templates/browse_content.inc.php';
+        
+        $browse2->set_filter('tag',$firsttag );
+        $object_ids = $browse2->get_objects();
+		$browse2->show_objects($object_ids);
+		$browse2->store();
     break;
     case 'artist':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('name','ASC');
-        $browse->show_objects();
+        $browse->set_simple_browse(false);
+        $object_ids = $browse->get_objects();
+		$browse->show_objects($object_ids);
+        //$browse->show_objects();
     break;
     case 'song':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('title','ASC');
-        $browse->show_objects();
+        $browse->set_simple_browse(false);
+        $object_ids = $browse->get_objects();
+		$browse->show_objects($object_ids);
+        //$browse->show_objects();
     break;
     case 'live_stream':
         $browse->set_sort('name','ASC');

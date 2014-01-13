@@ -28,21 +28,18 @@ $web_path = Config::get('web_path');
   <col id="col_add" />
   <col id="col_track" />
   <col id="col_song" />
-  <?php if (false == $GLOBALS['isMobile']) { ?>
   <col id="col_artist" />
   <col id="col_album" />
   <col id="col_genre" />
   <col id="col_track" />
   <col id="col_time" />
   <col id="col_rating" />
-  <?php }?>
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
     <th class="cel_add">&nbsp;</th>
     <th class="cel_track"><?php echo T_('Track'); ?></th>
     <th class="cel_song"><?php echo T_('Song Title'); ?></th>
-  	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_artist"><?php echo T_('Artist'); ?></th>
     <th class="cel_album"><?php echo T_('Album'); ?></th>
     <th class="cel_genre"><?php echo T_('Genre'); ?></th>
@@ -52,7 +49,6 @@ $web_path = Config::get('web_path');
         Rating::build_cache('song', array_map(create_function('$i', 'return $i[\'object_id\'];'), $object_ids));
 ?>
         <th class="cel_rating"><?php echo T_('Rating'); ?></th>
-  	<?php }?>
 <?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
 </tr>
@@ -70,7 +66,6 @@ $web_path = Config::get('web_path');
     <th class="cel_add">&nbsp;</th>
     <th class="cel_track"><?php echo T_('Track'); ?></th>
     <th class="cel_song"><?php echo T_('Song Title'); ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_artist"><?php echo T_('Artist'); ?></th>
     <th class="cel_album"><?php echo T_('Album'); ?></th>
     <th class="cel_genre"><?php echo T_('Genre'); ?></th>
@@ -79,7 +74,6 @@ $web_path = Config::get('web_path');
 <?php if (Config::get('ratings')) { ?>
         <th class="cel_rating"><?php echo T_('Rating'); ?></th>
 <?php } ?>
-	<?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
 </tr>
 </table>

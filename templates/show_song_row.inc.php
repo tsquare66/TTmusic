@@ -30,6 +30,8 @@
 else 
 { ?>
 <td class="cel_song"><?php echo $song->f_link; ?></a></td>
+<?php } ?>
+
 <td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
 <td class="cel_album"><?php echo $song->f_album_link; ?></td>
 <td class="cel_tags"><?php echo $song->f_tags; ?></td>
@@ -38,11 +40,9 @@ else
 <?php if (Config::get('ratings')) { ?>
 <td class="cel_rating" id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?></td>
 <?php } ?>
-<?php } ?>
 <td class="cel_action">
-<?php
-	echo Ajax::button('?page=song&action=show_song&song_id=' . $song->id,'preferences', T_('Song Information'),'show_song_pref_id' . $song->id);
-		
+    <a href="<?php echo $song->link; ?>"><?php echo UI::get_icon('preferences', T_('Song Information')); ?></a>
+<?php		
 	if (false == $GLOBALS['isMobile'])
 	{ ?>
     <?php if (Config::get('shoutbox')) { ?>

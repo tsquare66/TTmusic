@@ -26,29 +26,28 @@ $web_path = Config::get('web_path');
 
 ?>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<div id="show_artists">
+
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_add" />
   <col id="col_artist" />
   <col id="col_songs" />
-  <?php if (false == $GLOBALS['isMobile']) { ?>  
   <col id="col_albums" />
+  <col id="col_time" />
   <col id="col_tags" />
   <col id="col_rating" />
-  <?php } ?>
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
     <th class="cel_add"><?php echo T_('Add'); ?></th>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=artist&sort=name', T_('Artist'),'artist_sort_name'); ?></th>
     <th class="cel_songs"><?php echo T_('Songs');  ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_albums"><?php echo T_('Albums'); ?></th>
     <th class="cel_time"><?php echo T_('Time'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
     <th class="cel_rating"> <?php echo T_('Rating'); ?> </th>
     <th class="cel_action"> <?php echo T_('Action'); ?> </th>
-	<?php } ?>
 </tr>
 <?php
 // Cache the ratings we are going to use
@@ -72,13 +71,12 @@ foreach ($object_ids as $artist_id) {
     <th class="cel_add"><?php echo T_('Add'); ?></th>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&type=artist&browse_id=' . $browse->id . '&sort=name', T_('Artist'),'artist_sort_name_bottom'); ?></th>
     <th class="cel_songs"> <?php echo T_('Songs');  ?> </th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_albums"> <?php echo T_('Albums'); ?> </th>
     <th class="cel_time"> <?php echo T_('Time'); ?> </th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
     <th class="cel_rating"> <?php echo T_('Rating'); ?> </th>
     <th class="cel_action"> <?php echo T_('Action'); ?> </th>
-	<?php } ?>
 </tr>
 </table>
+</div> 
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>

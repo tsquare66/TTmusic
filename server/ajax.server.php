@@ -84,30 +84,9 @@ switch ($page) {
     break;
     case 'index':
         require_once Config::get('prefix') . '/server/index.ajax.php';
-        exit;
-    break;
-	case 'artist':
-		require_once Config::get('prefix') . '/artists.php';
-		exit;
-	break;
-	case 'album':
-		require_once Config::get('prefix') . '/albums.php';
-		exit;
-	break;
-	break;
-	case 'search':
-		require_once Config::get('prefix') . '/search.php';
-		exit;
-	break;
-	case 'preferences':
-		require_once Config::get('prefix') . '/preferences.php';
-		exit;
-	break;
-	case 'radio':
-		require_once Config::get('prefix') . '/radio.php';
-		exit;
-	break;
-	case 'musicbrainz':
+       exit;
+   break;
+  	case 'musicbrainz':
 		require_once Config::get('prefix') . '/server/musicbrainz.php';
 		exit;
 	break;

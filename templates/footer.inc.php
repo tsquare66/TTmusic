@@ -20,10 +20,6 @@
  *
  */
 ?>
-<?php  if (true == $GLOBALS['isMobile']) { 
-	//echo '<div id="sidebar">';
- } ?>
-
 <div style="clear:both;"></div>
 </div> <!-- end id="content"-->
 

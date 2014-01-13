@@ -1,6 +1,6 @@
 <?php 
 
-$GLOBALS['isMobile'] = true;
+$GLOBALS['isMobile'] = false;
 if (isset($_SESSION['mobile']))
 {
 	debug_event('is_mobile.php' , 'Session:'.$_SESSION['mobile'], '5');
@@ -69,10 +69,6 @@ if($GLOBALS['isMobile'] == false)
 	|| strpos($ua, 'wap2.') !== false;
 }
  
-//$GLOBALS['isMobile'] = true;
+$GLOBALS['isMobile'] = true;
 
-if (true == $GLOBALS['isMobile'])
-{
-	Config::Set('theme_path','/tt-mobile/themes/',1);
-}
 debug_event('is_mobile.php' , 'IsMobile:'. $GLOBALS['isMobile'], '5');

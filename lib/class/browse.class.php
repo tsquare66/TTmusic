@@ -194,10 +194,14 @@ class Browse extends Query {
                 UI::show_box_bottom();
             break;
             case 'tag':
-                Tag::build_cache($tags);
+               /* Tag::build_cache($tags);
                 UI::show_box_top(T_('Tag Cloud'),$class);
                 require_once Config::get('prefix') . '/templates/show_tagcloud.inc.php';
-                UI::show_box_bottom();
+                UI::show_box_bottom();*/
+            	UI::show_box_top(T_('Songs').$match.' '.T_('Item count').':'.$total_count, $class);
+            	Song::build_cache($object_ids);
+            	require_once Config::get('prefix') . '/templates/show_songs.inc.php';
+            	UI::show_box_bottom();
             break;
             case 'video':
                 Video::build_cache($object_ids);

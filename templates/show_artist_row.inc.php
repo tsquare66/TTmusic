@@ -26,7 +26,6 @@
 </td>
 <td class="cel_artist"><?php echo $artist->f_name_link; ?></td>
 <td class="cel_songs"><?php echo $artist->songs; ?></td>
-<?php if (false == $GLOBALS['isMobile']) { ?>
 <td class="cel_albums"><?php echo $artist->albums; ?></td>
 <td class="cel_time"><?php echo $artist->f_time; ?></td>
 <td class="cel_tags"><?php echo $artist->f_tags; ?></td>
@@ -39,6 +38,5 @@
 <?php } ?>
 <?php if (Access::check('interface','50')) { ?>
     <?php echo Ajax::button('?action=show_edit_object&type=artist_row&id=' . $artist->id,'edit', T_('Edit'),'edit_artist_' . $artist->id); ?>
-<?php } ?>
 <?php } ?>
 </td>

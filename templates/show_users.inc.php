@@ -28,30 +28,24 @@ $web_path = Config::get('web_path');
 <colgroup>
   <col id="col_username" />
   <col id="col_lastseen" />
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <col id="col_registrationdate" />
   <col id="col_activity" />
     <?php if (Config::get('track_user_ip')) { ?>
   <col id="col_lastip" />
-		<?php } ?>
-  <?php } ?>
+    <?php } ?>
   <col id="col_action" />
   <col id="col_online" />
 </colgroup>
 <tr class="th-top">
   <th class="cel_username"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=fullname', T_('Fullname'),'users_sort_fullname'); ?>( <?php echo Ajax::text('?page=browse&action=set_sort&type=user&sort=username', T_('Username'),'users_sort_username');?>)</th>
   <th class="cel_lastseen"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=last_seen', T_('Last Seen'),'users_sort_lastseen'); ?></th>
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <th class="cel_registrationdate"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=create_date', T_('Registration Date'),'users_sort_createdate'); ?></th>
   <th class="cel_activity"><?php echo T_('Activity'); ?></th>
     <?php if (Config::get('track_user_ip')) { ?>
   <th class="cel_lastip"><?php echo T_('Last Ip'); ?></th>
-		<?php } ?>
     <?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <th class="cel_online"><?php echo T_('On-line'); ?></th>
-  <?php } ?>
 </tr>
 <?php
 foreach ($object_ids as $user_id) {
@@ -67,16 +61,12 @@ foreach ($object_ids as $user_id) {
 <tr class="th-bottom">
     <th class="cel_username"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=fullname', T_('Fullname'),'users_sort_fullname1'); ?>( <?php echo Ajax::text('?page=browse&action=set_sort&type=user&sort=username', T_('Username'),'users_sort_username1');?>)</th>
   <th class="cel_lastseen"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=last_seen', T_('Last Seen'),'users_sort_lastseen1'); ?></th>
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <th class="cel_registrationdate"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=user&sort=create_date', T_('Registration Date'),'users_sort_createdate1'); ?></th>
   <th class="cel_activity"><?php echo T_('Activity'); ?></th>
     <?php if (Config::get('track_user_ip')) { ?>
   <th class="cel_lastip"><?php echo T_('Last Ip'); ?></th>
-		<?php } ?>
     <?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <th class="cel_online"><?php echo T_('On-line'); ?></th>
-  <?php } ?>
 </tr>
 </table>

@@ -203,6 +203,7 @@ else {
 
 } // If NO_SESSION passed
 
+
 // Load the Preferences from the database
 Preference::init();
 

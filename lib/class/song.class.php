@@ -122,6 +122,9 @@ class Song extends database_object implements media {
 
         $song_id = Dba::insert_id();
 
+        if (!is_array($tags)) {
+        	$tags[1] = '--Empty--';
+        }
         if (is_array($tags)) {
             foreach ($tags as $tag) {
                 $tag = trim($tag);
@@ -733,6 +736,7 @@ class Song extends database_object implements media {
     public static function update_album($new_album,$song_id) {
 
         self::_update_item('album',$new_album,$song_id,'50');
+        
 
     } // update_album
 

@@ -26,7 +26,6 @@
         </a>
     </td>
   <td class="cel_lastseen"><?php echo $last_seen; ?></td>
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <td class="cel_registrationdate"><?php echo $create_date; ?></td>
   <td class="cel_activity"><?php echo $client->f_useage; ?></td>
     <?php if (Config::get('track_user_ip')) { ?>
@@ -35,7 +34,6 @@
             <?php echo $client->ip_history; ?>
         </a>
         </td>
-		<?php } ?>
     <?php } ?>
     <td class="cel_action">
         <a href="<?php echo $web_path; ?>/admin/users.php?action=show_edit&amp;user_id=<?php echo $client->id; ?>"><?php echo UI::get_icon('edit', T_('Edit')); ?></a>
@@ -51,13 +49,12 @@
     ?>
         <a href="<?php echo $web_path; ?>/admin/users.php?action=delete&amp;user_id=<?php echo $client->id; ?>"><?php echo UI::get_icon('delete', T_('Delete')); ?></a>
     </td>
-    <?php if (false == $GLOBALS['isMobile'])  { 
+       <?php
     if (($client->is_logged_in()) AND ($client->is_online())) {
         echo "<td class=\"cel_online user_online\"> &nbsp; </td>";
     } elseif ($client->disabled == 1) {
         echo "<td class=\"cel_online user_disabled\"> &nbsp; </td>";
     } else {
         echo "<td class=\"cel_online user_offline\"> &nbsp; </td>";
-    }
     }
 ?>

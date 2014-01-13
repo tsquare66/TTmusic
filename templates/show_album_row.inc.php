@@ -36,7 +36,6 @@ if (Art::is_enabled()) {
 <?php } ?>
 <td class="cel_album"><?php echo $album->f_name_link; ?></td>
 <td class="cel_artist"><?php echo $album->f_artist_link; ?></td>
-<?php if (false == $GLOBALS['isMobile']) { ?>
 <td class="cel_songs"><?php echo $album->song_count; ?></td>
 <td class="cel_year"><?php echo $album->year; ?></td>
 <td class="cel_tags"><?php echo $album->f_tags; ?></td>
@@ -56,5 +55,3 @@ if (Art::is_enabled()) {
         <?php echo Ajax::button('?action=show_edit_object&type=album_row&id=' . $album->id,'edit', T_('Edit'),'edit_album_' . $album->id); ?>
     <?php } ?>
 </td>
-<?php } ?>
-	

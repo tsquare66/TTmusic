@@ -199,11 +199,7 @@ class Tag extends database_object {
 
         $cleaned_value = self::clean_tag($value);
 
-		if (!strlen($cleaned_value)) 
-		{ 
-			//return false; 
-			$cleaned_value = '--Empty--';
-		}
+        if (!strlen($cleaned_value)) { return false; }
 
         $uid = ($user === false) ? intval($user) : intval($GLOBALS['user']->id);
 
@@ -232,7 +228,6 @@ class Tag extends database_object {
      */
     public static function add_tag($value) {
 
-		debug_event('tag.class.php' , 'New Tag:'.$value, '5');
         // Clean it up and make it tagish
         $value = self::clean_tag($value);
 
@@ -355,7 +350,29 @@ class Tag extends database_object {
 
     } // tag_map_exists
 
-    /**
+	/**
+	 */
+	public static function update_tag_map($type,$object_id,$tag_id) {
+	
+		$object_id = Dba::escape($object_id);
+		$tag_id = Dba::escape($tag_id);
+		$type = Dba::escape($type);
+	
+		$sql = "UPDATE `tag_map` SET `tag_id`='$tag_id' WHERE `object_id`='$object_id' AND `object_type`='$type'";
+		$db_results = Dba::write($sql);
+	
+		$sql = "SELECT * FROM `tag_map` WHERE `tag_id`='$tag_id' AND `object_id`='$object_id' AND `object_type`='$type'";
+		$db_results = Dba::read($sql);
+
+		$results = Dba::fetch_assoc($db_results);
+			
+		parent::add_to_cache('tag_map_' . $type,$results['id'],$results);
+	
+		return $results['id'];
+	
+	} // 
+	
+	/**
      * get_top_tags
      * This gets the top tags for the specified object using limit
      */
@@ -642,7 +659,7 @@ class Tag extends database_object {
     public static function clean_tag($value) {
 
         $tag = preg_replace("/[^\w\_\-\s\&]/","",$value);
-		$tag = $value;
+	//	$tag = $value;
 
         return $tag;
 

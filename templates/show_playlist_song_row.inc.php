@@ -22,9 +22,6 @@
 ?>
 <td class="cel_add"><?php echo Ajax::button('?action=basket&type=song&id=' . $song->id,'add', T_('Add'),'playlist_add_' . $song->id); ?></td>
 <td class="cel_track"><?php echo $playlist_track; ?></td>
-<?php if (true == $GLOBALS['isMobile'])  { ?>
-    <td class="cel_song"><?php echo $song->f_title. "<br>" . $song->f_artist; ?></td>
-<?php } else { ?>
 <td class="cel_song"><?php echo $song->f_link; ?></td>
 <td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
 <td class="cel_album"><?php echo $song->f_album_link; ?></td>
@@ -33,7 +30,6 @@
 <td class="cel_time"><?php echo $song->f_time; ?></td>
 <?php if (Config::get('ratings')) { ?>
 <td class="cel_rating" id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?></td>
-<?php } ?>
 <?php } ?>
 <td class="cel_action">
     <?php if (Config::get('download')) { ?>

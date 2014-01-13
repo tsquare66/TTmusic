@@ -24,22 +24,18 @@
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_catalog" />
-  <?php if (false == $GLOBALS['isMobile'])  { ?>
   <col id="col_path" />
   <col id="col_lastverify" />
   <col id="col_lastadd" />
   <col id="col_lastclean" />
-  <?php } ?>
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
     <th class="cel_catalog"><?php echo T_('Name'); ?></th>
- 	<?php if (false == $GLOBALS['isMobile'])  { ?>
     <th class="cel_path"><?php echo T_('Path'); ?></th>
     <th class="cel_lastverify"><?php echo T_('Last Verify'); ?></th>
     <th class="cel_lastadd"><?php echo T_('Last Add'); ?></th>
     <th class="cel_lastclean"><?php echo T_('Last Clean'); ?></th>
-	<?php } ?>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 <?php
@@ -60,13 +56,11 @@
 </tr>
 <tr class="th-bottom">
     <th class="cel_catalog"><?php echo T_('Name'); ?></th>
-	<?php if (false == $GLOBALS['isMobile'])  { ?>
     <th class="cel_path"><?php echo T_('Path'); ?></th>
     <th class="cel_lastverify"><?php echo T_('Last Verify'); ?></th>
     <th class="cel_lastadd"><?php echo T_('Last Add'); ?></th>
     <th class="cel_lastclean"><?php echo T_('Last Clean'); ?></th>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
-	<?php } ?>
 </tr>
 </table>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>

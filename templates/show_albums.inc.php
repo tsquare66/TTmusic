@@ -23,6 +23,8 @@
 $web_path = Config::get('web_path');
 ?>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<div id="show_albums">
+
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_add" />
@@ -31,13 +33,11 @@ $web_path = Config::get('web_path');
 <?php } ?>
   <col id="col_album" />
   <col id="col_artist" />
-  <?php if (false == $GLOBALS['isMobile']) { ?> 
   <col id="col_songs" />
   <col id="col_year" />
   <col id="col_tags" />
   <col id="col_rating" />
   <col id="col_action" />
-  <?php } ?>
 </colgroup>
 <tr class="th-top">
     <th class="cel_add"><?php echo T_('Add'); ?></th>
@@ -46,13 +46,11 @@ $web_path = Config::get('web_path');
     <?php } ?>
     <th class="cel_album"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=name', T_('Album'),'album_sort_name'); ?></th>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=artist', T_('Artist'),'album_sort_artist'); ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_songs"><?php echo T_('Songs'); ?></th>
     <th class="cel_year"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=year', T_('Year'),'album_sort_year'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
     <th class="col_rating"><?php echo T_('Rating'); ?></th>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
-	<?php } ?>
 </tr>
 <?php
     if (Config::get('ratings')) {
@@ -79,13 +77,14 @@ $web_path = Config::get('web_path');
     <?php } ?>
     <th class="cel_album"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=name', T_('Album'),'album_sort_name_bottom'); ?></th>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=artist', T_('Artist'),'album_sort_artist'); ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_songs"><?php echo T_('Songs'); ?></th>
     <th class="cel_year"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=year', T_('Year'),'album_sort_year_bottom'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
     <th class="col_rating"><?php echo T_('Rating'); ?></th>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
-	<?php } ?>
 </tr>
 </table>
+</div> 
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+
+

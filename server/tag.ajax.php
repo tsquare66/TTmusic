@@ -62,7 +62,8 @@ switch ($_REQUEST['action']) {
     break;
 	case 'save_tag':
 		$new_tag = new Tag($_POST['tag_id']);
-		$new_tag->update_tag_map('song',$_GET['song_id'],$new_tag->id);		
+		$song_id = $_GET['song_id'];
+		$new_tag->update_tag_map('song',$song_id,$new_tag->id);		
 		$song = new Song($_GET['song_id']);
 		$song->format();
 		$id3 = new vainfo($song->file);

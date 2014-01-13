@@ -26,122 +26,16 @@
 require_once '../lib/init.php';
 session_start();
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'sidebar-page';
-else
-	$target = 'content';
-
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-debug_event('browse.ajax.php' , 'Action:'.$_REQUEST['action'].' Browse ID:'.$_REQUEST['browse_id'], '5');
-
-switch ($_REQUEST['action']) {
-	case 'tag':
-	case 'file':
-	case 'album':
-	case 'artist':
-	case 'playlist':
-	case 'smartplaylist':
-	case 'live_stream':
-	case 'video':
-	case 'song':
-		$browse = new Browse();
-		$browse->set_type($_REQUEST['action']);
-		//$browse->set_simple_browse(true);
-		switch ($_REQUEST['action'])
-		{
-			case 'file':
-				break;
-			case 'song':
-				$browse->set_filter('catalog',$_SESSION['catalog']);
-				$browse->set_sort('title','ASC');
-				ob_start();
-				//$browse->show_objects();
-				$object_ids = $browse->get_objects();
-				$browse->show_objects($object_ids);
-				$browse->store();
-				$results[$target] = ob_get_clean();
-				break;
-			case 'tag':
-				//$browse->set_sort('count','ASC');
-				// This one's a doozy
-				$browse->set_simple_browse(false);
-				ob_start();
-				//$browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
-				$browse->save_objects(Tag::get_tags(0,array()));
-				$object_ids = $browse->get_saved();
-				$keys = array_keys($object_ids);
-				Tag::build_cache($keys);			
-				$browse2 = new Browse();
-				$browse2->set_type('song');
-				UI::show_box_top(T_('Tag Cloud'),$class);
-				require_once Config::get('prefix') . '/templates/show_tagcloud.inc.php';
-				UI::show_box_bottom();
-				
-				echo '<div id="browse_content">';
-				$browse2->set_filter('tag',$firsttag );
-				$object_ids = $browse2->get_objects();
-				
-				$browse2->show_objects($object_ids);
-				$browse2->store();
-				echo '</div>';
-								
-				$results[$target] = ob_get_clean();
-				break;
-			case 'playlist':
-				$browse->set_sort('type','ASC');
-				$browse->set_filter('playlist_type','1');
-				ob_start();
-				$browse->show_objects();
-				$results[$target] = ob_get_clean();
-				break;
-			case 'smartplaylist':
-				$browse->set_sort('type', 'ASC');
-				$browse->set_filter('playlist_type','1');
-				ob_start();
-				$browse->show_objects();
-				$results[$target] = ob_get_clean();
-				break;
-    		case 'video':
-        		$browse->set_sort('title','ASC');
-				ob_start();
-				$browse->show_objects();
-				$results[$target] = ob_get_clean();
-				break;
-			case 'live_stream':
-				$browse->set_sort('name','ASC');
-				ob_start();
-				$browse->show_objects();
-				$results[$target] = ob_get_clean();
-				break;
-			case 'artist':
-			case 'album':
-				$browse->set_filter('catalog',$_SESSION['catalog']);
-				$browse->set_sort('name','ASC');
-				ob_start();
-				//$browse->show_objects();
-				$object_ids = $browse->get_objects();
-				$browse->show_objects($object_ids);
-				$browse->store();
-				$results[$target] = ob_get_clean();
-				break;
-		}
-		break;
-	default:
-		if (isset($_REQUEST['browse_id'])) {
-			$browse_id = $_REQUEST['browse_id'];
-		}
-		else {
-			$browse_id = null;
-		}
-		$browse = new Browse($browse_id);
-		break;
+if (isset($_REQUEST['browse_id'])) {
+    $browse_id = $_REQUEST['browse_id'];
+}
+else {
+    $browse_id = null;
 }
 
-if (true == $GLOBALS['isMobile'])
-	$target = 'browse_content';
-else
-	$target = 'browse_content';
+$browse = new Browse($browse_id);
 
 switch ($_REQUEST['action']) {
     case 'browse':
@@ -171,7 +65,7 @@ switch ($_REQUEST['action']) {
 
         ob_start();
                 $browse->show_objects();
-        $results[$target] = ob_get_clean();
+                $results['browse_content'] = ob_get_clean();
     break;
     
     case 'set_sort':
@@ -182,7 +76,7 @@ switch ($_REQUEST['action']) {
 
         ob_start();
         $browse->show_objects();
-		$results[$target] = ob_get_clean();
+        $results['browse_content'] = ob_get_clean();
     break;
     case 'toggle_tag':
         $type = $_SESSION['tagcloud_type'] ? $_SESSION['tagcloud_type'] : 'song';
@@ -224,14 +118,14 @@ switch ($_REQUEST['action']) {
 
         ob_start();
         $browse->show_objects();
-		$results[$target] = ob_get_clean();
+        $results['browse_content'] = ob_get_clean();
     break;
     case 'show_art':
         Art::set_enabled();
 
         ob_start();
         $browse->show_objects();
-		$results[$target] = ob_get_clean();
+        $results['browse_content'] = ob_get_clean();
     break;
     case 'get_filters':
         ob_start();

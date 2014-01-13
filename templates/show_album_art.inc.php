@@ -54,9 +54,7 @@ while ($i <= $rows) {
                 <?php } else { ?>
                 <span class="error"><?php echo T_('Invalid'); ?></span>
                 <?php } ?>
-				[
-			      <?php echo Ajax::text('?page=album&action=select_art&image='.$key.'&album_id='.intval($_REQUEST['album_id']),T_('Select'), 'select_album_art_'.$key); ?>
-				]
+                [<a href="<?php echo Config::get('web_path'); ?>/albums.php?action=select_art&amp;image=<?php echo $key; ?>&amp;album_id=<?php echo intval($_REQUEST['album_id']); ?>"><?php echo T_('Select'); ?></a>]
                 </p>
             </td>
 <?php

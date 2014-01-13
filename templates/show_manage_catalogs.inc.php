@@ -26,11 +26,12 @@
 <tr>
 <td>
 <ul>
-	<li> <?php echo Ajax::text_update('?page=catalog&action=gather_all_album_art', T_('Gather All Art'),'gather_all_album_art'); ?></li>
-	<li> <?php echo Ajax::text_update('?page=catalog&action=add_to_all_catalogs',  T_('Add to All'),    'add_to_all_catalogs');  ?></li>
-	<li> <?php echo Ajax::text_update('?page=catalog&action=clean_all_catalogs',   T_('Clean All'),     'clean_all_catalogs');  ?></li>
-	<li> <?php echo Ajax::text_update('?page=catalog&action=full_service',         T_('Update All'),    'full_service');  ?></li>
-	<li> <?php echo Ajax::text       ('?page=catalog&action=clear_stats',          T_('Clear Stats'),   'clear_stats');  ?></li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=gather_album_art"><?php echo T_('Gather All Art'); ?></a></li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=add_to_all_catalogs"><?php echo T_('Add to All'); ?></a> </li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=update_all_catalogs"><?php echo T_('Verify All'); ?></a></li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=clean_all_catalogs"><?php echo T_('Clean All'); ?></a></li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=full_service"><?php echo T_('Update All'); ?></a></li>
+    <li><a href="<?php echo Config::get('web_path'); ?>/admin/catalog.php?action=clear_stats"><?php echo T_('Clear Stats'); ?></a></li>
 </ul>
 </td>
 <td>

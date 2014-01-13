@@ -71,7 +71,10 @@ switch ($_REQUEST['action']) {
                 ob_start();
                 $_SESSION['state']['sidebar_tab'] = $button;
 				if (true == $GLOBALS['isMobile'])
-                	require_once Config::get('prefix') . '/tt-mobile/templates/sidebar.inc.php';
+				{
+					$results['sidebar-page'] = "";
+                	require_once Config::get('prefix') . '/themes/tt-mobile/templates/sidebar.inc.php';
+				}
 				else
                 require_once Config::get('prefix') . '/templates/sidebar.inc.php';
                 $results['sidebar'] = ob_get_contents();

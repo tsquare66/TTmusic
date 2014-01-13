@@ -513,7 +513,7 @@ class Catalog extends database_object {
                     if (strcmp($full_file,iconv(Config::get('site_charset'),Config::get('site_charset'),$full_file)) != '0') {
                         debug_event('read',$full_file . ' has non-' . Config::get('site_charset') . ' characters and can not be indexed, converted filename:' . iconv(Config::get('site_charset'),Config::get('site_charset'),$full_file),'1');
                         /* HINT: FullFile */
-                        Error::add('catalog_add', sprintf(T_('%s does not match site charset'), $full_file));
+                        //Error::add('catalog_add', sprintf(T_('%s does not match site charset'), $full_file));
                         //continue;
                     }
                 } // end if iconv

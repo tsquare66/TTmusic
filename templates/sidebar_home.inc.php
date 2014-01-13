@@ -25,17 +25,15 @@
 if (false == $GLOBALS['isMobile']) 
 {
  	echo '<ul class="sb2" id="sb_home">';
-	echo '<li><h4>'.T_('Browse').'</h4>';
-	echo '<ul class="sb3" id="sb_browse_bb">';
 }
 else
 {
 	echo '<div class="sb2" id="sb_home">';
-	echo '<div class="sb3" id="sb_browse_bb">';
-	echo '<li id="sb_search">';
-	echo Ajax::text("?page=search&action=search&type=song",T_('Search'),'sb_search');
-	echo '</li>';
 }	
+
+echo '<li><h4>'.T_('Browse').'</h4>';
+echo '<ul class="sb3" id="sb_browse_bb">';
+
 ?>
 
   <?php
@@ -58,14 +56,15 @@ else
 if (false == $GLOBALS['isMobile']) 
 {
  	echo '</ul>';
-	echo '</li>';
 }
 else
 {
 	echo '</div>';
 }
+echo '</li>';
 ?>
-        
+
+
   
 <?php Ajax::start_container('browse_filters'); ?>
 <?php Ajax::end_container(); ?>

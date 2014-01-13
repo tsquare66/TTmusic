@@ -27,9 +27,7 @@
 <td class="cel_playlist"><?php echo $playlist->f_link; ?></td>
 <td class="cel_type"><?php echo $playlist->f_type; ?></td>
 <td class="cel_songs"><?php echo $count; ?></td>
-<?php if (false == $GLOBALS['isMobile']) { ?>
-	<td class="cel_owner"><?php echo scrub_out($playlist->f_user); ?></td>
-<?php } ?>
+<td class="cel_owner"><?php echo scrub_out($playlist->f_user); ?></td>
 <td class="cel_action">
         <?php if (Access::check_function('batch_download')) { ?>
                 <a href="<?php echo Config::get('web_path'); ?>/batch.php?action=playlist&amp;id=<?php echo $playlist->id; ?>">

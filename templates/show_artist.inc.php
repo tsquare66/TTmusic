@@ -36,12 +36,15 @@ if (Config::get('ratings')) {
 <h3><?php echo T_('Actions'); ?>:</h3>
 <ul>
 <li>
-	<?php 
-	if ($object_type == 'album') 
-		echo Ajax::textbutton('?page=artist&action=show_all_songs&artist='.$artist->id,'view', T_("Show All Songs By ").$artist->f_name,'show_artist');
-	else 
-		echo Ajax::textbutton('?page=artist&action=show&artist='.$artist->id,'view', T_("Show Albums By ").$artist->f_name,'show_artist');
-	?>
+    <?php if ($object_type == 'album') { ?>
+    <a href="<?php echo $web_path; ?>/artists.php?action=show_all_songs&amp;artist=<?php echo $artist->id; ?>">
+    <?php echo UI::get_icon('view', T_("Show All Songs By %s")); ?>
+    <?php printf(T_("Show All Songs By %s"), $artist->f_name); ?></a>
+    <?php } else { ?>
+    <a href="<?php echo $web_path; ?>/artists.php?action=show&amp;artist=<?php echo $artist->id; ?>">
+    <?php echo UI::get_icon('view', T_("Show Albums By %s")); ?>
+    <?php printf(T_("Show Albums By %s"), $artist->f_name); ?></a>
+    <?php } ?>
 </li>
 <li>
     <?php /* HINT: Artist Fullname */ ?>

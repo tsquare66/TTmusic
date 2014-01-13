@@ -23,23 +23,23 @@
 $web_path = Config::get('web_path');
 ?>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<div id="show_songs">
+
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_add" />
   <col id="col_song" />
-  <?php if (false == $GLOBALS['isMobile']) { ?>
   <col id="col_artist" />
   <col id="col_album" />
+  <col id="col_tags" />
   <col id="col_track" />
   <col id="col_time" />
   <col id="col_rating" />
-  <?php } ?>
   <col id="col_action" />
 </colgroup>
 <tr class="th-top">
     <th class="cel_add"><?php echo T_('Add'); ?></th>
     <th class="cel_song"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=title', T_('Song Title'), 'sort_song_title'); ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=artist', T_('Artist'), 'sort_song_artist'); ?></th>
     <th class="cel_album"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=album', T_('Album'), 'sort_song_album'); ?></th>
         <th class="cel_tags"><?php echo T_('Tags'); ?></th>
@@ -49,7 +49,6 @@ $web_path = Config::get('web_path');
     Rating::build_cache('song', $object_ids);
 ?>
     <th class="cel_rating"><?php echo T_('Rating'); ?></th>
-<?php } ?>
 <?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
 </tr>
@@ -70,7 +69,6 @@ $web_path = Config::get('web_path');
 <tr class="th-bottom">
     <th class="cel_add"><?php echo T_('Add'); ?></th>
     <th class="cel_song"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=song&sort=title', T_('Song Title'),'sort_song_title_bottom'); ?></th>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
     <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=song&sort=artist', T_('Artist'),'sort_song_artist_bottom'); ?></th>
     <th class="cel_album"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=song&sort=album', T_('Album'),'sort_song_album_bottom'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
@@ -79,8 +77,8 @@ $web_path = Config::get('web_path');
 <?php if (Config::get('ratings')) { ?>
     <th class="cel_rating"><?php echo T_('Rating'); ?></th>
 <?php } ?>
-	<?php } ?>
     <th class="cel_action"><?php echo T_('Action'); ?></th>
 </tr>
 </table>
+</div> 
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>

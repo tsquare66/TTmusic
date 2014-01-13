@@ -25,8 +25,6 @@ $button = Ajax::button('?page=index&action=random_albums','random', T_('Refresh'
 ?>
 <?php UI::show_box_top(T_('Albums of the Moment') . ' ' . $button, 'box box_random_albums'); ?>
 
-	<table>
-	<tr>
     <?php
     if ($albums) {
         foreach ($albums as $album_id) {
@@ -34,34 +32,25 @@ $button = Ajax::button('?page=index&action=random_albums','random', T_('Refresh'
             $album->format();
             $name = '[' . $album->f_artist . '] ' . scrub_out($album->full_name);
         ?>
-        <td>
         <div class="random_album">
-        <?php 
-	        	$action = '?page=album&action=show&album='.$album_id;
-	        	if (Art::is_enabled()) 
-			    {
-	            	$img_url = $web_path .'/image.php?thumb=3&id='.$album_id;
-	            	echo Ajax::image($action, $img_url, '80', '','random_'.$album_id);
-	            } 
-	            else
-	            {
-	            	echo '[' . $album->f_artist . '] ' . $album->f_name;
-	            }
-			?>
-            <?php
+                <a href="<?php echo $web_path; ?>/albums.php?action=show&amp;album=<?php echo $album_id; ?>">
+                <?php if (Art::is_enabled()) { ?>
+                <img src="<?php echo $web_path; ?>/image.php?thumb=3&amp;id=<?php echo $album_id; ?>" width="80" height="80" alt="<?php echo $name; ?>" title="<?php echo $name; ?>" />
+                <?php } else { ?>
+                <?php echo '[' . $album->f_artist . '] ' . $album->f_name; ?>
+                <?php } ?>
+                </a>
+                <?php
                 if(Config::get('ratings')){
                         echo "<div id=\"rating_" . $album->id . "_album\">";
                         show_rating($album->id, 'album');
                         echo "</div>";
                 }
                 ?>
-        </div>
                   <span class="play_album"><?php echo Ajax::button('?action=basket&type=album&id=' . $album->id,'add', T_('Play Album'),'play_full_' . $album->id); ?></span>
-        </td>
-        	<?php } // end foreach ?>
-	<?php } // end if albums ?>
-	</tr>
-	</table>
-	
-	
+        </div>
+
+            <?php } // end foreach ?>
+    <?php } // end if albums ?>
+
 <?php UI::show_box_bottom(); ?>
