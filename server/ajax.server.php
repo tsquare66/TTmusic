@@ -39,8 +39,6 @@ header("Pragma: no-cache");
 
 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : null;
 
-debug_event('ajax.server.php' , 'Page: '.$page.' Action:'.$_REQUEST['action'], '5');
-
 switch ($page) {
     case 'flag':
         require_once Config::get('prefix') . '/server/flag.ajax.php';

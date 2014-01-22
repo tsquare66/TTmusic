@@ -159,6 +159,7 @@ class Stream_Playlist {
             case 'download':
             case 'democratic':
             case 'localplay':
+            case 'jplayer':
             case 'html5_player':
                 // These are valid, but witchy
                 $redirect = false;
@@ -358,6 +359,15 @@ class Stream_Playlist {
      */
     public function create_html5_player() {
         require Config::get('prefix') . '/templates/create_html5_player.inc.php';       
+    }
+
+    /**
+     * create_jplayer
+     *
+     * Creates an create_jplayer.
+     */
+    public function create_jplayer() {
+        require Config::get('prefix') . '/modules/jplayer/create_jplayer.inc.php';       
     }
 
     /**

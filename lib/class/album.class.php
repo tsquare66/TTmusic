@@ -209,14 +209,15 @@ class Album extends database_object {
 
         $sql = 'SELECT `id` FROM `album` WHERE `name` = ? AND `disk` = ? AND ' .
             '`year` = ? AND `mbid` ';
-        $params = array($name, $disk, $year);
+                $params = array($name, $disk, $year);
 
         if ($mbid) {
             $sql .= '= ? ';
             $params[] = $mbid;
         }
         else {
-            $sql .= 'IS NULL ';
+            //$sql .= 'IS NULL ';
+            $sql .= '=\'\'';
         }
 
         $sql .= 'AND `prefix` ';

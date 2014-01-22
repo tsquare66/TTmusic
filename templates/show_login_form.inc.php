@@ -65,7 +65,7 @@ function focus(){ document.login.username.focus(); }
           </a>
     </h1>
   </div>
-  	<?php } ?>
+  	<?php  }  ?>
     <div id="loginbox">
         <h2><?php echo scrub_out(Config::get('site_title')); ?></h2>
         <form name="login" method="post" enctype="multipart/form-data" action="<?php echo Config::get('web_path'); ?>/login.php">

@@ -356,7 +356,7 @@ class Playlist extends playlist_object {
             }
 
             /* Don't insert dead songs */
-            if ($id) {
+            if ($song_id) {
                 $sql = "INSERT INTO `playlist_data` (`playlist`,`object_id`,`object_type`,`track`) " .
                     " VALUES (?, ?, 'song', ?)";
                 $db_results = Dba::write($sql, array($this->id, $song->id, $track));
@@ -455,6 +455,8 @@ class Playlist extends playlist_object {
      * This deletes the current playlist and all associated data
      */
     public function delete() {
+    	
+    	$id = Dba::escape($this->id);
 
         $sql = "DELETE FROM `playlist_data` WHERE `playlist` = ?";
         $db_results = Dba::write($sql, array($id));

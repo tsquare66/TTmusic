@@ -1146,20 +1146,16 @@ class Art extends database_object {
         $size = '&imgsz=m'; // Medium
         //$size = '&imgsz=l'; // Large
 
-		$google_url = "http://images.google.de/images?source=hp&q=$search&oq=&um=1&ie=UTF-8&sa=N&tab=wi&start=0&tbo=1$size";
-		debug_event('gather_google' , 'Search:'.$google_url, '5');
-		$html = file_get_contents($google_url);
-		
-		//if(preg_match_all("|\ssrc\=\"(http.+?)\"|", $html, $matches, PREG_PATTERN_ORDER))
-		if(preg_match_all("#imgurl=(http.{1,100}(png|jpg))#", $html, $matches))
-			foreach ($matches[1] as $match) {
-				$extension = "image/jpeg";
+        $html = file_get_contents("http://images.google.com/images?source=hp&q=$search&oq=&um=1&ie=UTF-8&sa=N&tab=wi&start=0&tbo=1$size");
 
-				if (strrpos($extension, '.') !== false) $extension = substr($extension, strrpos($extension, '.') + 1);
+        if(preg_match_all("|\ssrc\=\"(http.+?)\"|", $html, $matches, PREG_PATTERN_ORDER))
+            foreach ($matches[1] as $match) {
+                $extension = "image/jpeg";
 
-				debug_event('gather_google' , 'Match:'.$match, '5');
-				$images[] = array('url' => $match, 'mime' => $extension);
-			}
+                if (strrpos($extension, '.') !== false) $extension = substr($extension, strrpos($extension, '.') + 1);
+
+                $images[] = array('url' => $match, 'mime' => $extension);
+            }
 
         return $images;
 

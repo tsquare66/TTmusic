@@ -49,7 +49,6 @@ switch ($_REQUEST['action']) {
     case 'song':
         $browse->set_type($_REQUEST['action']);
         $browse->set_simple_browse(true);
-        $browse->set_simple_browse(false);
     break;
 } // end switch
 
@@ -61,10 +60,7 @@ switch($_REQUEST['action']) {
     case 'album':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('name','ASC');
-        $browse->set_simple_browse(false);
-        $object_ids = $browse->get_objects();
-		$browse->show_objects($object_ids);
-        //$browse->show_objects();
+        $browse->show_objects();
     break;
     case 'tag':
         //FIXME: This whole thing is ugly, even though it works.
@@ -92,18 +88,12 @@ switch($_REQUEST['action']) {
     case 'artist':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('name','ASC');
-        $browse->set_simple_browse(false);
-        $object_ids = $browse->get_objects();
-		$browse->show_objects($object_ids);
-        //$browse->show_objects();
+        $browse->show_objects();
     break;
     case 'song':
         $browse->set_filter('catalog',$_SESSION['catalog']);
         $browse->set_sort('title','ASC');
-        $browse->set_simple_browse(false);
-        $object_ids = $browse->get_objects();
-		$browse->show_objects($object_ids);
-        //$browse->show_objects();
+        $browse->show_objects();
     break;
     case 'live_stream':
         $browse->set_sort('name','ASC');

@@ -270,6 +270,26 @@ class Tag extends database_object {
     } // add_tag_map
 
     /**
+     * del_tag_map
+     * This delets a specific tag to the map for specified object
+     */
+    public static function del_tag_map($type,$object_id,$user='') {
+
+        $uid = ($user == '') ? intval($GLOBALS['user']->id) : intval($user);
+        $tag_id = intval($tag_id);
+        if (!self::validate_type($type)) { return false; }
+        $id = intval($object_id);
+
+        if (!$id) { return false; }
+
+        $sql = "DELETE FROM `tag_map` WHERE `user`='$uid' AND `object_id`='$object_id' AND `object_type`='$type'";
+        $db_results = Dba::write($sql);
+        
+        parent::remove_from_cache('tag_map_' . $type,$object_id);
+        
+   } // del_tag_map
+
+    /**
      * gc
      *
      * This cleans out tag_maps that are obsolete and then removes tags that
@@ -659,7 +679,8 @@ class Tag extends database_object {
     public static function clean_tag($value) {
 
         $tag = preg_replace("/[^\w\_\-\s\&]/","",$value);
-	//	$tag = $value;
+        //TT Verhindern dass Umlaute erntfernt werden
+		$tag = $value;
 
         return $tag;
 

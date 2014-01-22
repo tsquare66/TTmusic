@@ -20,12 +20,9 @@
  *
  */
 ?>
-<?php if (false == $GLOBALS['isMobile']) { ?>
-	
 <div id="now_playing">
         <?php show_now_playing(); ?>
 </div> <!-- Close Now Playing Div -->
-
 <!-- Randomly selected albums of the moment -->
 <?php
 if (Art::is_enabled()) {
@@ -53,7 +50,4 @@ if (Art::is_enabled()) {
         }
     ?>
 </div>
-<?php } ?>
-
-
 <?php } ?>

@@ -73,9 +73,11 @@ switch ($_REQUEST['action']) {
 				if (true == $GLOBALS['isMobile'])
 				{
 					$results['sidebar-page'] = "";
-                	require_once Config::get('prefix') . '/themes/tt-mobile/templates/sidebar.inc.php';
+					//$results['information_actions'] = "";
+					$results['recently_played'] = "";
+					//$results['browse_content'] = "";
+					//$results['content'] = "";
 				}
-				else
                 require_once Config::get('prefix') . '/templates/sidebar.inc.php';
                 $results['sidebar'] = ob_get_contents();
                 ob_end_clean();

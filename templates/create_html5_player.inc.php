@@ -27,7 +27,12 @@
 <script language="javascript" type="text/javascript">
 <!-- begin
 function PlayerPopUp(URL) {
+	<?php if($GLOBALS['isMobile']){?>
+	window.open(URL, 'HTML5_player', 'width=320,height=500,scrollbars=0,toolbar=0,location=0,directories=0,status=0,resizable=0');
+	<?php }else{?>
 	window.open(URL, 'HTML5_player', 'width=700,height=210,scrollbars=0,toolbar=0,location=0,directories=0,status=0,resizable=0');
+	<?php }?>
+
 	window.location = '<?php echo return_referer() ?>';
 	return false;
 }

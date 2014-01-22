@@ -84,7 +84,7 @@ class Browse extends Query {
             $this->save_objects($object_ids);
         }
 
-        $total_count = count($object_ids);
+        $total_count = $this->get_total();
         
         // Limit is based on the user's preferences if this is not a 
         // simple browse because we've got too much here
@@ -159,12 +159,12 @@ class Browse extends Query {
             break;
             case 'playlist':
                 Playlist::build_cache($object_ids);
-                UI::show_box_top(T_('Playlists') . $match, $class);
+                UI::show_box_top(T_('Playlists')  . $match.' '.T_('Item count').':'.$total_count, $class);
                 require_once Config::get('prefix') . '/templates/show_playlists.inc.php';
                 UI::show_box_bottom();
             break;
             case 'playlist_song':
-                UI::show_box_top(T_('Playlist Songs') . $match,$class);
+                UI::show_box_top(T_('Playlist Songs')  . $match.' '.T_('Item count').':'.$total_count, $class);
                 require_once Config::get('prefix') . '/templates/show_playlist_songs.inc.php';
                 UI::show_box_bottom();
             break;

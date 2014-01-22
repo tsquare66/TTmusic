@@ -40,20 +40,10 @@ if (Config::get('use_rss')) { ?>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=<?php echo Config::get('site_charset'); ?>" />
 <title><?php echo scrub_out(Config::get('site_title')); ?> - <?php echo $location['title']; ?></title>
 <?php require_once Config::get('prefix') . '/templates/stylesheets.inc.php'; ?>
-<?php  if (true == $GLOBALS['isMobile']) 
+<?php if (true == $GLOBALS['isMobile'])
 { ?>
-   <link rel="apple-touch-icon" href="<?php echo $web_path; ?>/themes/tt-mobile/favicon.png" />
-   <meta name="apple-mobile-web-app-capable" content="yes" />
-   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
    <meta name="viewport" content="width=320, user-scalable = no" />
-   <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/mobile.playlist.css" type="text/css" media="screen" />
-<?php 
-} 
-else 
-{ ?>
-   <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jplayer/skins/blue.monday/jplayer.blue.monday.css" type="text/css" media="screen" />
-<?php 
-} ?>
+<?php } ?>
 
 
 
@@ -63,51 +53,10 @@ else
 <script src="<?php echo $web_path; ?>/modules/tinybox/tinybox.js" language="javascript" type="text/javascript"></script>
 <script src="<?php echo $web_path; ?>/lib/javascript/base.js" language="javascript" type="text/javascript"></script>
 <script src="<?php echo $web_path; ?>/lib/javascript/ajax.js" language="javascript" type="text/javascript"></script>
-
-<script src="<?php echo $web_path; ?>/modules/jplayer/extras/jquery-1.8.2-ajax-deprecated.min.js" type="text/javascript"></script>
-<script src="<?php echo $web_path; ?>/modules/jplayer/jquery.jplayer.min.js" type="text/javascript"></script>
-<script src="<?php echo $web_path; ?>/modules/jplayer/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
-<script src="<?php echo $web_path; ?>/modules/jplayer/add-on/jquery.jplayer.inspector.js" type="text/javascript"></script>
-
-<script type="text/javascript">jQuery.noConflict();</script>
-
-
-
-
 <!-- rfc3514 implementation -->
 <div id="rfc3514" style="display:none;">0x0</div>
 <div id="maincontainer">
     <div id="header"><!-- This is the header -->
-
-<?php if (true == $GLOBALS['isMobile'])
-{ ?>
-	<table>
-	<tr>
-	<td>
-	    <a href="<?php echo Config::get('web_path'); ?>">
-		<h2><?php echo scrub_out(Config::get('site_title')); ?></h2>
-		</a>
-	</td>
-	<td>
-		<!-- Tiny little iframe, used to cheat the system -->
-		<div id="ajax-loading">Loading . . .</div>
-		<iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
-	</td>
-	</tr>
-	
-	</table>
-	</div><!-- End header -->
-	
-	<div id="sidebar"><!-- This is the sidebar -->
-	<?php require_once Config::get('prefix') . '/themes/tt-mobile/templates/sidebar.inc.php'; ?>
-	</div> <!-- End sidebar -->
-	
-	<div id="sidebar-page">
-
-<?php 
-} 
-else 
-{ ?>
         <h1 id="headerlogo">
           <a href="<?php echo Config::get('web_path'); ?>">
             <img src="<?php echo $web_path; ?><?php echo Config::get('theme_path'); ?>/images/ampache.png" title="<?php echo Config::get('site_title'); ?>" alt="<?php echo Config::get('site_title'); ?>" />
@@ -123,12 +72,14 @@ else
     </div><!-- End header -->
     <div id="sidebar"><!-- This is the sidebar -->
         <?php require_once Config::get('prefix') . '/templates/sidebar.inc.php'; ?>
+    <?php if (false == $GLOBALS['isMobile']) { ?>
     </div><!-- End sidebar -->
     <div id="rightbar"><!-- This is the rightbar -->
         <?php require_once Config::get('prefix') . '/templates/rightbar.inc.php'; ?>
     </div><!-- End rightbar -->
-<!-- Tiny little iframe, used to cheat the system -->
-<div id="ajax-loading">Loading . . .</div>
+    <?php }  ?>
+	<!-- Tiny little iframe, used to cheat the system -->
+	<div id="ajax-loading">Loading . . .</div>
 <iframe name="util_iframe" id="util_iframe" style="display:none;" src="<?php echo Config::get('web_path'); ?>/util.php"></iframe>
 <div id="content">
 <?php if (Config::get('int_config_version') != Config::get('config_version') AND $GLOBALS['user']->has_access(100)) { ?>
@@ -137,4 +88,3 @@ else
     <a href="<?php echo Config::get('web_path'); ?>/admin/system.php?action=generate_config"><?php echo T_('Generate New Config'); ?></a>
 </div>
 <?php } ?>
-<?php }  ?>

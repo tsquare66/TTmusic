@@ -25,12 +25,6 @@
  */
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-debug_event('stream.ajax.php' , 
-			'Action:'.$_REQUEST['action'].
-			' Playlist method:'. $_REQUEST['playlist_method'].
-			' Play type:'. Config::get('play_type'),
-			'5');
-
 switch ($_REQUEST['action']) {
     case 'set_play_type':
         // Make sure they have the rights to do this
@@ -79,10 +73,7 @@ switch ($_REQUEST['action']) {
     case 'basket':
         // Go ahead and see if we should clear the playlist here or not,
         // we might not actually clear it in the session.
-        if ( ($_REQUEST['playlist_method'] == 'clear' || 
-              Config::get('playlist_method') == 'clear') AND 
-              Config::get('play_type') != 'jplayer') 
-        {
+        if ( ($_REQUEST['playlist_method'] == 'clear' || Config::get('playlist_method') == 'clear')) {
             define('NO_SONGS','1');
             ob_start();
             require_once Config::get('prefix') . '/templates/rightbar.inc.php';
@@ -90,20 +81,8 @@ switch ($_REQUEST['action']) {
         }
 
         // We need to set the basket up!
-		if (Config::get('play_type') == 'jplayer')
-		{
-			ob_start();
-			require_once Config::get('prefix') . '/modules/jplayer/jplayer.php';	
-			if (true == $GLOBALS['isMobile'])
-				$results['rightbar'] = ob_get_clean();
-			else
-				$results['content'] = ob_get_clean();
-		}
-		else
-		{
         $_SESSION['iframe']['target'] = Config::get('web_path') . '/stream.php?action=basket&playlist_method=' . scrub_out($_REQUEST['playlist_method']);
         $results['rfc3514'] = '<script type="text/javascript">reloadUtil(\''.$_SESSION['iframe']['target'] . '\');</script>';
-		}
     break;
     default:
         $results['rfc3514'] = '0x1';

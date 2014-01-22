@@ -103,21 +103,15 @@ switch ($_REQUEST['action']) {
         $options['album_name']    = $album_name;
         $options['keyword']    = $artist . " " . $album_name;
 
+        // Attempt to find the art.
+        $images = $art->gather($options,'24');
 
-		if (!empty($_POST['url_cover'])) 
-		{
-		    debug_event('album_ajax' , 'Url Cover:'.$_POST['url_cover'], '5');
-			$path_info = pathinfo($_POST['url_cover']);
-			$cover_url[0]['url'] 	= scrub_in($_POST['url_cover']);
-			$cover_url[0]['mime'] 	= 'image/' . $path_info['extension'];
-		
-			$images = $cover_url;
-		}
-		else
-		{
-			// Attempt to find the art.
-			$images = $art->gather($options,'24');
-		}
+        if (!empty($_REQUEST['cover'])) {
+            $path_info = pathinfo($_REQUEST['cover']);
+            $cover_url[0]['url']     = scrub_in($_REQUEST['cover']);
+            $cover_url[0]['mime']     = 'image/' . $path_info['extension'];
+        }
+        $images = array_merge($cover_url,$images);
 
         // If we've found anything then go for it!
         if (count($images)) {

@@ -212,19 +212,6 @@ class Ajax {
 
     } // text
 
-	public static function text_update($action,$text,$source,$post='',$class='') {
-
-		$url = Config::get('ajax_url') . $action;
-		$ajax_string = "macheRequest('$url')";
-		// If we pass a source put it in the ID
-		$string = "<a href=\"javascript:void(0);\" id=\"$source\" $class>$text</a>\n";
-
-		$string .= self::observe($source,'click',$ajax_string);
-
-		return $string;
-
-	} // text
-	
     /**
      * run
      * This runs the specified action no questions asked
@@ -275,20 +262,5 @@ class Ajax {
 
     } // end_container
 
-	public static function flush() {
-		//$new = ob_get_clean();
-		//echo $new;
-		echo str_pad('<br>', 1024, ' ', STR_PAD_RIGHT) . "\n";
-	        while (ob_get_level()) {
-            @ob_end_flush();
-            @ob_flush();
-            @flush();
-        }
-        // start output buffering again
-        if (ob_get_length() === false) {
-            ob_start();
-        }
-	} // flush
-	
 } // end Ajax class
 ?>

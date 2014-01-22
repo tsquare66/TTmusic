@@ -960,20 +960,39 @@ class Catalog extends database_object {
         $new_song->f_album = $album . " - " . $new_song->year;
         $new_song->title = self::check_title($new_song->title,$new_song->file);
 
-        // Nothing to assign here this is a multi-value doodly
-        // multiple genre support
-        foreach ($tags as $tag) {
-            $tag = trim($tag);
-            //self::check_tag($tag,$song->id);
-            //self::check_tag($tag,$new_song->album,'album');
-            //self::check_tag($tag,$new_song->artist,'artist');
-        }
-
+        
         /* Since we're doing a full compare make sure we fill the extended information */
         $song->fill_ext_info();
 
         $info = Song::compare_song_information($song,$new_song);
 
+        $OldTags = Tag::get_top_tags('song',$song->id);
+        $OldTagList = "";
+        
+        // Iterate through the tags, format them according to type and element id
+        foreach ($OldTags as $tag_id=>$value) {
+        	$tag = new Tag($tag_id);
+        	$tag->format('song',$song->id);
+        	$OldTagList[] = $tag->name ;
+        }
+        
+        
+        if ($OldTagList != $tags )
+        {
+        	$info['change'] = true;
+        	$info['text'] .= ' Genre Changed';
+        	Tag::del_tag_map('song',$song->id);
+        	if (!is_array($tags)) {
+        		$tags[1] = '--Empty--';
+        	}
+        	if (is_array($tags)) {
+        		foreach ($tags as $tag) {
+        			$tag = trim($tag);
+        			Tag::add('song', $song->id, $tag, false);
+        		}
+        	}
+        }
+        
         if ($info['change']) {
             debug_event('update', "$song->file : differences found, updating database", 5);
             $song->update_song($song->id,$new_song);

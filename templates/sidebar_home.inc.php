@@ -20,22 +20,8 @@
  *
  */
 ?>
-
-<?php 
-if (false == $GLOBALS['isMobile']) 
-{
- 	echo '<ul class="sb2" id="sb_home">';
-}
-else
-{
-	echo '<div class="sb2" id="sb_home">';
-}	
-
-echo '<li><h4>'.T_('Browse').'</h4>';
-echo '<ul class="sb3" id="sb_browse_bb">';
-
-?>
-
+<ul class="sb2" id="sb_home">
+  <li><h4><?php echo T_('Browse'); ?></h4>
   <?php
     // Build the selected dealie
     if (isset($_REQUEST['action'])) {
@@ -43,6 +29,7 @@ echo '<ul class="sb3" id="sb_browse_bb">';
         ${$text} = ' selected="selected"';
     }
   ?>
+    <ul class="sb3" id="sb_browse_bb">
       <li id="sb_browse_bb_SongTitle"><a href="<?php echo $web_path; ?>/browse.php?action=song"><?php echo T_('Song Titles'); ?></a></li>
       <li id="sb_browse_bb_Album"><a href="<?php echo $web_path; ?>/browse.php?action=album"><?php echo T_('Albums'); ?></a></li>
       <li id="sb_browse_bb_Artist"><a href="<?php echo $web_path; ?>/browse.php?action=artist"><?php echo T_('Artists'); ?></a></li>
@@ -51,25 +38,10 @@ echo '<ul class="sb3" id="sb_browse_bb">';
       <li id="sb_browse_bb_SmartPlaylist"><a href="<?php echo $web_path; ?>/browse.php?action=smartplaylist"><?php echo T_('Smart Playlists'); ?></a></li>
       <li id="sb_browse_bb_RadioStation"><a href="<?php echo $web_path; ?>/browse.php?action=live_stream"><?php echo T_('Radio Stations'); ?></a></li>
       <li id="sb_browse_bb_Video"><a href="<?php echo $web_path; ?>/browse.php?action=video"><?php echo T_('Videos'); ?></a></li>
-
-<?php 
-if (false == $GLOBALS['isMobile']) 
-{
- 	echo '</ul>';
-}
-else
-{
-	echo '</div>';
-}
-echo '</li>';
-?>
-
-
-  
+    </ul>
+  </li>
 <?php Ajax::start_container('browse_filters'); ?>
 <?php Ajax::end_container(); ?>
-
-<?php if (false == $GLOBALS['isMobile']) { ?>
   <li><h4><?php echo T_('Playlist'); ?></h4>
     <ul class="sb3" id="sb_home_info">
       <li id="sb_home_info_CurrentlyPlaying"><a href="<?php echo $web_path; ?>/index.php"><?php echo T_('Currently Playing'); ?></a></li>
@@ -96,7 +68,6 @@ echo '</li>';
       <li id="sb_home_random_advanced"><a href="<?php echo $web_path; ?>/random.php?action=advanced&type=song"><?php echo T_('Advanced'); ?></a></li>
     </ul>
   </li>
-<?php } ?>
   <li><h4><?php echo T_('Information'); ?></h4>
     <ul class="sb3" id="sb_home_info">
       <li id="sb_home_info_Statistics"><a href="<?php echo $web_path; ?>/stats.php?action=show"><?php echo T_('Statistics'); ?></a></li>
@@ -104,8 +75,6 @@ echo '</li>';
       <li id="sb_home_info_Popular"><a href="<?php echo $web_path; ?>/stats.php?action=popular"><?php echo T_('Popular'); ?></a></li>
     </ul>
   </li>
-<?php 
-if (false == $GLOBALS['isMobile'])  ?>
   <li><h4><?php echo T_('Search'); ?></h4>
     <ul class="sb3" id="sb_home_search">
       <li id="sb_home_search_song"><a href="<?php echo $web_path; ?>/search.php?type=song"><?php echo T_('Songs'); ?></a></li>
@@ -114,12 +83,4 @@ if (false == $GLOBALS['isMobile'])  ?>
       <li id="sb_home_search_video"><a href="<?php echo $web_path; ?>/search.php?type=video"><?php echo T_('Videos'); ?></a></li>
     </ul>
   </li>
-<?php 
-if (false == $GLOBALS['isMobile']) 
- 	echo '</ul>';
-else
-	echo '</div>';
-?>
- 
-        
-  
+</ul>

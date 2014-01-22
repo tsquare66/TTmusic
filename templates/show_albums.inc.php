@@ -49,7 +49,7 @@ $web_path = Config::get('web_path');
     <th class="cel_songs"><?php echo T_('Songs'); ?></th>
     <th class="cel_year"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=year', T_('Year'),'album_sort_year'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="col_rating"><?php echo T_('Rating'); ?></th>
+    <th class="cel_rating"><?php echo T_('Rating'); ?></th>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 <?php
@@ -80,7 +80,7 @@ $web_path = Config::get('web_path');
     <th class="cel_songs"><?php echo T_('Songs'); ?></th>
     <th class="cel_year"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&sort=year', T_('Year'),'album_sort_year_bottom'); ?></th>
     <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="col_rating"><?php echo T_('Rating'); ?></th>
+    <th class="cel_rating"><?php echo T_('Rating'); ?></th>
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 </table>

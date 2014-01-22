@@ -1,3 +1,54 @@
+<?php
+/* vim:set tabstop=4 softtabstop=4 shiftwidth=4 expandtab: */
+/**
+ *
+ * LICENSE: GNU General Public License, version 2 (GPLv2)
+ * Copyright 2013 Ampache.org
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License v2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ */
+
+header('Cache-Control: no-cache');
+header('Pragma: no-cache');
+header('Expires: ' . gmdate(DATE_RFC1123, time()-1));
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+<title><?php echo Config::get('site_title'); ?></title>
+
+<?php require_once Config::get('prefix') . '/templates/stylesheets.inc.php'; ?>
+
+<?php  if (true == $GLOBALS['isMobile']) 
+{ ?>
+   <link rel="stylesheet" href="<?php echo Config::get('web_path'); ?>/modules/jplayer/skins/blue.monday/mobile.playlist.css" type="text/css" media="screen" />
+<?php 
+} 
+else 
+{ ?>
+   <link rel="stylesheet" href="<?php echo Config::get('web_path'); ?>/modules/jplayer/skins/blue.monday/jplayer.blue.monday.css" type="text/css" media="screen" />
+<?php 
+} ?>
+
+
+<script src="<?php echo Config::get('web_path'); ?>/modules/prototype/prototype.js" language="javascript" type="text/javascript"></script>
+<script src="<?php echo Config::get('web_path'); ?>/modules/jplayer/extras/jquery-1.8.2-ajax-deprecated.min.js" type="text/javascript"></script>
+<script src="<?php echo Config::get('web_path'); ?>/modules/jplayer/jquery.jplayer.min.js" type="text/javascript"></script>
+<script src="<?php echo Config::get('web_path'); ?>/modules/jplayer/add-on/jplayer.playlist.min.js" type="text/javascript"></script>
+<script src="<?php echo Config::get('web_path'); ?>/modules/jplayer/add-on/jquery.jplayer.inspector.js" type="text/javascript"></script>
+<script type="text/javascript">jQuery.noConflict();</script>
 
 <script type="text/javascript">
 (function() {
@@ -20,10 +71,39 @@
 	})();
 </script>
 
+<div id="maincontainer">
+<div id="rightbar">
 
-<?php  
+<?php
+                $media_ids = $GLOBALS['user']->playlist->get_items();
+                $playlist = new Stream_Playlist();
+                $playlist->add($media_ids);
+                
+                $jplaylist = "";
+                $delimiter = "";
+                foreach($playlist->urls as $item)
+                {
+                        $title = $item->title;
+                        debug_event('jplayer.php' ,        'Title : '.$title, '5');
+                        $artist = $item->author;
+                        $location = $item->url;
+                        $image = $item->image_url;
+                        
+                        $jplaylist .= $delimiter;
+                        $jplaylist .= "{";
+                        $jplaylist .=        " title: \"".$title."\",\n";
+                        $jplaylist .=        " artist: \"".$artist."\",\n";
+                        $jplaylist .=        " mp3: \"".$location."\",\n";
+                        $jplaylist .=        " poster: \"".$image."\"\n";
+                        $jplaylist .= "}";
+                        $delimiter = ",\n";
+                }
+
+
+  
 	include Config::get('prefix') . '/modules/jplayer/mediaplaylist.php';
 ?>
+
 <div id="jplayer_inspector_1"></div>
 
 		
@@ -68,4 +148,6 @@ window.setTimeout(function(){
 },100);
 </script>
 
+</div><!-- End rightbar -->
+</div><!-- End maincontainer -->
 		

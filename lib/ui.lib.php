@@ -166,8 +166,8 @@ function get_location() {
             $location['title']    = T_('Statistics');
             break;
 		case 'login.php':
-			$location['title'] = 'Login';
-			break;
+	    	$location['title']    = T_('Login');
+	   	 	break;
         default:
             $location['title'] = '';
             break;
@@ -505,45 +505,6 @@ function toggle_visible($element) {
     echo "</script>\n";
 
 } // toggle_visible
-
-/**
- * make_invisible
- */
-function make_invisible($element) {
-
-	echo '<script type="text/javascript">';
-	echo "$('$element').style.display = 'none';";
-	echo "</script>\n";
-
-} // make_invisible
-
-/**
- * make_visible
- */
-function make_visible($element) {
-
-	echo '<script type="text/javascript">';
-	echo "$('$element').style.display = 'block';";
-	echo "</script>\n";
-
-} // make_visible
-
-
-/**
- * update_text
- * Convenience function
- */
-function update_text($field, $value) {
-	if(defined('CLI')) {
-		echo "$value\n";
-		return;
-	}
-	echo '<script type="text/javascript">';
-	echo "updateText('$field', '$value');";
-	echo "</script>\n";
-	/*ob_flush();
-	flush();*/
-}
 
 /**
  * print_bool

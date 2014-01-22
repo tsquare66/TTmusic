@@ -27,6 +27,9 @@ ${$class_name} = ' active';
 // List of buttons ( id, title, icon, access level)
 $sidebar_items[] = array('id'=>'home', 'title' => T_('Home'), 'icon'=>'home', 'access'=>5);
 $sidebar_items[] = array('id'=>'localplay', 'title' => T_('Localplay'), 'icon'=>'volumeup', 'access'=>5);
+if (true == $GLOBALS['isMobile']){
+	$sidebar_items[] = array('id'=>'basket', 'title'=>'Basket', 'icon'=>'feed', 'access'=>5);
+}
 $sidebar_items[] = array('id'=>'preferences', 'title' => T_('Preferences'), 'icon'=>'edit', 'access'=>5);
 $sidebar_items[] = array('id'=>'modules','title' => T_('Modules'),'icon'=>'plugin','access'=>100);
 $sidebar_items[] = array('id'=>'admin', 'title' => T_('Admin'), 'icon'=>'admin', 'access'=>100);
@@ -44,13 +47,16 @@ $web_path = Config::get('web_path');
           <?php
         // Button
         echo Ajax::button("?page=index&action=sidebar&button=".$item['id'],$item['icon'],$item['title'],'sidebar_'.$item['id']);
-
-          // Include subnav if it's the selected one
+        
+       if (false == $GLOBALS['isMobile']){
+        
+        // Include subnav if it's the selected one
           // so that it's generated inside its parent li
     if ($item['id']==$_SESSION['state']['sidebar_tab']) {
             ?><div id="sidebar-page"><?php
             require_once Config::get('prefix') . '/templates/sidebar_' . $_SESSION['state']['sidebar_tab'] . '.inc.php';
             ?></div><?php
+    }
         }
        ?></li><?php
      }
@@ -62,4 +68,27 @@ $web_path = Config::get('web_path');
     </a>
 </li>
 </ul>
+
+<?php if (true == $GLOBALS['isMobile']){
+	if ($_SESSION['state']['sidebar_tab'] == "basket")
+	{
+		echo '<div id="sidebar-page">';
+		echo '<div id="rightbar">';
+		require_once Config::get('prefix') . '/templates/rightbar.inc.php';
+		echo '</div><!-- End rightbar -->';
+		echo '</div><!-- End sidebar-page -->';
+		echo '</div><!-- End sidebar -->';
+	}
+	else
+	{
+		if ($_REQUEST['action'] == 'sidebar')
+		{
+			echo '<div id="sidebar-page">';
+			require_once Config::get('prefix') . '/templates/sidebar_' . $_SESSION['state']['sidebar_tab'] . '.inc.php';
+			echo '</div><!-- End sidebar-page -->';
+			echo '</div><!-- End sidebar -->';
+		}
+	}
+}
+?>
 
