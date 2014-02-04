@@ -23,15 +23,7 @@
 <td class="cel_add">
     <?php echo Ajax::button('?action=basket&type=song&id=' . $song->id,'add', T_('Add'),'add_' . $song->id); ?>
 </td>
-<?php if (true == $GLOBALS['isMobile']) { ?>
-   <td class="cel_song"><a href="<?php echo Song::play_url($song->id); ?>" title="<?php echo scrub_out($song->title); ?>"><?php echo $song->f_title. "<br>" . $song->f_artist; ?></a></td>
-<?php
-}
-else 
-{ ?>
 <td class="cel_song"><?php echo $song->f_link; ?></a></td>
-<?php } ?>
-
 <td class="cel_artist"><?php echo $song->f_artist_link; ?></td>
 <td class="cel_album"><?php echo $song->f_album_link; ?></td>
 <td class="cel_tags"><?php echo $song->f_tags; ?></td>

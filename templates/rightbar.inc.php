@@ -21,54 +21,39 @@
  */
 ?>
 <ul id="rb_action">
-	<li>
-	<?php 
-	    if (true == $GLOBALS['isMobile'])
-			echo Ajax::textbutton('?page=stream&action=basket','all',T_('Play'),'rightbar_play');
-	    else
-	    	echo Ajax::button('?page=stream&action=basket','all', T_('Play'),'rightbar_play');
-	?>
-	</li>
-	<li id="pl_add">
-	    <?php if (true == $GLOBALS['isMobile'])
-	    		echo T_('Add to Playlist');
-	    	else
-        echo UI::get_icon('playlist_add', T_('Add to Playlist'));
-	    ?>
-		<ul id="pl_action_additems" class="submenu">
-		  <li>
-		    <?php echo Ajax::text('?page=playlist&action=create', T_('Add to New Playlist'),'rb_create_playlist'); ?>
-		  </li>
-		<?php
-			$playlists = Playlist::get_users($GLOBALS['user']->id);
-			Playlist::build_cache($playlists);
-			foreach ($playlists as $playlist_id) {
-				$playlist = new Playlist($playlist_id);
-				$playlist->format();
-		?>
-		  <li>
-		    <?php echo Ajax::text('?page=playlist&action=append&playlist_id=' .  $playlist->id,$playlist->f_name,'rb_append_playlist_' . $playlist->id); ?>
-		  </li>
-		<?php } ?>
-		</ul>
-	</li>
+    <li>
+    <?php echo Ajax::button('?page=stream&action=basket','all', T_('Play'),'rightbar_play'); ?>
+    </li>
+    <li id="pl_add">
+        <?php echo UI::get_icon('playlist_add', T_('Add to Playlist')); ?>
+        <ul id="pl_action_additems" class="submenu">
+          <li>
+            <?php echo Ajax::text('?page=playlist&action=create', T_('Add to New Playlist'),'rb_create_playlist'); ?>
+          </li>
+        <?php
+            $playlists = Playlist::get_users($GLOBALS['user']->id);
+            Playlist::build_cache($playlists);
+            foreach ($playlists as $playlist_id) {
+                $playlist = new Playlist($playlist_id);
+                $playlist->format();
+        ?>
+          <li>
+            <?php echo Ajax::text('?page=playlist&action=append&playlist_id=' .  $playlist->id,$playlist->f_name,'rb_append_playlist_' . $playlist->id); ?>
+          </li>
+        <?php } ?>
+        </ul>
+    </li>
 <?php if (Access::check_function('batch_download')) { ?>
-	<li>
-	<a href="<?php echo Config::get('web_path'); ?>/batch.php?action=tmp_playlist&amp;id=<?php echo $GLOBALS['user']->playlist->id; ?>">
+    <li>
+    <a href="<?php echo Config::get('web_path'); ?>/batch.php?action=tmp_playlist&amp;id=<?php echo $GLOBALS['user']->playlist->id; ?>">
             <?php echo UI::get_icon('batch_download', T_('Batch Download')); ?>
         </a>
-	</li>
+    </li>
 <?php } ?>
-	<li>
-	<?php 
-	    if (true == $GLOBALS['isMobile'])
-	    	echo Ajax::textbutton('?action=basket&type=clear_all','delete',T_('Clear Playlist'),'rb_clear_playlist');
-	    else
-	    	echo Ajax::button('?action=basket&type=clear_all','delete',T_('Clear Playlist'),'rb_clear_playlist');
-	?>
-	</li>
-	<?php if (false == $GLOBALS['isMobile']) { ?>
-	<li id="rb_add">
+    <li>
+    <?php echo Ajax::button('?action=basket&type=clear_all','delete', T_('Clear Playlist'),'rb_clear_playlist'); ?>
+    </li>
+    <li id="rb_add">
       <?php echo UI::get_icon('add', T_('Add Dynamic Items')); ?>
       <ul id="rb_action_additems" class="submenu">
        <li>
@@ -85,7 +70,6 @@
        </li>
       </ul>
     </li>
-	<?php } ?>
 </ul>
 <?php if (Config::get('play_type') == 'localplay') { require_once Config::get('prefix') . '/templates/show_localplay_control.inc.php'; } ?>
 <ul id="rb_current_playlist">

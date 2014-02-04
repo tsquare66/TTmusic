@@ -25,25 +25,27 @@ div.jp-controls-holder {
 	top:-3px; /* This negative value depends on the size of the text in jp-currentTime and jp-duration */
 }
 
-#rightbar div.jp-interface ul.jp-controls {
+div.jp-interface ul.jp-controls {
 	list-style-type:none;
+	margin:0;
+	padding: 0;
 	overflow:hidden;
 	width: 285px;
 }
 
-#rightbar ul.jp-controls,
+ul.jp-controls,
 div.jp-interface ul.jp-controls li {
 	display:inline;
 	float: left;
 }
 
-#rightbar div.jp-interface ul.jp-controls a {
+div.jp-interface ul.jp-controls a {
 	display:block;
 	overflow:hidden;
 	text-indent:-9999px;
 }
 
-#rightbar .jp-interface li {
+.jp-interface li {
 	margin:0;
 	padding: 0;
 	background:navy;
@@ -228,14 +230,14 @@ div.jp-playlist li {
 	border-bottom:1px solid #eee;
 }
 
-#rightbar div.jp-playlist li div a {
+div.jp-playlist li div a {
 	display:inline;
-	color:navy;
+	color:yellow;
 }
 
 /* Note that the first-child (IE6) and last-child (IE6/7/8) selectors do not work on IE */
 
-#rightbar div.jp-type-playlist div.jp-playlist li.jp-playlist-current {
+div.jp-type-playlist div.jp-playlist li.jp-playlist-current {
 	background: orange;
 	background: -moz-linear-gradient(top, blue, orange);
 	background: -webkit-linear-gradient(top, blue, orange);
@@ -244,7 +246,7 @@ div.jp-playlist li {
 
 span.jp-artist {
 	font-size:.8em;
-	color:white;
+	color:orange;
 }
 
 /* @end */
@@ -321,13 +323,13 @@ div.jp-jplayer {
 
 /* @end */
 
-#rightbar #jplayer_inspector_1  a{
+#jplayer_inspector_1  a{
 	color:yellow;
 } 
-#rightbar #jplayer_inspector_1 p{
+#jplayer_inspector_1 p{
 	color:blue;
 }
-#rightbar #jplayer_inspector_1 div{
+#jplayer_inspector_1 div{
 	color:black;
 }
 

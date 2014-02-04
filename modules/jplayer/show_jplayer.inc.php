@@ -72,7 +72,6 @@ else
 </script>
 
 <div id="maincontainer">
-<div id="rightbar">
 
 <?php
                 $media_ids = $GLOBALS['user']->playlist->get_items();
@@ -144,10 +143,8 @@ window.setTimeout(function(){
 	});
 	
 	jQuery("#jquery_jplayer_1").jPlayer('setMedia', <?php echo $jplaylist; ?>);
-	jQuery("#jplayer_inspector_1").jPlayerInspector({jPlayer:jQuery("#jquery_jplayer_1")});
 },100);
 </script>
 
-</div><!-- End rightbar -->
 </div><!-- End maincontainer -->
 		

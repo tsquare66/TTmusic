@@ -1078,6 +1078,9 @@ class Song extends database_object implements media {
             debug_event('transcode', 'Target format ' . $target . ' is not properly configured', 2);
             return false;
         }
+        
+        $path = Config::get('prefix') . "/bin/";
+        $cmd = $path . $cmd;
 
         debug_event('transcode', 'Command: ' . $cmd . ' Arguments: ' . $args, 5);
         return array('format' => $target,

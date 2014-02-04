@@ -26,9 +26,13 @@ web_path = "/tt-music"
 ; Session and Login Variables #
 ;##############################
 
-; Hostname of your Database
+; Hostname of your database
 ; DEFAULT: localhost
 database_hostname = "localhost"
+
+; Port to use when connecting to your database
+; DEFAULT: none
+;database_port = 3306
 
 ; Name of your ampache database
 ; DEFAULT: ampache
@@ -47,35 +51,35 @@ database_password = "krake1"
 ; Length that a session will last expressed in seconds. Default is
 ; one hour. 
 ; DEFAULT: 3600
-session_length = "3600"
+session_length = 3600
 
 ; Length that the session for a single streaming instance will last
 ; the default is two hours. With some clients, and long songs this can 
 ; cause playback to stop, increase this value if you experience that
 ; DEFAULT: 7200
-stream_length = "7200"
+stream_length = 7200
 
 ; This length defines how long a 'remember me' session and cookie will 
 ; last, the default is 7200, same as length. It is up to the administrator
 ; of the box to increase this, for reference 86400 = 1 day 
 ; 604800 = 1 week and 2419200 = 1 month
 ; DEFAULT: 86400
-remember_length = "86400"
+remember_length = 86400
 
 ; Name of the Session/Cookie that will sent to the browser
 ; default should be fine
 ; DEFAULT: ampache
-session_name = "tt-music"
+session_name = tt-music
 
 ; Lifetime of the Cookie, 0 == Forever (until browser close) , otherwise in terms of seconds
 ; If you want cookies to last past a browser close set this to a value in seconds. 
 ; DEFAULT: 0
-session_cookielife = "0"
+session_cookielife = 0
 
 ; Is the cookie a "secure" cookie? This should only be set to 1 (true) if you are
 ; running a secure site (HTTPS). 
 ; DEFAULT: 0
-session_cookiesecure = "0"
+session_cookiesecure       = 0
 
 ; Auth Methods 
 ; This defines which auth methods Auth will attempt to use and in which order.
@@ -132,7 +136,7 @@ catalog_prefix_pattern = "The|An|A|Die|Das|Ein|Eine|Les|Le|La"
 ; will not work without this on.
 ; NOTE: Default Behavior is DENY FROM ALL 
 ; DEFAULT: true
-access_control = "true"
+access_control	= "true"
 
 ; Require Session
 ; If this is set to true ampache will make sure that the URL passed when
@@ -147,7 +151,7 @@ require_session = "true"
 ; is passed even on hosts defined in the Local Network ACL. This setting
 ; has no effect if access_control is not enabled
 ; DEFAULT: true
-require_localnet_session = "true"
+require_localnet_session = "true" 
 
 ; Multiple Logins
 ; Added by Vlet 07/25/07
@@ -215,11 +219,10 @@ require_localnet_session = "true"
 
 ; This determines the tag order for all cataloged
 ; music. If none of the listed tags are found then
-; ampache will default to the first tag format
-; that was found. 
-; POSSIBLE VALUES: ape asf avi id3v1 id3v2 lyrics3 mpeg quicktime riff
+; ampache will randomly use whatever was found.
+; POSSIBLE VALUES: ape asf avi id3v1 id3v2 lyrics3 matroska mpeg quicktime riff
 ;     vorbiscomment
-; DEFAULT: id3v2 id3v1 vorbiscomment quicktime ape asf avi mpeg riff
+; DEFAULT: id3v2 id3v1 vorbiscomment quicktime matroska ape asf avi mpeg riff
 getid3_tag_order = "id3v2"
 
 ; Determines whether we try to autodetect the encoding for id3v2 tags.
@@ -232,7 +235,7 @@ getid3_tag_order = "id3v2"
 ; POSSIBLE VALUES (builtins): filename and getID3
 ; POSSIBLE VALUES (plugins): MusicBrainz, plus any others you've installed.
 ; DEFAULT: getID3 filename
-metadata_order = "getID3,MusicBrainz,filename"
+metadata_order = "getID3,filename"
 
 ; Un comment if don't want ampache to follow symlinks
 ; DEFAULT: false
@@ -244,7 +247,7 @@ metadata_order = "getID3,MusicBrainz,filename"
 ; will not ask you for a username and password. false is only
 ; recommended for internal only instances
 ; DEFAULT true
-use_auth = "true"
+use_auth	= "true"
 
 ; Default Auth Level
 ; If use_auth is set to false then this option is used
@@ -259,14 +262,14 @@ default_auth_level = "admin"
 ; This allows ratings for almost any object in ampache
 ; POSSIBLE VALUES: false true
 ; DEFAULT: true
-ratings = "true"
+ratings = "false"
 
 ; Sociable
 ; This turns on / off all of the "social" features of ampache
 ; default is on, but if you don't care and just want music
 ; turn this off to disable all social features. 
 ; DEFAULT: true
-sociable = "true"
+sociable = "false"
 
 ; This options will turn on/off Demo Mode
 ; If Demo mode is on you can not play songs or update your catalog
@@ -314,7 +317,7 @@ sociable = "true"
 ; database
 ; POSSIBLE VALUES: db tags folder amazon lastfm musicbrainz google
 ; DEFAULT: db,tags,folder,musicbrainz,lastfm,google
-art_order = "tags,db,musicbrainz,google"
+art_order = "db,tags,musicbrainz,amazon,google"
 
 ; Amazon Developer Key
 ; These are needed in order to actually use the amazon album art
@@ -359,7 +362,7 @@ amazon_base_urls = "http://webservices.amazon.de"
 ; Of course a good search will return only a few matches anyway.
 ; It is strongly recommended that you do _not_ change this value
 ; DEFAULT: 1 page (10 items)
-max_amazon_results_pages = "1"
+max_amazon_results_pages = 2
 
 ; Debug
 ; If this is enabled Ampache will write debugging information to the log file
@@ -376,7 +379,7 @@ debug = "true"
 ; 4 == ?? (Profit!)
 ; 5 == Information (cataloging progress etc.)
 ; DEFAULT: 5
-debug_level = "5"
+debug_level = 5
 
 ; Path to Log File
 ; This defines where you want ampache to log events to
@@ -390,8 +393,8 @@ log_path = "/log/"
 ; Charset of generated HTML pages
 ; Default of UTF-8 should work for most people
 ; DEFAULT: UTF-8
-site_charset = "UTF-8"
-file_charset = "cp1251"
+site_charset = UTF-8
+file_charset = cp1251
 
 ; Locale Charset 
 ; In some cases this has to be different
@@ -525,7 +528,7 @@ refresh_limit = "60"
 ;
 ; 'Downsampling' will also use these commands.
 ;
-; To state the bleeding obvious, any programs referenced in the downsample
+; To state the bleeding obvious, any programs referenced in the transcode
 ; commands must be installed, in the web server's search path (or referenced
 ; by their full path), and executable by the web server.
 
@@ -535,7 +538,7 @@ refresh_limit = "60"
 ; (e.g. if you store everything in FLAC, but don't want to ever stream that.)
 ; transcode_TYPE         = {allowed|required|false}
 ; DEFAULT: false
-transcode_m4a = "1"
+;transcode_m4a      = allowed
 ;transcode_flac     = required
 transcode_mp3      = allowed
 
@@ -581,7 +584,7 @@ encode_args_ogg = "-vn -c:a libvorbis -f ogg pipe:1"
 ; song is the information in the feed. can be multiple items.
 ; use_rss = false (values true | false)
 ;DEFAULT: use_rss = true
-use_rss = "1"
+use_rss = true
 ;#####################################################
 
 ;#############################
@@ -677,5 +680,5 @@ use_iconv = "1"
 ; comma separated, available encodings are listed on php.net.
 ; see http://php.net/manual/mbstring.supported-encodings.php
 ; DEFAULT: auto
-;mb_detect_order = "EUC-JP, SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP, ASCII, UTF-8, UTF-7"
+;mb_detect_order = "ASCII,UTF-8,EUC-JP,ISO-2022-JP,SJIS,JIS"
 

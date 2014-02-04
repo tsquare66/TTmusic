@@ -23,8 +23,6 @@
 $web_path = Config::get('web_path');
 ?>
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
-<div id="show_albums">
-
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_add" />
@@ -84,7 +82,6 @@ $web_path = Config::get('web_path');
     <th class="cel_action"><?php echo T_('Actions'); ?></th>
 </tr>
 </table>
-</div> 
 <?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
 
 

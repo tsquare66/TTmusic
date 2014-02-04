@@ -28,7 +28,7 @@ web_path = "/tt-music"
 
 ; Hostname of your database
 ; DEFAULT: localhost
-database_hostname = localhost
+database_hostname = "localhost"
 
 ; Port to use when connecting to your database
 ; DEFAULT: none
@@ -36,17 +36,17 @@ database_hostname = localhost
 
 ; Name of your ampache database
 ; DEFAULT: ampache
-database_name = tt-music
+database_name = "tt-music"
 
 ; Username for your ampache database
 ; DEFAULT: ""
-database_username = root
+database_username = "root"
 
 ; Password for your ampache database, this can not be blank
 ; this is a 'forced' security precaution, the default value
 ; will not work
 ; DEFAULT: ""
-database_password = krake1
+database_password = "krake1"
 
 ; Length that a session will last expressed in seconds. Default is
 ; one hour. 
@@ -115,7 +115,7 @@ auth_methods = "mysql"
 ; You can specify any file extension you want in here separating them
 ; with a |
 ; DEFAULT: mp3|mpc|m4p|m4a|mp4|aac|ogg|rm|wma|asf|flac|spx|ra|ape|shn|wv
-catalog_file_pattern = "mp3|mpc|m4p|m4a|mp4|aac|ogg|rm|wma|asf|flac|spx|ra|ape|shn|wv"
+catalog_file_pattern = "mp3"
 
 ; Video Pattern
 ; This defines which video file types Ampache will attempt to catalog
@@ -262,14 +262,14 @@ default_auth_level = "admin"
 ; This allows ratings for almost any object in ampache
 ; POSSIBLE VALUES: false true
 ; DEFAULT: true
-ratings = "true"
+ratings = "false"
 
 ; Sociable
 ; This turns on / off all of the "social" features of ampache
 ; default is on, but if you don't care and just want music
 ; turn this off to disable all social features. 
 ; DEFAULT: true
-sociable = "true"
+sociable = "false"
 
 ; This options will turn on/off Demo Mode
 ; If Demo mode is on you can not play songs or update your catalog
@@ -317,7 +317,7 @@ sociable = "true"
 ; database
 ; POSSIBLE VALUES: db tags folder amazon lastfm musicbrainz google
 ; DEFAULT: db,tags,folder,musicbrainz,lastfm,google
-art_order = "db,tags,folder,musicbrainz,lastfm,google"
+art_order = "db,tags,musicbrainz,amazon,google"
 
 ; Amazon Developer Key
 ; These are needed in order to actually use the amazon album art
@@ -352,7 +352,7 @@ art_order = "db,tags,folder,musicbrainz,lastfm,google"
 ;	http://webservices.amazon.fr
 ;	http://webservices.amazon.ca
 ; Default: http://webservices.amazon.com
-amazon_base_urls = "http://webservices.amazon.com"
+amazon_base_urls = "http://webservices.amazon.de"
 
 ; max_amazon_results_pages
 ; The maximum number of results pages to pull from EACH amazon site
@@ -362,7 +362,7 @@ amazon_base_urls = "http://webservices.amazon.com"
 ; Of course a good search will return only a few matches anyway.
 ; It is strongly recommended that you do _not_ change this value
 ; DEFAULT: 1 page (10 items)
-max_amazon_results_pages = 1
+max_amazon_results_pages = 2
 
 ; Debug
 ; If this is enabled Ampache will write debugging information to the log file
@@ -540,16 +540,16 @@ refresh_limit = "60"
 ; DEFAULT: false
 ;transcode_m4a      = allowed
 ;transcode_flac     = required
-;transcode_mp3      = allowed
+transcode_mp3      = allowed
 
 ; Default output format
 ; DEFAULT: none
-;encode_target = mp3
+encode_target = mp3
 
 ; Override the default output format on a per-type basis
 ; encode_target_TYPE = TYPE
 ; DEFAULT: none
-;encode_target_flac = ogg
+;encode_target_flac = mp3
 
 ; Command configuration. Substitutions will be made as follows:
 ; %FILE% => filename
@@ -563,24 +563,20 @@ refresh_limit = "60"
 ; equivalent to the old default, but if you find that necessary you should be
 ; clever enough to figure out how on your own.
 ; DEFAULT: none
-;transcode_cmd = "ffmpeg -i %FILE%"
-;transcode_cmd = "avconv -i %FILE%"
-;transcode_cmd = "/usr/bin/neatokeen %FILE%"
+transcode_cmd = "ffmpeg -i %FILE%"
 
 ; Specific transcode commands
 ; It shouldn't be necessary in most cases, but you can override the transcode
 ; command for specific source formats.  It still needs to accept the 
 ; encoding arguments, so the easiest approach is to use your normal command as
 ; a clearing-house.
-; transcode_cmd_TYPE = TRANSCODE_CMD
-;transcode_cmd_mid = "timidity -Or -o – %FILE% | ffmpeg -f s16le -i pipe:0"
+transcode_cmd_TYPE = TRANSCODE_CMD
+transcode_cmd_mid = "timidity -Or -o – %FILE% | ffmpeg -f s16le -i pipe:0"
 
-; Encoding arguments
-; For each output format, you should provide the necessary arguments for
-; your transcode_cmd. 
-; encode_args_TYPE = TRANSCODE_CMD_ARGS
-;encode_args_mp3 = "-vn -b:a %SAMPLE%K -c:a libmp3lame -f mp3 pipe:1"
+encode_args_TYPE = TRANSCODE_CMD_ARGS
+encode_args_mp3 = "-vn -b:a %SAMPLE%K -c:a libmp3lame -f mp3 pipe:1"
 ;encode_args_ogg = "-vn -b:a %SAMPLE%K -c:a libvorbis -f ogg pipe:1"
+encode_args_ogg = "-vn -c:a libvorbis -f ogg pipe:1"
 
 ;######################################################
 ; these options allow you to configure your rss-feed
@@ -676,8 +672,13 @@ use_rss = true
 ;#############################
 ;   Multibyte Settings       #
 ;#############################
-; See http://php.net/manual/mbstring.supported-encodings.php
-; If you want ID3v1 encoding detection to work, you should uncomment this line
-; so that the ordering is sane.
+; Use Iconv or not
+; DEFAULT: false
+use_iconv = "1"
+
+; mb_detect_order
+; comma separated, available encodings are listed on php.net.
+; see http://php.net/manual/mbstring.supported-encodings.php
 ; DEFAULT: auto
 ;mb_detect_order = "ASCII,UTF-8,EUC-JP,ISO-2022-JP,SJIS,JIS"
+

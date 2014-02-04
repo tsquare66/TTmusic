@@ -73,10 +73,7 @@ switch ($_REQUEST['action']) {
 				if (true == $GLOBALS['isMobile'])
 				{
 					$results['sidebar-page'] = "";
-					//$results['information_actions'] = "";
 					$results['recently_played'] = "";
-					//$results['browse_content'] = "";
-					//$results['content'] = "";
 				}
                 require_once Config::get('prefix') . '/templates/sidebar.inc.php';
                 $results['sidebar'] = ob_get_contents();
