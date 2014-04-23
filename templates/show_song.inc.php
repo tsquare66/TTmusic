@@ -46,6 +46,7 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Title')]   = scrub_out($song->title);
   $songprops[gettext_noop('Artist')]  = $song->f_artist_link;
   $songprops[gettext_noop('Album')]   = $song->f_album_link;
+  $songprops[gettext_noop('Albumartist')]   = $song->band;
   $songprops[gettext_noop('Year')]    = scrub_out($song->year);
   $songprops[gettext_noop('Genre')]   = $song->f_genre_link;
   $songprops[gettext_noop('Length')]  = scrub_out($song->f_time);
@@ -53,13 +54,12 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Label')]   = scrub_out($song->label);
   $songprops[gettext_noop('Song Language')]= scrub_out($song->language);
   $songprops[gettext_noop('Catalog Number')]   = scrub_out($song->catalog_number);
-  if (false == $GLOBALS['isMobile'])
-  {
+  
   $songprops[gettext_noop('Bitrate')]   = scrub_out($song->f_bitrate);
   if (Access::check('interface','75')) {
 	    $songprops[gettext_noop('Filename')]   = scrub_out(utf8_encode($song->file)) . " " . $song->f_size;
 	  }
-  }
+  
   if ($song->update_time) {
     $songprops[gettext_noop('Last Updated')]   = date("d/m/Y H:i",$song->update_time);
   }
@@ -95,10 +95,63 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
     }
   }
   
-  if (Access::check('interface','75')) {
-	  echo "<dt class=" . UI::flip_class() .">" . "Search" . "</dt>";
-	  echo "<dd>" .  Ajax::text('?page=musicbrainz&action=search_song&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "</dd>";
+  echo "<dt class=" . UI::flip_class() .">" . "Cover in mp3-Tag" . "</dt>";
+  $images = Song::get_art_from_tag($song->file);
+  if (count($images)) {
+  	$image_url = Config::get('web_path') . '/image.php?type=song_tag&song_id=' . $song->id .'&dummy='.time();
+  	$Art = new Art('');
+  	$dimensions = Core::image_dimensions(Art::get_from_source($images, 'album'));
+  
+  	echo('<dd>');
+  	echo('<div id="mp3_cover">');
+  	echo Ajax::text('?page=musicbrainz&action=show_mp3_cover&song_id=' . $song->id,"Show",'song_cover_' . $song->id);
+  	echo('</div>');
+  	
+  	if (is_array($dimensions)) {
+  		echo(intval($dimensions['width']).'x'.intval($dimensions['height']));
+  	}
+  	echo("</dd>\n");
   }
+  
+  
+  if (Access::check('interface','75')) {
+  	
+  	  if (!empty($song->band) && !empty($song->album) ) 
+  	  {
+  		$album = new Album($song->album);
+  		$album_name = $album->name;
+  		if ($album_name <> T_('Unknown (Orphaned)')) {
+	  		$album_path = Config::get('album_path') . get_allowed_dirname($song->band) . "\\" . get_allowed_dirname($album_name);
+	  		
+		    $filename = utf8_encode($song->file);
+		    $filename = substr(strrchr($filename, '\\'), 1);
+		    $file_target = $album_path.'\\'.$filename;
+		    $target = utf8_decode($file_target);
+		    if ($target <> $song->file)
+	  		{	  			  		
+		  		echo "<dt class=" . UI::flip_class() .">" . "Move file to" . "</dt>";	
+		  		echo('<dd>');
+		  		echo('<div id="mp3_cover">');
+		  		echo Ajax::text('?page=musicbrainz&action=move_file&song_id=' . $song->id,$album_path,'move_file_' . $song->id);
+		  		echo('</div>');
+		  		echo("</dd>\n");
+  			}
+  		}
+  	  }
+  	
+	  echo "<dt class=" . UI::flip_class() .">" . "Search" . "</dt>";
+	  echo "<dd>" .  Ajax::text('?page=musicbrainz&action=search_song&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "<br>";
+	  if ($_SESSION['with_compilation'] == TRUE)
+	  {
+	  	echo T_('With Compilations') . '<input type="checkbox" id="id_compilation" checked="checked"  />'. "</dd>";
+	  }
+	  else
+	  {
+	  	echo T_('With Compilations') . '<input type="checkbox" id="id_compilation" />'. "</dd>";
+	  }
+	  echo Ajax::observe('id_compilation', 'click', Ajax::action('?page=musicbrainz&action=switch_compilation',''));
+  }
+  
   
 ?>
 </dl>

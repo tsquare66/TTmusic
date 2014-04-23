@@ -186,12 +186,13 @@ class Album extends database_object {
      *
      * Searches for an album; if none is found, insert a new one.
      */
-    public static function check($name, $year = 0, $disk = 0, $mbid = null,
-        $readonly = false) {
+    public static function check($name, $year = 0, $disk = 0, $mbid = null, $band = null,  $readonly = false) {
         
         $trimmed = Catalog::trim_prefix(trim($name));
         $name = $trimmed['string'];
         $prefix = $trimmed['prefix'];
+        $band = empty($band) ? null : $band;
+        $mbid = empty($mbid) ? null : $mbid;
 
         // Not even sure if these can be negative, but better safe than llama.
         $year = abs(intval($year));
@@ -201,39 +202,20 @@ class Album extends database_object {
             $name = T_('Unknown (Orphaned)');
             $year = 0;
             $disk = 0;
+            $band = null;
         }
 
-        if (isset(self::$_mapcache[$name][$year][$disk][$mbid])) {
-            return self::$_mapcache[$name][$year][$disk][$mbid];
-        }
+        $sql = "SELECT `id` FROM `album` WHERE `name` = '" . Dba::escape($name) . "'";
+        if (empty($band))
+        	$sql .= " AND  `band` IS NULL";
+        else
+        	$sql .= " AND `band` = '". Dba::escape($band) . "'";
+        	 
 
-        $sql = 'SELECT `id` FROM `album` WHERE `name` = ? AND `disk` = ? AND ' .
-            '`year` = ? AND `mbid` ';
-                $params = array($name, $disk, $year);
-
-        if ($mbid) {
-            $sql .= '= ? ';
-            $params[] = $mbid;
-        }
-        else {
-            //$sql .= 'IS NULL ';
-            $sql .= '=\'\'';
-        }
-
-        $sql .= 'AND `prefix` ';
-        if ($prefix) {
-            $sql .= '= ?';
-            $params[] = $prefix;
-        }
-        else {
-            $sql .= 'IS NULL';
-        }
-
-        $db_results = Dba::read($sql, $params);
+        $db_results = Dba::read($sql);
 
         if ($row = Dba::fetch_assoc($db_results)) {
             $id = $row['id'];
-            self::$_mapcache[$name][$year][$disk][$mbid] = $id;
             return $id;
         }
 
@@ -241,17 +223,16 @@ class Album extends database_object {
             return null;
         }
 
-        $sql = 'INSERT INTO `album` (`name`, `prefix`, `year`, `disk`, `mbid`) '.
+        $sql = 'INSERT INTO `album` (`name`, `year`, `disk`, `mbid`, `band`) '.
             'VALUES (?, ?, ?, ?, ?)';
 
-        $db_results = Dba::write($sql, array($name, $prefix, $year, $disk, $mbid));
+        $db_results = Dba::write($sql, array($name, $year, $disk, $mbid, $band));
         if (!$db_results) {
             return null;
         }
 
         $id = Dba::insert_id();
-        self::$_mapcache[$name][$year][$disk][$mbid] = $id;
-        return $id;
+         return $id;
     }
 
     /**

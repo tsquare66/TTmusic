@@ -87,6 +87,15 @@ switch ($_GET['type']) {
         $image = Art::get_from_source($_SESSION['form']['images'][$filename], 'album');
         $mime = $_SESSION['form']['images'][$filename]['mime'];
     break;
+    case 'song_tag':
+        Session::check();
+        $song_id = $_REQUEST['song_id'];
+        $song = new Song($song_id);
+        $filename = $song->file;
+        $art = Song::get_art_from_tag($filename);
+        $image = $art['raw'];
+        $mime = $art['mime'];
+    break;
     default:
         $media = new $type($_GET['id']);
         $filename = $media->name;

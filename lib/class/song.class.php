@@ -26,6 +26,7 @@ class Song extends database_object implements media {
     public $id;
     public $file;
     public $album; // album.id (Int)
+    public $band;
     public $artist; // artist.id (Int)
     public $title;
     public $year;
@@ -87,6 +88,7 @@ class Song extends database_object implements media {
         $title = trim($results['title']) ?: $file;
         $artist = $results['artist'];
         $album = $results['album'];
+        $band = $results['band'] ?: null;
         $bitrate = $results['bitrate'];
         $rate = $results['rate'] ?: 0;
         $mode = $results['mode'];
@@ -103,17 +105,17 @@ class Song extends database_object implements media {
         $lyrics = $results['lyrics'];
 
         $artist_id = Artist::check($artist, $artist_mbid);
-        $album_id = Album::check($album, $year, $disk, $album_mbid);
+        $album_id = Album::check($album, $year, $disk, $album_mbid,$band);
 
         $sql = 'INSERT INTO `song` (`file`, `catalog`, `album`, `artist`, ' .
             '`title`, `bitrate`, `rate`, `mode`, `size`, `time`, `track`, ' .
-            '`addition_time`, `year`, `mbid`) ' .
-            'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            '`addition_time`, `year`, `mbid`, `band`) ' .
+            'VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
         $db_results = Dba::write($sql, array(
             $file, $catalog, $album_id, $artist_id,
             $title, $bitrate, $rate, $mode, $size, $time, $track,
-            time(), $year, $track_mbid));
+            time(), $year, $track_mbid,$band));
 
         if (!$db_results) {
             debug_event('song', 'Unable to insert' . $file, 2);
@@ -221,7 +223,7 @@ class Song extends database_object implements media {
             return parent::get_from_cache('song', $id);
         }
 
-        $sql = 'SELECT `id`, `file`, `catalog`, `album`, `year`, `artist`,' .
+        $sql = 'SELECT `id`, `file`, `catalog`, `album`, `band`, `year`, `artist`,' .
             '`title`, `bitrate`, `rate`, `mode`, `size`, `time`, `track`, ' .
             '`played`, `enabled`, `update_time`, `mbid`, `addition_time` ' .
             'FROM `song` WHERE `id` = ?';
@@ -530,12 +532,14 @@ class Song extends database_object implements media {
                 case 'artist':
                     // Don't do anything if we've negative one'd this baby
                     if ($value == '-1') {
-                        $value = Catalog::check_artist($data['artist_name'], $data['mb_artistid']);
+                        $value = Artist::check($data['artist_name'], $data['mb_artistid']);
                     }
                 case 'album':
                     if ($value == '-1') {
-                        $value = Catalog::check_album($data['album_name'], $data['year'], $data['disk'], $data['mb_albumid']);
+                        $value = Album::check($data['album_name'], $data['year'], $data['disk'], $data['mb_albumid'],$data['band']);
                     }
+                case 'band':
+                case 'year':
                 case 'title':
                 case 'track':
                     // Check to see if it needs to be updated
@@ -580,6 +584,7 @@ class Song extends database_object implements media {
         $mbid        = Dba::escape($new_song->mbid);
         $artist        = Dba::escape($new_song->artist);
         $album        = Dba::escape($new_song->album);
+        $band        = Dba::escape($new_song->band);
         $year        = Dba::escape($new_song->year);
         $song_id    = Dba::escape($song_id);
         $update_time    = time();
@@ -589,6 +594,7 @@ class Song extends database_object implements media {
             "`title`='$title', `bitrate`='$bitrate', `rate`='$rate', `mode`='$mode', " .
             "`size`='$size', `time`='$time', `track`='$track', " .
             "`mbid`='$mbid', " .
+            "`band`='$band', " .
             "`update_time`='$update_time' WHERE `id`='$song_id'";
         $db_results = Dba::write($sql);
 
@@ -653,6 +659,26 @@ class Song extends database_object implements media {
 
     } // update_title
 
+    /**
+     * update_band
+     * updates the band field
+     */
+    public static function update_band($new_band,$song_id) {
+
+        self::_update_item('band',$new_band,$song_id,'50');
+
+    } // update_title
+
+    /**
+     * update_file
+     * updates the band field
+     */
+    public static function update_file($new_file,$song_id) {
+    
+    	self::_update_item('file',$new_file,$song_id,'50');
+    
+    } // update_title
+    
     /**
      * update_bitrate
      * updates the bitrate field
@@ -960,6 +986,28 @@ class Song extends database_object implements media {
         return $songs;
 
     } // get_from_path
+
+    /**
+     * get_art_from_tag
+     */
+    public static function get_art_from_tag($file) {
+    
+    	$getID3 = new getID3();
+    	try { $id3 = $getID3->analyze($file); }
+   		catch (Exception $error) {
+    		debug_event('getid3', $error->message, 1);
+    	}
+    
+    	if (isset($id3['id3v2']['APIC'])) {
+    		$data = array(
+    				'song' => $file,
+    				'raw' => $id3['id3v2']['APIC'][0]['data'],
+    				'mime' => $id3['id3v2']['APIC'][0]['mime']);
+    	}
+    
+    	return ($data);
+    }
+    
 
     /**
      *    @function    get_rel_path

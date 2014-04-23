@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
         // If we got something back insert it
         if ($image_data) {
             $art = new Art($album->id,'album'); 
-            $art->insert($image_data,$_FILES['file']['type']);
+            $art->insert($image_data,$_FILES['file']['type'],true);
             show_confirmation(T_('Album Art Inserted'),'',"/albums.php?action=show&amp;album=" . $album->id);
         }
         // Else it failed
@@ -77,7 +77,7 @@ switch ($_REQUEST['action']) {
             $image_data = Art::get_from_source($upload, 'album');
 
             if ($image_data) {
-                $art->insert($image_data,$upload['0']['mime']);
+                $art->insert($image_data,$upload['0']['mime'],true);
                 show_confirmation(T_('Album Art Inserted'),'',"/albums.php?action=show&amp;album=" . $_REQUEST['album_id']);
                 break;
 
@@ -150,7 +150,7 @@ switch ($_REQUEST['action']) {
         $image     = Art::get_from_source($_SESSION['form']['images'][$image_id], 'album');
         $mime    = $_SESSION['form']['images'][$image_id]['mime'];
 
-        $art->insert($image,$mime);
+        $art->insert($image,$mime,true);
 
         header("Location:" . Config::get('web_path') . "/albums.php?action=show&album=" . $art->uid);
     break;

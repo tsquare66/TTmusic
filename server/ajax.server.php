@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
     case 'edit_object':
         // Scrub the data
         foreach ($_POST as $key => $data) {
-            $_POST[$key] = scrub_in($data);
+            //$_POST[$key] = scrub_in($data);
         }
 
         $level = '50';
@@ -199,6 +199,11 @@ switch ($_REQUEST['action']) {
                     $album = new Album($new_id);
                     foreach ($songs as $song_id) {
                         Flag::add($song_id,'song','retag','Inline Album Update');
+        				$song = new Song($song_id); 
+        				$song->format();   
+        				$id3 = new vainfo($song->file);
+        				$tag_data['album'] = $album->full_name;
+        				$id3->write_id3($tag_data);
                     }
                 }
                 $album->format();
@@ -221,7 +226,13 @@ switch ($_REQUEST['action']) {
                 $song = new Song($_POST['id']);
                 Flag::add($song->id,'song','retag','Inline Single Song Update');
                 $song->update($_POST);
-                $song->format();
+
+                $album = new Album($_POST['album']);
+        		$song->format();   
+        		$id3 = new vainfo($song->file);
+        		$tag_data['album'] = $album->full_name;
+        		$id3->write_id3($tag_data);
+                
             break;
             case 'playlist_row':
             case 'playlist_title':

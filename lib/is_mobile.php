@@ -69,6 +69,6 @@ if($GLOBALS['isMobile'] == false)
 	|| strpos($ua, 'wap2.') !== false;
 }
  
-$GLOBALS['isMobile'] = true;
+//$GLOBALS['isMobile'] = true;
 
 debug_event('is_mobile.php' , 'IsMobile:'. $GLOBALS['isMobile'], '5');

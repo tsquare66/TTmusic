@@ -138,6 +138,16 @@ class Search extends playlist_object {
         );
 
         $this->basetypes['text'][] = array(
+            'name'    => 'empty',
+            'description' => T_('is empty'),
+        );
+
+        $this->basetypes['text'][] = array(
+            'name'    => 'notempty',
+            'description' => T_('not is empty'),
+        );
+
+        $this->basetypes['text'][] = array(
             'name'    => 'sounds',
             'description' => T_('sounds like'),
             'sql'     => 'SOUNDS LIKE'
@@ -214,6 +224,13 @@ class Search extends playlist_object {
             $this->types[] = array(
                 'name'   => 'artist',
                 'label'  => T_('Artist'),
+                'type'   => 'text',
+                'widget' => array('input', 'text')
+            );
+
+            $this->types[] = array(
+                'name'   => 'band',
+                'label'  => T_('Band'),
                 'type'   => 'text',
                 'widget' => array('input', 'text')
             );
@@ -745,12 +762,27 @@ class Search extends playlist_object {
         }
 
         if ($type == 'boolean') {
-            return make_bool($input);
+            return make_bool($data);
         }
 
         return $data;
     }
 
+    /**
+     * _get_where_statement
+     *
+     */
+    private function _get_where_statement($column, $rule_name, $operator,$input) {
+          if ($rule_name == 'empty')
+              $where = "(" . $column . " is null or " . $column . " = '')";
+           elseif ($rule_name == 'notempty')
+              $where = "not (" . $column . " is null or " . $column . " = '')";
+           else
+           	  $where = $column . " " . $operator . " '" . $input . "'";
+    	
+    	return $where;
+    }
+    
     /**
      * album_to_sql
      *
@@ -936,8 +968,11 @@ class Search extends playlist_object {
                 case 'title':
                     $where[] = "`song`.`title` $sql_match_operator '$input'";
                 break;
+                case 'band':
+                	$where[] = $this->_get_where_statement("`song`.`band`",$operator['name'],$sql_match_operator,$input);
+                break;
                 case 'album':
-                    $where[] = "`album`.`name` $sql_match_operator '$input'";
+                    $where[] = $this->_get_where_statement("`album`.`name`",$operator['name'],$sql_match_operator,$input);
                     $join['album'] = true;
                 break;
                 case 'artist':

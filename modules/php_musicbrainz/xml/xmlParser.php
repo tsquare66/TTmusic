@@ -56,7 +56,7 @@ class XMLNode {
     }
 
     public function setText($text) {
-        $this->attributes['TEXT'] = $text;
+        $this->attributes['TEXT'] .= $text;
     }
 
     public function getText() {

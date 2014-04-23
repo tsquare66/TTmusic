@@ -29,19 +29,20 @@
 </td>
 <td>
     <?php
-    if ($album->artist_count == '1') {
+    /*if ($album->artist_count == '1') {
         show_artist_select('artist',$album->artist_id);
     }
     else {
         echo T_('Various');
-    }
+    }*/
+    echo $album->f_artist;
     ?>
 </td>
 <td>
-    <input type="text" name="year" value="<?php echo scrub_out($album->year); ?>" />
+    <?php echo scrub_out($album->year); ?>
 </td>
 <td>
-    <input type="text" name="disk" value="<?php echo scrub_out($album->disk); ?>" />
+    <?php echo scrub_out($album->disk); ?>
 </td>
 <td>
     <input type="hidden" name="id" value="<?php echo $album->id; ?>" />

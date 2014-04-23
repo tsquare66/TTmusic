@@ -40,12 +40,6 @@ if (Config::get('use_rss')) { ?>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=<?php echo Config::get('site_charset'); ?>" />
 <title><?php echo scrub_out(Config::get('site_title')); ?> - <?php echo $location['title']; ?></title>
 <?php require_once Config::get('prefix') . '/templates/stylesheets.inc.php'; ?>
-<?php if (true == $GLOBALS['isMobile'])
-{ ?>
-   <meta name="viewport" content="width=320, user-scalable = no" />
-<?php } ?>
-
-
 
 </head>
 <body>

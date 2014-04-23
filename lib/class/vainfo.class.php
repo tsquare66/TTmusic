@@ -251,11 +251,14 @@ class vainfo {
 			if(isset($data['year']))
 			{
 				$TagData['year'][0] = $data['year'];
-			}
-				
-			if(isset($TagData['track_number']))
+			}				
+			if(isset($data['band']))
 			{
-				$TagData['track'][0] = $TagData['track_number'][0];
+				$TagData['band'][0] = $data['band'];
+			}
+			if(isset($data['track']))
+			{
+				$TagData['track'][0] = $data['track'];
 			}
 			$tagWriter->tag_data = $TagData;
 				
@@ -361,6 +364,8 @@ class vainfo {
             $info['artist']    = $info['artist'] ?: trim($tags['artist']);
 
             $info['album'] = $info['album'] ?: trim($tags['album']);
+            
+            $info['band'] = $info['band'] ?: trim($tags['band']);
 
             // multiple genre support
             if ((!$info['genre']) && $tags['genre']) {

@@ -35,3 +35,11 @@ if (is_rtl(Config::get('lang'))
 ?>
 <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/tinybox/tinybox.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/print.css" type="text/css" media="print" />
+
+<?php if (true == $GLOBALS['isMobile'])
+{ ?>
+   <meta name="viewport" content="width=320, user-scalable = no" />
+<?php } ?>
+
+
+

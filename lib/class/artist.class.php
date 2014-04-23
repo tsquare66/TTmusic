@@ -136,6 +136,29 @@ class Artist extends database_object {
     } // get_from_name
 
     /**
+     * get_main_name
+     * This gets an artist without feat. or things like this
+     */
+    public static function get_main_name($name) {
+
+		$pos = strpos($name, " feat");
+		if( $pos > 0)
+			$name = substr($name,0,$pos);
+		$pos = strpos($name, " Feat");
+		if( $pos > 0)
+			$name = substr($name,0,$pos);
+		$pos = strpos($name, " vs");
+		if( $pos > 0)
+			$name = substr($name,0,$pos);
+		$pos = strpos($name, " Vs");
+		if( $pos > 0)
+			$name = substr($name,0,$pos);
+    	
+        return $name;
+
+    } // get_from_name
+
+    /**
      * get_albums
      * gets the album ids that this artist is a part
      * of

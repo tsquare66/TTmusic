@@ -712,6 +712,7 @@ CREATE TABLE `song` (
   `file` varchar(4096) COLLATE utf8_unicode_ci DEFAULT NULL,
   `catalog` int(11) unsigned NOT NULL DEFAULT '0',
   `album` int(11) unsigned NOT NULL DEFAULT '0',
+  `band` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `year` mediumint(4) unsigned NOT NULL DEFAULT '0',
   `artist` int(11) unsigned NOT NULL DEFAULT '0',
   `title` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
