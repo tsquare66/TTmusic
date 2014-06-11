@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -32,7 +32,8 @@ ob_end_flush();
 $catclean = 0;        //All off by default
 $catverify = 0;
 $catadd = 0;
-$artadd = 0; 
+$artadd = 0;
+$plimp = 0;
 
 if (count($_SERVER['argv']) == 1) { 
     $operations_string = "\n\t". T_('- All Catalog Operations');
@@ -57,6 +58,10 @@ if (count($_SERVER['argv']) > 1) {
             $operations_string .= "\n\t" . T_('- Catalog Art Gather');
             $artadd = 1; 
         } 
+        elseif ($_SERVER['argv'][$x] == "-i") { 
+            $operations_string .= "\n\t" . T_('- Playlist Import');
+            $plimp = 1; 
+        }
         else {
             if ($where) $where .= " OR ";
             $where .= "name LIKE '%" . Dba::escape(preg_replace("/[^a-z0-9\. -]/i", "", $_SERVER['argv'][$x])) . "%'";
@@ -73,7 +78,7 @@ if ($artadd == 0 && $catclean == 0 && $catverify == 0 && $catadd == 0) {    //di
     $catclean = 1;                        //set them all to on
     $catverify = 1;
     $catadd = 1;
-    $artadd = 1; 
+    $artadd = 1;
 }
 
 echo T_("Starting Catalog Operations...") . $operations_string . "\n"; 
@@ -88,7 +93,7 @@ ob_start("ob_html_strip",'1024',true);
 
 while ($row = Dba::fetch_row($db_results)) {
 
-    $catalog = new Catalog($row['0']);
+    $catalog = Catalog::create_from_id($row['0']);
     printf(T_('Reading: %s'), $catalog->name);
     ob_flush(); 
     echo "\n"; 
@@ -112,11 +117,16 @@ while ($row = Dba::fetch_row($db_results)) {
         // Look for new files
         echo T_("- Starting Add - ");
         echo "\n";
-        $catalog->add_to_catalog();
+        $options = array();
+        if ($artadd == 1) {
+            $options['gather_art'] = true;
+        }
+        if ($plimp == 1) {
+            $options['parse_playlist'] = true;
+        }
+        $catalog->add_to_catalog($options);
         echo "----------------\n\n";
-    }
-
-    if ($artadd == 1) { 
+    } elseif ($artadd == 1) { 
         // Look for album art
         echo T_('Starting Album Art Search');
         echo "\n"; 
@@ -146,15 +156,17 @@ function ob_html_strip($string) {
 function usage() {
     echo T_("- Catalog Update -");
     echo "\n";
-    echo T_("Usage: catalog_update.inc [CATALOG NAME] [-c|-v|-a|-g|-t]");
+    echo T_("Usage: catalog_update.inc [CATALOG NAME] [-c|-v|-a|-g|-t|-i]");
     echo "\n\t"; 
-    echo T_("Default behavior is to do all");
+    echo T_("Default behavior is to do all except playlist import");
     echo "\n-c\t";
     echo T_('Clean Catalogs');
     echo "\n-v\t";
     echo T_('Verify Catalogs');
     echo "\n-a\t";
     echo T_('Add to Catalogs');
+    echo "\n-i\t";
+    echo T_('Import Playlists');
     echo "\n-g\t";
     echo T_('Gather Art');
     echo "\n";

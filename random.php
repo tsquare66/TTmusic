@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -29,14 +29,15 @@ switch ($_REQUEST['action']) {
         $object_ids = Random::advanced($_REQUEST['type'], $_POST);
 
         // We need to add them to the active playlist
-        foreach ($object_ids as $object_id) {
-            $GLOBALS['user']->playlist->add_object($object_id, 'song');
+        if (is_array($object_ids)) {
+            foreach ($object_ids as $object_id) {
+                $GLOBALS['user']->playlist->add_object($object_id, 'song');
+            }
         }
     case 'advanced':
     default:
-        require_once Config::get('prefix') . '/templates/show_random.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_random.inc.php';
     break;
 } // end switch
 
 UI::show_footer();
-?>

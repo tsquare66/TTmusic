@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -24,7 +24,7 @@
 if (true == $GLOBALS['isMobile'])
 	$pics_per_row = 1;
 else
-	$pics_per_row = 3;
+	$pics_per_row = 4;
 $total_images = count($images);
 $rows = floor($total_images/$pics_per_row);
 $i = 0;
@@ -39,14 +39,13 @@ while ($i <= $rows) {
     $j=0;
 	while ($j < $pics_per_row) {
 		$key = $i*$pics_per_row+$j;
-		$image_url = Config::get('web_path') . '/image.php?type=session&image_index=' . $key.'&dummy='.time();
+		$image_url = AmpConfig::get('web_path') . '/image.php?type=session&image_index=' . $key.'&dummy='.time();
 		$Art = new Art('');
         $dimensions = Core::image_dimensions(Art::get_from_source($_SESSION['form']['images'][$key], 'album'));
-        if (!isset($images[$key])) { echo "<td>&nbsp;</td>\n"; }
-        else {
+        if (!isset($images[$key])) { echo "<td>&nbsp;</td>\n"; } else {
 ?>
             <td align="center">
-                <a href="<?php echo $image_url; ?>" target="_blank"><img src="<?php echo $image_url; ?>" alt="<?php echo T_('Album Art'); ?>" border="0" height="175" width="175" /></a>
+                <a href="<?php echo $image_url; ?>" rel="prettyPhoto" target="_blank"><img src="<?php echo $image_url; ?>" alt="<?php echo T_('Album Art'); ?>" border="0" height="175" width="175" /></a>
                 <br />
                 <p align="center">
                 <?php if (is_array($dimensions)) { ?>
@@ -54,15 +53,14 @@ while ($i <= $rows) {
                 <?php } else { ?>
                 <span class="error"><?php echo T_('Invalid'); ?></span>
                 <?php } ?>
-                [<a href="<?php echo Config::get('web_path'); ?>/albums.php?action=select_art&amp;image=<?php echo $key; ?>&amp;album_id=<?php echo intval($_REQUEST['album_id']); ?>"><?php echo T_('Select'); ?></a>]
+                [<a href="<?php echo AmpConfig::get('web_path'); ?>/albums.php?action=select_art&amp;image=<?php echo $key; ?>&amp;album_id=<?php echo intval($_REQUEST['album_id']); ?>"><?php echo T_('Select'); ?></a>]
                 </p>
             </td>
 <?php
         } // end else
         $j++;
     } // end while cells
-    if($i < $rows) { echo "</tr>\n<tr>"; }
-        else { echo "</tr>"; }
+    if ($i < $rows) { echo "</tr>\n<tr>"; } else { echo "</tr>"; }
     $i++;
 } // end while
 ?>

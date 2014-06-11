@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -33,4 +33,3 @@ $class = $class ? $class : 'box';
        <h3 class="box-title"><?php echo $title; ?></h3>
       <?php } ?>
     <div class="box-content clearfix">
-

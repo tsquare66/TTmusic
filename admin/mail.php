@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -32,13 +32,13 @@ UI::show_header();
 // Action switch
 switch ($_REQUEST['action']) {
     case 'send_mail':
-        if (Config::get('demo_mode')) {
+        if (AmpConfig::get('demo_mode')) {
             UI::access_denied();
             exit;
         }
 
         // Multi-byte Character Mail
-        if(function_exists('mb_language')) {
+        if (function_exists('mb_language')) {
             ini_set("mbstring.internal_encoding","UTF-8");
             mb_language("uni");
         }
@@ -51,30 +51,25 @@ switch ($_REQUEST['action']) {
 
         if ($_REQUEST['from'] == 'system') {
             $mailer->set_default_sender();
-        }
-        else {
+        } else {
             $mailer->sender = $GLOBALS['user']->email;
             $mailer->sender_name = $GLOBALS['user']->fullname;
         }
 
-        if($mailer->send_to_group($_REQUEST['to'])) {
+        if ($mailer->send_to_group($_REQUEST['to'])) {
             $title  = T_('E-mail Sent');
             $body   = T_('Your E-mail was successfully sent.');
-        }
-        else {
+        } else {
             $title     = T_('E-mail Not Sent');
             $body     = T_('Your E-mail was not sent.');
         }
-        $url = Config::get('web_path') . '/admin/mail.php';
+        $url = AmpConfig::get('web_path') . '/admin/mail.php';
         show_confirmation($title,$body,$url);
 
     break;
     default:
-        require_once Config::get('prefix') . '/templates/show_mail_users.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_mail_users.inc.php';
     break;
 } // end switch
 
 UI::show_footer();
-
-
-?>

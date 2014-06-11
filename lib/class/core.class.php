@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -27,14 +27,14 @@
  * would be replaced by a namespace library once that exists in php
  *
  */
-class Core {
-
+class Core
+{
     /**
      * constructor
      * This doesn't do anything
      */
-    private function __construct() {
-
+    private function __construct()
+    {
         return false;
 
     } // construction
@@ -46,21 +46,40 @@ class Core {
      * needed so that we don't use a million include statements which load
      * more than we need.
      */
-    public static function autoload($class) {
-        $file = Config::get('prefix') . '/lib/class/' .
-            strtolower($class) . '.class.php';
+    public static function autoload($class)
+    {
+        if (strpos($class, '\\') === false) {
+            $file = AmpConfig::get('prefix') . '/lib/class/' .
+                strtolower($class) . '.class.php';
 
-        if (Core::is_readable($file)) {
-            require_once $file;
+            if (Core::is_readable($file)) {
+                require_once $file;
 
-            // Call _auto_init if it exists
-            $autocall = array($class, '_auto_init');
-            if (is_callable($autocall)) {
-                call_user_func($autocall);
+                // Call _auto_init if it exists
+                $autocall = array($class, '_auto_init');
+                if (is_callable($autocall)) {
+                    call_user_func($autocall);
+                }
+            } else {
+                debug_event('autoload', "'$class' not found!", 1);
             }
-        }
-        else {
-            debug_event('autoload', "'$class' not found!", 1);
+        } else {
+            // Class with namespace are not used by Ampache but probably by modules
+            $split = explode('\\', $class);
+            $path = AmpConfig::get('prefix') . '/modules';
+            for ($i = 0; $i < count($split); ++$i) {
+                $path .= '/' . $split[$i];
+                if ($i != count($split)-1) {
+                    if (!is_dir($path)) {
+                        break;
+                    }
+                } else {
+                    $path .= '.php';
+                    if (Core::is_readable($path)) {
+                        require_once $path;
+                    }
+                }
+            }
         }
     }
 
@@ -69,11 +88,11 @@ class Core {
      * This registers a form with a SID, inserts it into the session
      * variables and then returns a string for use in the HTML form
      */
-    public static function form_register($name, $type = 'post') {
-
+    public static function form_register($name, $type = 'post')
+    {
         // Make ourselves a nice little sid
         $sid =  md5(uniqid(rand(), true));
-        $window = Config::get('session_length');
+        $window = AmpConfig::get('session_length');
         $expire = time() + $window;
 
         // Register it
@@ -81,12 +100,12 @@ class Core {
         debug_event('Core', "Registered $type form $name with SID $sid and expiration $expire ($window seconds from now)", 5);
 
         switch ($type) {
-            default:
-            case 'post':
-                $string = '<input type="hidden" name="form_validation" value="' . $sid . '" />';
-            break;
             case 'get':
                 $string = $sid;
+            break;
+            case 'post':
+            default:
+                $string = '<input type="hidden" name="form_validation" value="' . $sid . '" />';
             break;
         } // end switch on type
 
@@ -101,7 +120,8 @@ class Core {
      * they don't match then it returns false and doesn't let the person
      * continue
      */
-    public static function form_verify($name, $type = 'post') {
+    public static function form_verify($name, $type = 'post')
+    {
         switch ($type) {
             case 'post':
                 $sid = $_POST['form_validation'];
@@ -115,13 +135,15 @@ class Core {
             case 'request':
                 $sid = $_REQUEST['form_validation'];
             break;
+            default:
+                return false;
         }
 
         if (!isset($_SESSION['forms'][$sid])) {
             debug_event('Core', "Form $sid not found in session, rejecting request", 2);
             return false;
         }
-        
+
         $form = $_SESSION['forms'][$sid];
         unset($_SESSION['forms'][$sid]);
 
@@ -147,8 +169,8 @@ class Core {
     * returns an empty array if PHP-GD is not currently installed, returns
     * false on error
     */
-    public static function image_dimensions($image_data) {
-
+    public static function image_dimensions($image_data)
+    {
         if (!function_exists('ImageCreateFromString')) { return false; }
 
         $image = ImageCreateFromString($image_data);
@@ -170,7 +192,8 @@ class Core {
      * Replacement function because PHP's is_readable is buggy:
      * https://bugs.php.net/bug.php?id=49620
      */
-    public static function is_readable($path) {
+    public static function is_readable($path)
+    {
         if (is_dir($path)) {
             $handle = opendir($path);
             if ($handle === false) {
@@ -180,7 +203,7 @@ class Core {
             return true;
         }
 
-        $handle = fopen($path, 'rb');
+        $handle = @fopen($path, 'rb');
         if ($handle === false) {
             return false;
         }
@@ -188,5 +211,39 @@ class Core {
         return true;
     }
 
+    /*
+     * conv_lc_file
+     *
+     * Convert site charset filename to local charset filename for file operations
+     */
+    public static function conv_lc_file($filename)
+    {
+        $lc_filename = $filename;
+        $site_charset = AmpConfig::get('site_charset');
+        $lc_charset = AmpConfig::get('lc_charset');
+        if ($lc_charset && $lc_charset != $site_charset) {
+            if (function_exists('iconv')) {
+                $lc_filename = iconv($site_charset, $lc_charset, $filename);
+            }
+        }
+
+        return $lc_filename;
+    }
+
+    /*
+     * is_session_started
+     *
+     * Universal function for checking session status.
+     */
+    public static function is_session_started()
+    {
+        if (php_sapi_name() !== 'cli' ) {
+            if (version_compare(phpversion(), '5.4.0', '>=') ) {
+                return session_status() === PHP_SESSION_ACTIVE ? true : false;
+            } else {
+                return session_id() === '' ? false : true;
+            }
+        }
+        return false;
+    }
 } // Core
-?>

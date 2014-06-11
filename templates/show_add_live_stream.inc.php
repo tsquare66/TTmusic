@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,12 +21,12 @@
  */
 ?>
 <?php UI::show_box_top(T_('Add Radio Station'), 'box box_add_live_stream'); ?>
-<form name="radio" method="post" action="<?php echo Config::get('web_path'); ?>/radio.php?action=create">
-<table>
+<form name="radio" method="post" action="<?php echo AmpConfig::get('web_path'); ?>/radio.php?action=create">
+<table class="tabledata" cellspacing="0" cellpadding="0">
 <tr>
     <td><?php echo T_('Name'); ?></td>
     <td>
-        <input type="text" name="name" size="20" value="<?php echo scrub_out($_REQUEST['name']); ?>" />
+        <input type="text" name="name" value="<?php echo scrub_out($_REQUEST['name']); ?>" />
         <?php Error::display('name'); ?>
     </td>
 </tr>
@@ -45,15 +45,9 @@
     </td>
 </tr>
 <tr>
-    <td><?php echo T_('Frequency'); ?></td>
+    <td><?php echo T_('Codec'); ?></td>
     <td>
-        <input type="text" name="frequency" value="<?php echo scrub_out($_REQUEST['frequency']); ?>" />
-    </td>
-</tr>
-<tr>
-    <td><?php echo T_('Callsign'); ?></td>
-    <td>
-        <input type="text" name="call_sign" value="<?php echo scrub_out($_REQUEST['call_sign']); ?>" />
+        <input type="text" name="codec" value="<?php echo scrub_out($_REQUEST['codec']); ?>" />
     </td>
 </tr>
 <tr>

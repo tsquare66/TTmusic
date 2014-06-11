@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,12 +26,12 @@
  * work, this lists all required functions and the expected
  * input
  */
-interface media {
-
+interface media
+{
     /**
      * format
-     * 
-     * Creates the gussied-up member variables for output 
+     *
+     * Creates the gussied-up member variables for output
      */
     public function format();
 
@@ -47,9 +47,9 @@ interface media {
      * play_url
      *
      * Returns the url to stream the specified object
-     * 
+     *
      */
-    public static function play_url($oid);
+    public static function play_url($oid, $additional_params='');
 
     /**
      * get_transcode_settings
@@ -61,11 +61,4 @@ interface media {
      */
     public function get_transcode_settings($target = null);
 
-    /**
-     * has_flag
-     *
-     */
-    public function has_flag();
-
 } // end interface
-?>

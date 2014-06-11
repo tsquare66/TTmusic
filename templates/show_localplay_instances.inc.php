@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -36,7 +36,7 @@
     <td><?php echo $instance[$key]; ?></td>
     <?php } ?>
     <td>
-        <a href="<?php echo Config::get('web_path'); ?>/localplay.php?action=edit_instance&instance=<?php echo $uid; ?>"><?php echo UI::get_icon('edit', T_('Edit Instance')); ?></a>
+        <a href="<?php echo AmpConfig::get('web_path'); ?>/localplay.php?action=edit_instance&instance=<?php echo $uid; ?>"><?php echo UI::get_icon('edit', T_('Edit Instance')); ?></a>
         <?php echo Ajax::button('?page=localplay&action=delete_instance&instance=' . $uid,'delete', T_('Delete'),'delete_instance_' . $uid); ?>
     </td>
 </tr>

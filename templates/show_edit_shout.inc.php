@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,7 +21,7 @@
  */
 ?>
 <?php UI::show_box_top(T_('Edit existing Shoutbox Post')); ?>
-<form method="post" enctype="multipart/form-data" action="<?php echo Config::get('web_path'); ?>/admin/shout.php?action=edit_shout">
+<form method="post" enctype="multipart/form-data" action="<?php echo AmpConfig::get('web_path'); ?>/admin/shout.php?action=edit_shout">
 <input type="hidden" name="shout_id" value="<?php echo $shout->id; ?>" />
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <tr>
@@ -31,10 +31,10 @@
     <td><strong><?php echo T_('Comment:'); ?></strong>
 </tr>
 <tr>
-    <td><textarea rows="5" cols="70" name="comment"><?php echo $shout->text; ?></textarea></td>
+    <td><textarea rows="5" cols="70"  maxlength="140" name="comment"><?php echo $shout->text; ?></textarea></td>
 </tr>
 <tr>
-    <td><input type="checkbox" name="sticky" <?php if ($shout->sticky == "1") { echo "checked"; } ?>/> <strong><?php echo T_('Make Sticky'); ?></strong></td>
+    <td><input type="checkbox" name="sticky" <?php if ($shout->sticky == "1") { echo "checked"; } ?>/> <strong><?php echo T_('Stick this comment'); ?></strong></td>
 </tr>
 <tr>
     <td>

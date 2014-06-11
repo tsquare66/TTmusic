@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -25,6 +25,7 @@
  */
 if (!defined('AJAX_INCLUDE')) { exit; }
 
+$results = array();
 switch ($_REQUEST['action']) {
     case 'set_instance':
         // Make sure they they are allowed to do this
@@ -35,13 +36,13 @@ switch ($_REQUEST['action']) {
 
         $type = $_REQUEST['instance'] ? 'localplay' : 'stream';
 
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->set_active_instance($_REQUEST['instance']);
         Preference::update('play_type',$GLOBALS['user']->id,$type);
 
         // We should also refesh the sidebar
         ob_start();
-        require_once Config::get('prefix') . '/templates/sidebar.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/sidebar.inc.php';
         $results['sidebar'] = ob_get_contents();
         ob_end_clean();
     break;
@@ -52,7 +53,7 @@ switch ($_REQUEST['action']) {
             exit;
         }
 
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->connect();
 
         // Switch on valid commands
@@ -73,7 +74,7 @@ switch ($_REQUEST['action']) {
 
                 // We actually want to refresh something here
                 ob_start();
-                require_once Config::get('prefix') . '/templates/show_localplay_status.inc.php';
+                require_once AmpConfig::get('prefix') . '/templates/show_localplay_status.inc.php';
                 $results['localplay_status'] = ob_get_contents();
                 ob_end_clean();
             break;
@@ -86,7 +87,7 @@ switch ($_REQUEST['action']) {
                 $browse->save_objects(array());
                 $browse->show_objects(array());
                 $browse->store();
-                $results['browse_content'] = ob_get_contents();
+                $results['browse_content_' . $browse->get_type()] = ob_get_contents();
                 ob_end_clean();
             break;
             case 'skip':
@@ -99,7 +100,7 @@ switch ($_REQUEST['action']) {
                 $browse->save_objects($objects);
                 $browse->show_objects($objects);
                 $browse->store();
-                $results['browse_content'] = ob_get_contents();
+                $results['browse_content_' . $browse->get_type()] = ob_get_contents();
                 ob_end_clean();
             break;
             default:
@@ -114,7 +115,7 @@ switch ($_REQUEST['action']) {
             debug_event('DENIED','Attempted to delete track without access','1');
             exit;
         }
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->connect();
 
         // Scrub in the delete request
@@ -134,7 +135,7 @@ switch ($_REQUEST['action']) {
         $browse->save_objects($objects);
         $browse->show_objects($objects);
         $browse->store();
-        $results['browse_content'] = ob_get_contents();
+        $results['browse_content_' . $browse->get_type()] = ob_get_contents();
         ob_end_clean();
 
     break;
@@ -146,7 +147,7 @@ switch ($_REQUEST['action']) {
         }
 
         // Scrub it in
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->delete_instance($_REQUEST['instance']);
 
         $key = 'localplay_instance_' . $_REQUEST['instance'];
@@ -160,12 +161,12 @@ switch ($_REQUEST['action']) {
         }
 
         // Scrub her in
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->connect();
         $localplay->repeat(make_bool($_REQUEST['value']));
 
         ob_start();
-        require_once Config::get('prefix') . '/templates/show_localplay_status.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_localplay_status.inc.php';
         $results['localplay_status'] = ob_get_contents();
         ob_end_clean();
 
@@ -178,12 +179,12 @@ switch ($_REQUEST['action']) {
         }
 
         // Scrub her in
-        $localplay = new Localplay(Config::get('localplay_controller'));
+        $localplay = new Localplay(AmpConfig::get('localplay_controller'));
         $localplay->connect();
         $localplay->random(make_bool($_REQUEST['value']));
 
         ob_start();
-        require_once Config::get('prefix') . '/templates/show_localplay_status.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_localplay_status.inc.php';
         $results['localplay_status'] = ob_get_contents();
         ob_end_clean();
 
@@ -194,5 +195,4 @@ switch ($_REQUEST['action']) {
 } // switch on action;
 
 // We always do this
-echo xml_from_array($results);
-?>
+echo xoutput_from_array($results);

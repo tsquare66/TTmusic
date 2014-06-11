@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,13 +22,18 @@
 ?>
     <td class="cel_username">
         <a href="<?php echo $web_path; ?>/stats.php?action=show_user&amp;user_id=<?php echo $client->id; ?>">
+<?php
+if ($client->f_avatar_mini) {
+    echo $client->f_avatar_mini;
+}
+?>
             <?php echo $client->fullname; ?> (<?php echo $client->username; ?>)
         </a>
     </td>
   <td class="cel_lastseen"><?php echo $last_seen; ?></td>
   <td class="cel_registrationdate"><?php echo $create_date; ?></td>
   <td class="cel_activity"><?php echo $client->f_useage; ?></td>
-    <?php if (Config::get('track_user_ip')) { ?>
+    <?php if (AmpConfig::get('track_user_ip')) { ?>
         <td class="cel_lastip">
         <a href="<?php echo $web_path; ?>/admin/users.php?action=show_ip_history&amp;user_id=<?php echo $client->id; ?>">
             <?php echo $client->ip_history; ?>
@@ -42,12 +47,11 @@
     //FIXME: Fix this for the extra permission levels
     if ($client->disabled == '1') {
         echo "<a href=\"".$web_path."/admin/users.php?action=enable&amp;user_id=$client->id\">" . UI::get_icon('enable', T_('Enable')) . "</a>";
-    }
-    else {
+    } else {
         echo "<a href=\"".$web_path."/admin/users.php?action=disable&amp;user_id=$client->id\">" . UI::get_icon('disable', T_('Disable')) ."</a>";
     }
     ?>
-        <a href="<?php echo $web_path; ?>/admin/users.php?action=delete&amp;user_id=<?php echo $client->id; ?>"><?php echo UI::get_icon('delete', T_('Delete')); ?></a>
+        <a href="<?php echo $web_path; ?>/admin/users.php?action=delete&user_id=<?php echo $client->id; ?>"><?php echo UI::get_icon('delete', T_('Delete')); ?></a>
     </td>
        <?php
     if (($client->is_logged_in()) AND ($client->is_online())) {

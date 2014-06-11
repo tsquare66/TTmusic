@@ -1,5 +1,7 @@
 Ampache
 =======
+[www.ampache.org](http://www.ampache.org) |
+[ampache.github.io](http://ampache.github.io)
 
 Basics
 ------
@@ -19,6 +21,12 @@ Recommended Version
 -------------------
 
 Currently, the recommended version is [git HEAD](https://github.com/ampache/ampache/archive/master.tar.gz).
+[![Build Status](https://api.travis-ci.org/ampache/ampache.png?branch=master)](https://travis-ci.org/ampache/ampache)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ampache/ampache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ampache/ampache/?branch=master)
+
+Latest changes but unstable is [develop branch](https://github.com/ampache/ampache/archive/develop.tar.gz).
+[![Build Status](https://api.travis-ci.org/ampache/ampache.png?branch=develop)](https://travis-ci.org/ampache/ampache)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ampache/ampache/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/ampache/ampache/?branch=develop)
 
 Requirements
 ------------
@@ -63,16 +71,35 @@ as published by the Free Software Foundation.
 
 Ampache includes some external modules that carry their own licensing.
 
-* [getID3()](http://getid3.sourceforge.net/): GPL v2
-* [Horde_Browser](http://www.horde.org/): LGPL v2.1
+* [getID3](http://getid3.sourceforge.net): GPL v2
+* [Horde_Browser](http://www.horde.org): LGPL v2.1
 * [PHP-gettext](https://launchpad.net/php-gettext): GPL v2
-* php_musicbrainz: LGPL v2.1
+* [MusicBrainz](https://github.com/mikealmond/MusicBrainz): MIT
 * PHP MPD interface: GPL v2
 * [PHPMailer](https://github.com/PHPMailer/PHPMailer): LGPL v2.1
-* [Prototype](http://www.prototypejs.org/): MIT
-* [Snoopy](http://snoopy.sourceforge.net/): LGPL v2.1
+* [jQuery](http://jquery.org): MIT
+* [Requests](http://requests.ryanmccue.info): ISC Licensed
 * [Whatever:hover](http://www.xs4all.nl/~peterned): LGPL v2.1
 * [xbmc-php-rpc](https://github.com/karlrixon/xbmc-php-rpc): GPL v3
+* [Dropbox SDK](https://github.com/dropbox/dropbox-sdk-php): MIT
+* [jPlayer](http://jplayer.org): MIT
+* [prettyPhoto](http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone): GPL v2
+* [Tag-it!] (http://aehlke.github.io/tag-it): MIT
+* [PHP Echo Nest API] (https://github.com/bshaffer/php-echonest-api): MIT
+* [Noty] (http://ned.im/noty): MIT
+* [jScroll] (https://github.com/pklauzinski/jscroll): MIT
+* [jquery.qrcode] (http://jeromeetienne.github.io/jquery-qrcode): MIT
+* [PHP OpenID] (https://github.com/openid/php-openid): Apache License
+* [Ratchet] (http://socketo.me): MIT
+* [ReactPHP] (https://github.com/reactphp/react): MIT
+* [Guzzle] (https://github.com/guzzle/guzzle): MIT
+* [Symfony Components] (https://github.com/symfony): MIT
+* [Evenement] (https://github.com/igorw/evenement): MIT
+* [RhinoSlider] (http://rhinoslider.com): MIT
+* [MediaTable] (https://github.com/edenspiekermann/MediaTable): MIT
+* [Responsive Elements] (https://github.com/kumailht/responsive-elements): MIT
+* [Bootstrap] (http://getbootstrap.com): MIT
+
 
 Translations
 ------------
@@ -99,21 +126,7 @@ for more instructions.
 Credits
 -------
 
-Thanks to all those who have helped make Ampache awesome:
-
-* Scott Kveton: Original creator of Ampache, 2001 - 2003
-* Robert Hopson
-* Andy Morgan
-* RosenSama
-* latka
-* Lamar Hansford
-* Lacy Morrow
-* Karl Vollmer (vollmerk)
-* Paul Arthur MacIain (flowerysong)
-* Chris Slamar (cslamar)
-* Holger Brunn
-* Kevin Purdy (purdyk)
-* Charlie Smotherman (porthose)
+Thanks to all those who have helped make Ampache awesome: [Credits](docs/ACKNOWLEDGEMENTS)
 
 
 Contact Us

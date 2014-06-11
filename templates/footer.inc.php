@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,17 +26,21 @@
 <?php  if (true == $GLOBALS['isMobile']) { ?>
 	<div id="footer">
 	    <br>
-		<h3> <?php echo Config::get('version'); ?></h3>
+		<h3> <?php echo AmpConfig::get('version'); ?></h3>
 	</div>
 	</div> <!-- end id="maincontainer"-->
 	</div> 
 <?php } else {?>
 	</div> <!-- end id="maincontainer"-->
 	<div id="footer">
-	    <br>
-		<h3> <?php echo Config::get('version'); ?></h3>
+	    <a href="https://github.com/ampache/ampache#readme" target="_blank" title="Copyright © 2001 - 2014 Ampache.org">Ampache <?php echo AmpConfig::get('version'); ?></a><br />
+	    <?php echo T_('Queries:'); ?><?php echo Dba::$stats['query']; ?> <?php echo T_('Cache Hits:'); ?><?php echo database_object::$cache_hit; ?>
+	<?php
+	    $load_time_end = microtime(true);
+	    $load_time = number_format(($load_time_end - AmpConfig::get('load_time_begin')), 4);
+	?>
+	    | <?php echo T_('Load time:'); ?><?php echo $load_time; ?>
 	</div>
 <?php } ?>
-	
 </body>
 </html>

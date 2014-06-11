@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,14 +22,13 @@
 
 if ($playlist) {
     $logic_operator = $playlist->logic_operator;
-}
-else {
+} else {
     $logic_operator = $_REQUEST['operator'];
 }
 $logic_operator = strtolower($logic_operator);
 ?>
-<script type="text/javascript" src="<?php echo Config::get('web_path'); ?>/lib/javascript/search.js"></script>
-<script type="text/javascript" src="<?php echo Config::get('web_path'); ?>/lib/javascript/search-data.php?type=<?php echo $_REQUEST['type'] ? scrub_out($_REQUEST['type']) : 'song'; ?>"></script>
+<script type="text/javascript" src="<?php echo AmpConfig::get('web_path'); ?>/lib/javascript/search.js"></script>
+<script type="text/javascript" src="<?php echo AmpConfig::get('web_path'); ?>/lib/javascript/search-data.php?type=<?php echo $_REQUEST['type'] ? scrub_out($_REQUEST['type']) : 'song'; ?>"></script>
 
 <?php UI::show_box_top(T_('Rules') . "...", 'box box_rules'); ?>
 <table class="tabledata" cellpadding="3" cellspacing="0">
@@ -49,7 +48,7 @@ $logic_operator = strtolower($logic_operator);
             <?php echo UI::get_icon('add'); ?>
         <?php echo T_('Add Another Rule'); ?>
         </a>
-        <script type="text/javascript">Event.observe('addrowbutton', 'click', SearchRow.add);</script>
+        <script type="text/javascript">$('#addrowbutton').on('click', SearchRow.add);</script>
     </td>
     </tr>
 </tbody>
@@ -59,16 +58,14 @@ $logic_operator = strtolower($logic_operator);
 <?php
 if ($playlist) {
     $out = $playlist->to_js();
-}
-else {
+} else {
     $mysearch = new Search($_REQUEST['type']);
     $mysearch->parse_rules(Search::clean_request($_REQUEST));
     $out = $mysearch->to_js();
 }
 if ($out) {
     echo $out;
-}
-else {
+} else {
     echo '<script type="text/javascript">SearchRow.add();</script>';
 }
 ?>

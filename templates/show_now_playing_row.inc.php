@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,91 +21,83 @@
  */
 ?>
 <div class="np_group" id="np_group_1">
-  <div class="np_cell cel_username">
-    <label><?php echo T_('Username'); ?></label>
-      <a title="<?php echo scrub_out($agent); ?>" href="<?php echo $web_path; ?>/stats.php?action=show_user&amp;user_id=<?php echo $np_user->id; ?>">
-      <?php echo scrub_out($np_user->fullname); ?>
-    </a>
-  </div>
-
-  <div class="np_cell cel_rating">
-    <label><?php echo T_('Rating'); ?></label>
-    <div id="rating_<?php echo $media->id; ?>_song">
-      <?php Rating::show($media->id,'song'); ?>
+    <div class="np_cell cel_username">
+        <label><?php echo T_('Username'); ?></label>
+        <a title="<?php echo scrub_out($agent); ?>" href="<?php echo $web_path; ?>/stats.php?action=show_user&amp;user_id=<?php echo $np_user->id; ?>">
+        <?php echo scrub_out($np_user->fullname); ?>
+<?php
+        if ($np_user->f_avatar_medium) {
+            echo '<div>' . $np_user->f_avatar_medium . '</div>';
+        }
+?>
+        </a>
     </div>
-  </div>
-
-  <?php if (Config::get('show_lyrics')) {?>
-  <div class="np_cell cel_lyrics">
-      <label>&nbsp;</label>
-      <a title="<?php echo scrub_out($media->title); ?>" href="<?php echo $web_path; ?>/song.php?action=show_lyrics&amp;song_id=<?php echo $media->id; ?>">
-      <?php echo T_('Show Lyrics');?>
-      </a>
-  </div>
-  <?php } ?>
 </div>
 
 <div class="np_group" id="np_group_2">
-  <div class="np_cell cel_song">
-      <label><?php echo T_('Song'); ?></label>
-    <?php echo $media->f_link; ?>
-  </div>
-
-  <div class="np_cell cel_album">
-      <label><?php echo T_('Album'); ?></label>
-    <?php echo $media->f_album_link; ?>
-  </div>
-
-  <div class="np_cell cel_artist">
-      <label><?php echo T_('Artist'); ?></label>
-    <?php echo $media->f_artist_link; ?>
-  </div>
+    <div class="np_cell cel_song">
+        <label><?php echo T_('Song'); ?></label>
+        <?php echo $media->f_link; ?>
+    </div>
+    <div class="np_cell cel_album">
+        <label><?php echo T_('Album'); ?></label>
+        <?php echo $media->f_album_link; ?>
+    </div>
+    <div class="np_cell cel_artist">
+        <label><?php echo T_('Artist'); ?></label>
+        <?php echo $media->f_artist_link; ?>
+    </div>
+    <div id="np_song_tags_<?php echo $media->id?>" class="np_cell cel_artist">
+        <label><?php echo T_('Tags'); ?></label>
+        <?php echo $media->f_tags; ?>
+    </div>
 </div>
 
 <?php if (Art::is_enabled()) { ?>
 <div class="np_group" id="np_group_3">
   <div class="np_cell cel_albumart">
-      <a href="<?php echo $web_path; ?>/image.php?id=<?php echo $media->album; ?>" onclick="TINY.box.show({image:'<?php echo $web_path; ?>/image.php?id=<?php echo $media->album; ?>',boxid:'frameless',animate:true}); return false;">
-        <img align="middle" src="<?php echo $web_path; ?>/image.php?id=<?php echo $media->album; ?>&amp;thumb=1&amp;sid=<?php echo session_id(); ?>" alt="<?php echo scrub_out($media->f_album_full); ?>" title="<?php echo scrub_out($media->f_album_full); ?>" height="80" width="80" />
+      <a href="<?php echo $web_path; ?>/image.php?id=<?php echo $media->album; ?>" rel="prettyPhoto">
+        <img align="middle" src="<?php echo $web_path; ?>/image.php?id=<?php echo $media->album; ?>&amp;thumb=1" alt="<?php echo scrub_out($media->f_album_full); ?>" title="<?php echo scrub_out($media->f_album_full); ?>" height="80" width="80" />
       </a>
   </div>
 </div>
-<?php } // end play album art ?>
+<?php } ?>
 
-<?php if (Config::get('show_similar')) { ?>
-<div class="np_group">
-<?php if ($artists = Recommendation::get_artists_like($media->artist, 3, false)) { ?>
-    <div class="np_cel cel_similar">
-        <label><?php echo T_('Similar Artists'); ?></label>
-        <?php    foreach ($artists as $a) { ?>
-            <div class="np_cel cel_similar_artist">
-            <?php
-            if (is_null($a['id'])) {
-                echo scrub_out(UI::truncate($a['name']), Config::get('ellipse_threshold_artist'));
-            }
-            else {
-                $artist = new Artist($a['id']);
-                $artist->format();
-                echo $artist->f_name_link;
-            }
-            ?>
-            </div>
-        <?php } // end foreach ?> 
+<?php if (AmpConfig::get('show_similar')) { ?>
+<div class="np_group similars" id="similar_items_<?php echo $media->id; ?>">
+    <div class="np_group similars">
+        <div class="np_cell cel_similar">
+            <label><?php echo T_('Similar Artists'); ?></label>
+            <p><?php echo T_('Loading...'); ?></p>
+        </div>
     </div>
-<?php } // end show similar artists ?>
-<?php if ($songs = Recommendation::get_songs_like($media->id, 3)) { ?>
-    <div class="np_cel cel_similar">
-        <label><?php echo T_('Similar Songs'); ?></label>
-        <?php    foreach ($songs as $s) { ?>
-            <div class="np_cel cel_similar_song">
-            <?php
-            $song = new Song($s['id']);
-            $song->format();
-            echo $song->f_link;
-            ?>
-            </div>
-        <?php } // end foreach ?>
+    <div class="np_group similars">
+        <div class="np_cell cel_similar">
+            <label><?php echo T_('Similar Songs'); ?></label>
+            <p><?php echo T_('Loading...'); ?></p>
+        </div>
     </div>
-<?php } // end show similar songs ?>
 </div>
-<?php } // end show similar things ?>
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+    <?php echo Ajax::action('?page=index&action=similar_now_playing&media_id='.$media->id.'&media_artist='.$media->artist, 'similar_now_playing'); ?>
+});
+</script>
+<?php } ?>
+
+<div class="np_group" id="np_group_4">
+<?php if (AmpConfig::get('ratings')) { ?>
+    <div class="np_cell cel_rating">
+        <label><?php echo T_('Rating'); ?></label>
+        <div id="rating_<?php echo $media->id; ?>_song">
+            <?php Rating::show($media->id,'song'); ?>
+        </div>
+    </div>
+    <div class="np_cell cel_userflag">
+        <label><?php echo T_('Fav.'); ?></label>
+        <div id="userflag_<?php echo $media->id; ?>_song">
+            <?php Userflag::show($media->id,'song'); ?>
+        </div>
+    </div>
+<?php } ?>
+</div>

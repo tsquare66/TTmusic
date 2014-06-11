@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,15 +22,20 @@
 ?>
 
 <ul class="sb2" id="sb_localplay">
-<?php if ($server_allow = Config::get('allow_localplay_playback') AND $controller = Config::get('localplay_controller') AND $access_check = Access::check('localplay','5')) { ?>
+<?php
+$server_allow = AmpConfig::get('allow_localplay_playback');
+$controller = AmpConfig::get('localplay_controller');
+$access_check = Access::check('localplay','5');
+if ($server_allow && $controller && $access_check) {
+?>
 <?php
     // Little bit of work to be done here
-    $localplay = new Localplay(Config::get('localplay_controller'));
+    $localplay = new Localplay(AmpConfig::get('localplay_controller'));
     $current_instance = $localplay->current_instance();
     $class = $current_instance ? '' : ' class="active_instance"';
 ?>
 <?php if (Access::check('localplay','25')) { ?>
-  <li><h4><?php echo T_('Localplay'); ?></h4>
+  <li><h4 class="header"><?php echo T_('Localplay'); ?><span class="sprite sprite-icon_all <?php echo isset($_COOKIE['sb_localplay']) ? $_COOKIE['sb_localplay'] : 'expanded'; ?>" id="localplay" alt="<?php echo T_('Expand/Collapse'); ?>" title="<?php echo T_('Expand/Collapse'); ?>"></h4>
     <ul class="sb3" id="sb_localplay_info">
 <?php if (Access::check('localplay','75')) { ?>
     <li id="sb_localplay_info_add_instance"><a href="<?php echo $web_path; ?>/localplay.php?action=show_add_instance"><?php echo T_('Add Instance'); ?></a></li>
@@ -40,7 +45,7 @@
     </ul>
   </li>
 <?php } ?>
-  <li><h4><?php echo T_('Active Instance'); ?></h4>
+  <li><h4 class="header"><?php echo T_('Active Instance'); ?><span class="sprite sprite-icon_all <?php echo isset($_COOKIE['sb_active_instance']) ? $_COOKIE['sb_active_instance'] : 'expanded'; ?>" id="active_instance" alt="<?php echo T_('Expand/Collapse'); ?>" title="<?php echo T_('Expand/Collapse'); ?>"></h4>
     <ul class="sb3" id="sb_localplay_instances">
     <li id="sb_localplay_instances_none"<?php echo $class; ?>><?php echo Ajax::text('?page=localplay&action=set_instance&instance=0', T_('None'),'localplay_instance_none');  ?></li>
     <?php
@@ -58,7 +63,7 @@
     </ul>
   </li>
 <?php } else { ?>
-  <li><h4><?php echo T_('Localplay Disabled'); ?></h4></li>
+  <li><h4 class="header"><?php echo T_('Localplay Disabled'); ?><span class="sprite sprite-icon_all <?php echo isset($_COOKIE['sb_localplay_disabled']) ? $_COOKIE['sb_localplay_disabled'] : 'expanded'; ?>" id="localplay_disabled" alt="<?php echo T_('Expand/Collapse'); ?>" title="<?php echo T_('Expand/Collapse'); ?>"></h4></li>
   <?php if (!$server_allow) { ?>
     <li><?php echo T_('Allow Localplay set to False'); ?></li>
   <?php } elseif (!$controller) { ?>

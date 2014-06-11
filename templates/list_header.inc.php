@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -27,15 +27,38 @@
  * to layout this page.
  */
 
+ if (isset($is_header) && $is_header) {
+    $is_header = false;
+ } else {
+    $is_header = true;
+ }
+
 // Pull these variables out to allow shorthand (easier for lazy programmers)
 $limit    = $browse->get_offset();
 $start    = $browse->get_start();
 $total    = $browse->get_total();
-$uid    = Config::get('list_header_uid');
+if (isset($_REQUEST['browse_uid'])) {
+    $uid = $_REQUEST['browse_uid']++;
+} else {
+    $uid = AmpConfig::get('list_header_uid');
+    AmpConfig::set('list_header_uid', ++$uid, true);
+}
 $sides  = 5;
 
-// ++ the uid
-Config::set('list_header_uid', $uid + 1, true);
+?>
+<?php if (!$browse->get_use_pages() && !$is_header) { ?>
+<?php $this->show_next_link(); ?>
+</p>
+</div>
+<script type="text/javascript">
+$('#browse_<?php echo $browse->id; ?>_scroll').jscroll({
+    autoTrigger: true,
+    nextSelector: 'a.jscroll-next:last',
+    autoTriggerUntil: 5,
+});
+</script>
+<?php } ?>
+<?php
 
 // Next
 $next_offset = $start + $limit;
@@ -48,13 +71,35 @@ if ($prev_offset < 0) { $prev_offset = '0'; }
 /* Calculate how many pages total exist */
 if ($limit > 0 && $total > $limit) {
     $pages = ceil($total / $limit);
-}
-else {
+} else {
     $pages = 0;
 }
-
+?>
+<div class="list-header">
+<?php if ($browse->get_use_alpha()) { ?>
+    <div class="list-header-alpha">
+    <?php
+    $alphastr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $alphalist = str_split($alphastr);
+    $alphalist[] = '#';
+    foreach ($alphalist as $key => $value) {
+        $filter = '^';
+        if ($value == '#') {
+            $filter .= '[[:digit:]|[:punct:]]';
+        } else {
+            $filter .= $value;
+        }
+        if ($browse->get_filter('regex_match') == $filter) {
+            $value = '<b>' . $value . '</b>';
+        }
+        echo Ajax::text('?page=browse&action=browse&browse_id=' . $browse->id . '&key=regex_match&multi_alpha_filter=' . $filter, $value,'browse_' . $uid . '_alpha_' . $key,'');
+    }
+    ?>
+    </div>
+<?php } ?>
+<?php
 // are there enough items to even need this view?
-if ($pages > 1) {
+if ($pages > 1 && $start > -1) {
 
     /* Calculate current page and how many we have on each side */
     $page_data = array('up' => array(), 'down' => array());
@@ -62,8 +107,7 @@ if ($pages > 1) {
     // Can't divide by 0
     if ($start > 0) {
         $current_page = floor($start / $limit);
-    }
-    else {
+    } else {
         $current_page = 0;
     }
 
@@ -81,7 +125,7 @@ if ($pages > 1) {
     // Then up
     $page = $current_page + 1;
     $i = 0;
-    while ($page <= $pages) {
+    while ($page < $pages) {
         if ($page * $limit > $total) { break; }
         if ($i == $sides) {
             $key = $pages - 1;
@@ -98,18 +142,17 @@ if ($pages > 1) {
     ksort($page_data['up']);
     ksort($page_data['down']);
 ?>
-<div class="list-header">
-
-  <?php echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $prev_offset, T_('Prev'),'browse_' . $uid . 'prev','','prev'); ?>
-    <?php echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $next_offset, T_('Next'),'browse_' . $uid . 'next','','next'); ?>
+<?php if ($browse->get_use_pages()) { ?>
+    <?php echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $prev_offset . '&browse_uid=' . $uid, T_('Prev'),'browse_' . $uid . 'prev','','prev'); ?>
+    <?php echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $next_offset . '&browse_uid=' . $uid, T_('Next'),'browse_' . $uid . 'next','','next'); ?>
+    <?php echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=-1&browse_uid=' . $uid, T_('All'),'browse_' . $uid . 'all','','all'); ?>
     <?php
         /* Echo everything below us */
         foreach ($page_data['down'] as $page => $offset) {
-            if ($offset === '...') { echo '...&nbsp;'; }
-            else {
+            if ($offset === '...') { echo '...&nbsp;'; } else {
             // Hack Alert
             $page++;
-                echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $offset,$page,'browse_' . $uid . 'page_' . $page,'','page-nb');
+                echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $offset . '&browse_uid=' . $uid,$page,'browse_' . $uid . 'page_' . $page,'','page-nb');
             }
         } // end foreach down
 
@@ -121,13 +164,36 @@ if ($pages > 1) {
 
         /* Echo everything above us */
         foreach ($page_data['up'] as $page=>$offset) {
-            if ($offset === '...') { echo '...&nbsp;'; }
-            else {
-                echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $offset,$page,'browse_' . $uid . 'page_' . $page,'','page-nb');
+            if ($offset === '...') { echo '...&nbsp;'; } else {
+                echo Ajax::text('?page=browse&action=page&browse_id=' . $browse->id . '&start=' . $offset . '&browse_uid=' . $uid,$page,'browse_' . $uid . 'page_' . $page,'','page-nb');
             } // end else
         } // end foreach up
     ?>
-</div>
+    <input type="text" id="browse_custom_value" name="value" value="<?php echo $current_page; ?>" onKeyUp="delayRun(this, '500', 'ajaxState', '<?php echo Ajax::url('?page=browse&action=options&browse_id=' . $browse->id . '&option=custom'); ?>', 'browse_custom_value');">
 <?php
+    }
 } // if stuff
 ?>
+    &nbsp;
+    <span class="browse-options">
+        <a href="#" onClick="showFilters(this);" class="browse-options-link"><?php echo T_("Filters"); ?></a>
+        <span class="browse-options-content">
+            <span><input type="checkbox" id="browse_<?php echo $browse->id; ?>_use_pages_<?php echo $is_header; ?>" value="true" <?php echo (($browse->get_use_pages()) ? 'checked' : ''); ?> onClick="javascript:<?php echo Ajax::action("?page=browse&action=options&browse_id=" . $browse->id . "&option=use_pages&value=' + $('#browse_" . $browse->id . "_use_pages_" . $is_header . "').is(':checked') + '", "browse_" . $browse->id . "_use_pages_" . $is_header); ?>">Pages</span>
+            <span><input type="checkbox" id="browse_<?php echo $browse->id; ?>_use_scroll_<?php echo $is_header; ?>" value="true" <?php echo ((!$browse->get_use_pages()) ? 'checked' : ''); ?> onClick="javascript:<?php echo Ajax::action("?page=browse&action=options&browse_id=" . $browse->id . "&option=use_pages&value=' + !($('#browse_" . $browse->id . "_use_scroll_" . $is_header . "').is(':checked')) + '", "browse_" . $browse->id . "_use_scroll_" . $is_header); ?>">Infinite Scroll</span>
+            <span><input type="checkbox" id="browse_<?php echo $browse->id; ?>_use_alpha_<?php echo $is_header; ?>" value="true" <?php echo (($browse->get_use_alpha()) ? 'checked' : ''); ?> onClick="javascript:<?php echo Ajax::action("?page=browse&action=options&browse_id=" . $browse->id . "&option=use_alpha&value=' + $('#browse_" . $browse->id . "_use_alpha_" . $is_header . "').is(':checked') + '", "browse_" . $browse->id . "_use_alpha_" . $is_header); ?>">Alphabet</span>
+        <?php if ($browse->get_use_pages()) { ?>
+            <span>|</span>
+            <span>
+                <form id="browse_<?php echo $browse->id; ?>_limit_form_<?php echo $is_header; ?>" method="post" action="javascript:void(0);">
+                    <label id="limit_label_<?php echo $browse->id; ?>_<?php echo $is_header; ?>" for="multi_alpha_filter"><?php echo T_('Limit'); ?>:</label>
+                    <input type="text" id="limit_value_<?php echo $browse->id; ?>_<?php echo $is_header; ?>" name="value" value="<?php echo $browse->get_offset(); ?>" onKeyUp="delayRun(this, '800', 'ajaxState', '<?php echo Ajax::url('?page=browse&action=options&browse_id=' . $browse->id . '&option=limit'); ?>', 'limit_value_<?php echo $browse->id; ?>_<?php echo $is_header; ?>');">
+                </form>
+            </span>
+        <?php } ?>
+        </span>
+    </span>
+</div>
+<?php if (!$browse->get_use_pages() && $is_header) { ?>
+<div id="browse_<?php echo $browse->id; ?>_scroll">
+<p>
+<?php } ?>

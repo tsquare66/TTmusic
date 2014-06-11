@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
     case 'edit_shout':
         $shout_id = $_POST['shout_id'];
         $update = Shoutbox::update($_POST);
-        show_confirmation(T_('Shoutbox Post Updated'),'',Config::get('web_path').'/admin/shout.php');
+        show_confirmation(T_('Shoutbox Post Updated'),'',AmpConfig::get('web_path').'/admin/shout.php');
     break;
     case 'show_edit':
         $shout = new Shoutbox($_REQUEST['shout_id']);
@@ -42,11 +42,11 @@ switch ($_REQUEST['action']) {
         $object->format();
         $client = new User($shout->user);
         $client->format();
-        require_once Config::get('prefix') . '/templates/show_edit_shout.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_edit_shout.inc.php';
         break;
     case 'delete':
-        $shout_id = Shoutbox::delete($_REQUEST['shout_id']);
-        show_confirmation(T_('Shoutbox Post Deleted'),'',Config::get('web_path').'/admin/shout.php');
+        Shoutbox::delete($_REQUEST['shout_id']);
+        show_confirmation(T_('Shoutbox Post Deleted'),'',AmpConfig::get('web_path').'/admin/shout.php');
     break;
     default:
         $browse = new Browse();
@@ -59,4 +59,3 @@ switch ($_REQUEST['action']) {
 } // end switch on action
 
 UI::show_footer();
-?>

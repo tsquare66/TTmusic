@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -30,18 +30,31 @@ require_once '../modules/getid3/write.php';
 
 if (!defined('AJAX_INCLUDE')) { exit; }
 
-
-debug_event('tag.ajax.php' , 'Action:'.$_REQUEST['action'].' Browse ID:'.$_GET['browse_id'].' Tag ID:'.$_POST['tag_id'], '5');
-
-
+$results = array();
 switch ($_REQUEST['action']) {
     case 'show_add_tag':
 
     break;
+    case 'get_tag_map':
+        $tags = Tag::get_display(Tag::get_tags());
+        $results['tags'] = $tags;
+    break;
     case 'add_tag':
+        debug_event('tag.ajax', 'Adding new tag...', '5');
         Tag::add_tag_map($_GET['type'],$_GET['object_id'],$_GET['tag_id']);
     break;
-    case 'remove_tag':
+    case 'add_tag_by_name':
+        debug_event('tag.ajax', 'Adding new tag by name...', '5');
+        Tag::add($_GET['type'],$_GET['object_id'],$_GET['tag_name'], false);
+    break;
+    case 'delete':
+        debug_event('tag.ajax', 'Deleting tag...', '5');
+        $tag = new Tag($_GET['tag_id']);
+        $tag->delete();
+        header('Location: ' . AmpConfig::get('web_path') . '/browse.php?action=tag');
+        exit;
+    case 'remove_tag_map':
+        debug_event('tag.ajax', 'Removing tag map...', '5');
         $tag = new Tag($_GET['tag_id']);
         $tag->remove_map($_GET['type'],$_GET['object_id']);
     break;
@@ -52,11 +65,12 @@ switch ($_REQUEST['action']) {
     break;
     case 'add_filter':
         $browse = new Browse($_GET['browse_id']);
+        //$browse->set_filter('tag', $_GET['tag_id']);
         $browse->set_filter('tag', $_POST['tag_id']);
         $object_ids = $browse->get_objects();
         ob_start();
         $browse->show_objects($object_ids);
-        $results['browse_content'] = ob_get_clean();
+        $results['browse_content_' . $browse->get_type()] = ob_get_clean();
         $browse->store();
         // Retrieve current objects of type based on combined filters
     break;
@@ -77,5 +91,4 @@ switch ($_REQUEST['action']) {
 
 
 // We always do this
-echo xml_from_array($results);
-?>
+echo xoutput_from_array($results);

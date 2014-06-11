@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,8 +28,8 @@
  * are all static calls
  *
  */
-class XML_Data {
-
+class XML_Data
+{
     // This is added so that we don't pop any webservers
     private static $limit = '5000';
     private static $offset = '0';
@@ -40,8 +40,8 @@ class XML_Data {
      *
      * We don't use this, as its really a static class
      */
-    private function __construct() {
-
+    private function __construct()
+    {
         // Rien a faire
 
     } // constructor
@@ -54,8 +54,8 @@ class XML_Data {
      * @param    integer    $offset    (description here...)
      * @return    void
      */
-    public static function set_offset($offset) {
-
+    public static function set_offset($offset)
+    {
         $offset = intval($offset);
         self::$offset = $offset;
 
@@ -69,8 +69,8 @@ class XML_Data {
      * @param    integer    $limit    (description here...)
      * @return    void
      */
-    public static function set_limit($limit) {
-
+    public static function set_limit($limit)
+    {
         if (!$limit) { return false; }
 
         $limit = intval($limit);
@@ -86,8 +86,8 @@ class XML_Data {
      * @param    string    $type    XML_Data type
      * @return    void
      */
-    public static function set_type($type) {
-
+    public static function set_type($type)
+    {
         if (!in_array($type,array('rss','xspf','itunes'))) { return false; }
 
         self::$type = $type;
@@ -104,8 +104,8 @@ class XML_Data {
      * @param    string    $string    Error message
      * @return    string    return error message xml
      */
-    public static function error($code,$string) {
-
+    public static function error($code,$string)
+    {
         $string = self::_header() . "\t<error code=\"$code\"><![CDATA[$string]]></error>" . self::_footer();
         return $string;
 
@@ -120,9 +120,15 @@ class XML_Data {
      * @param    string    $string    xml data
      * @return    string    return xml
      */
-    public static function single_string($key,$string) {
-
-        $final = self::_header() . "\t<$key><![CDATA[$string]]></$key>" . self::_footer();
+    public static function single_string($key, $string='')
+    {
+        $final = self::_header();
+        if (!empty($string)) {
+            $final .= "\t<$key><![CDATA[$string]]></$key>";
+        } else {
+            $final .= "\t<$key />";
+        }
+        $final .= self::_footer();
 
         return $final;
 
@@ -136,8 +142,8 @@ class XML_Data {
      * @see    _header()
      * @return    string    return xml
      */
-    public static function header() {
-
+    public static function header()
+    {
         return self::_header();
 
     } // header
@@ -148,10 +154,10 @@ class XML_Data {
      * This returns the footer
      *
      * @see    _footer()
-     * @return    string    return xml    
+     * @return    string    return xml
      */
-    public static function footer() {
-
+    public static function footer()
+    {
         return self::_footer();
 
     } // footer
@@ -162,16 +168,16 @@ class XML_Data {
      * This returns the formatted 'tags' string for an xml document
      *
      */
-    private static function tags_string($tags) {
-
+    private static function tags_string($tags)
+    {
         $string = '';
 
         if (is_array($tags)) {
 
             foreach ($tags as $tag_id => $data) {
                 $tag = new Tag($tag_id);
-                $string .= "\t<tag id=\"" . $tag->id . 
-                    '" count="' . count($data['users']) . 
+                $string .= "\t<tag id=\"" . $tag->id .
+                    '" count="' . count($data['users']) .
                     '"><![CDATA[' . $tag->name . "]]></tag>\n";
             }
         }
@@ -189,25 +195,24 @@ class XML_Data {
      * @param    boolean    $callback    (description here...)
      * @return    string    return xml
      */
-    public static function keyed_array($array,$callback='') {
-
+    public static function keyed_array($array,$callback='')
+    {
         $string = '';
 
         // Foreach it
         foreach ($array as $key=>$value) {
             $attribute = '';
             // See if the key has attributes
-            if (is_array($value) AND isset($value['<attributes>'])) { 
-                $attribute = ' ' . $value['<attributes>']; 
-                $key = $value['value']; 
-            } 
+            if (is_array($value) AND isset($value['<attributes>'])) {
+                $attribute = ' ' . $value['<attributes>'];
+                $key = $value['value'];
+            }
 
             // If it's an array, run again
             if (is_array($value)) {
                 $value = self::keyed_array($value,1);
                 $string .= "<$key$attribute>\n$value\n</$key>\n";
-            }
-            else {
+            } else {
                 $string .= "\t<$key$attribute><![CDATA[$value]]></$key>\n";
             }
 
@@ -229,8 +234,8 @@ class XML_Data {
      * @param    array    $tags    (description here...)
      * @return    string    return xml
      */
-    public static function tags($tags) {
-
+    public static function tags($tags)
+    {
         if (count($tags) > self::$limit OR self::$offset > 0) {
             $tags = array_splice($tags,self::$offset,self::$limit);
         }
@@ -246,8 +251,8 @@ class XML_Data {
                     "\t<artists>" . intval($counts['artist']) . "</artists>\n" .
                     "\t<songs>" . intval($counts['song']) . "</songs>\n" .
                     "\t<videos>" . intval($counts['video']) . "</videos>\n" .
-                    "\t<playlists>" . intval($count['playlist']) . "</playlists>\n" .
-                    "\t<stream>" . intval($count['live_stream']) . "</stream>\n" .
+                    "\t<playlists>" . intval($counts['playlist']) . "</playlists>\n" .
+                    "\t<stream>" . intval($counts['live_stream']) . "</stream>\n" .
                     "</tag>\n";
         } // end foreach
 
@@ -266,8 +271,8 @@ class XML_Data {
      * @param    array    $artists    (description here...)
      * @return    string    return xml
      */
-    public static function artists($artists) {
-
+    public static function artists($artists)
+    {
         if (count($artists) > self::$limit OR self::$offset > 0) {
             $artists = array_splice($artists,self::$offset,self::$limit);
         }
@@ -283,14 +288,18 @@ class XML_Data {
             $rating = new Rating($artist_id,'artist');
             $tag_string = self::tags_string($artist->tags);
 
-            $string .= "<artist id=\"$artist->id\">\n" .
-                    "\t<name><![CDATA[$artist->f_full_name]]></name>\n" .
+            $string .= "<artist id=\"" . $artist->id . "\">\n" .
+                    "\t<name><![CDATA[" . $artist->f_full_name . "]]></name>\n" .
                     $tag_string .
-                    "\t<albums>$artist->albums</albums>\n" .
-                    "\t<songs>$artist->songs</songs>\n" .
+                    "\t<albums>" . $artist->albums . "</albums>\n" .
+                    "\t<songs>" . $artist->songs . "</songs>\n" .
                     "\t<preciserating>" . $rating->get_user_rating() . "</preciserating>\n" .
                     "\t<rating>" . $rating->get_user_rating() . "</rating>\n" .
                     "\t<averagerating>" . $rating->get_average_rating() . "</averagerating>\n" .
+                    "\t<mbid>" . $artist->mbid . "</mbid>\n" .
+                    "\t<summary>" . $artist->summary . "</summary>\n" .
+                    "\t<yearformed>" . $artist->summary . "</yearformed>\n" .
+                    "\t<placeformed>" . $artist->summary . "</placeformed>\n" .
                     "</artist>\n";
         } // end foreach artists
 
@@ -308,14 +317,15 @@ class XML_Data {
      * @param    array    $albums    (description here...)
      * @return    string    return xml
      */
-    public static function albums($albums) {
-
+    public static function albums($albums)
+    {
         if (count($albums) > self::$limit OR self::$offset > 0) {
             $albums = array_splice($albums,self::$offset,self::$limit);
         }
 
         Rating::build_cache('album',$albums);
 
+        $string = "";
         foreach ($albums as $album_id) {
             $album = new Album($album_id);
             $album->format();
@@ -323,27 +333,27 @@ class XML_Data {
             $rating = new Rating($album_id,'album');
 
             // Build the Art URL, include session
-            $art_url = Config::get('web_path') . '/image.php?id=' . $album->id . '&auth=' . scrub_out($_REQUEST['auth']);
+            $art_url = AmpConfig::get('web_path') . '/image.php?id=' . $album->id . '&auth=' . scrub_out($_REQUEST['auth']);
 
-            $string .= "<album id=\"$album->id\">\n" .
-                    "\t<name><![CDATA[$album->name]]></name>\n";
+            $string .= "<album id=\"" . $album->id . "\">\n" .
+                    "\t<name><![CDATA[" . $album->name . "]]></name>\n";
 
             // Do a little check for artist stuff
             if ($album->artist_count != 1) {
                 $string .= "\t<artist id=\"0\"><![CDATA[Various]]></artist>\n";
-            }
-            else {
+            } else {
                 $string .= "\t<artist id=\"$album->artist_id\"><![CDATA[$album->artist_name]]></artist>\n";
             }
 
-            $string .= "\t<year>$album->year</year>\n" .
-                    "\t<tracks>$album->song_count</tracks>\n" .
-                    "\t<disk>$album->disk</disk>\n" .
+            $string .= "\t<year>" . $album->year . "</year>\n" .
+                    "\t<tracks>" . $album->song_count . "</tracks>\n" .
+                    "\t<disk>" . $album->disk . "</disk>\n" .
                     self::tags_string($album->tags) .
                     "\t<art><![CDATA[$art_url]]></art>\n" .
                     "\t<preciserating>" . $rating->get_user_rating() . "</preciserating>\n" .
                     "\t<rating>" . $rating->get_user_rating() . "</rating>\n" .
                     "\t<averagerating>" . $rating->get_average_rating() . "</averagerating>\n" .
+                    "\t<mbid>" . $album->mbid . "</mbid>\n" .
                     "</album>\n";
         } // end foreach
 
@@ -361,8 +371,8 @@ class XML_Data {
      * @param    array    $playlists    (description here...)
      * @return    string    return xml
      */
-    public static function playlists($playlists) {
-
+    public static function playlists($playlists)
+    {
         if (count($playlists) > self::$limit OR self::$offset > 0) {
             $playlists = array_slice($playlists,self::$offset,self::$limit);
         }
@@ -399,8 +409,8 @@ class XML_Data {
      * This returns an xml document from an array of song ids.
      * (Spiffy isn't it!)
      */
-    public static function songs($songs) {
-
+    public static function songs($songs)
+    {
         if (count($songs) > self::$limit OR self::$offset > 0) {
             $songs = array_slice($songs, self::$offset, self::$limit);
         }
@@ -408,6 +418,7 @@ class XML_Data {
         Song::build_cache($songs);
         Stream::set_session($_REQUEST['auth']);
 
+        $string = "";
         // Foreach the ids!
         foreach ($songs as $song_id) {
             $song = new Song($song_id);
@@ -419,26 +430,27 @@ class XML_Data {
             $rating = new Rating($song_id, 'song');
             $art_url = Art::url($song->album, 'album', $_REQUEST['auth']);
 
-            $string .= "<song id=\"$song->id\">\n" .
-                "\t<title><![CDATA[$song->title]]></title>\n" .
-                "\t<artist id=\"" . $song->artist . 
+            $string .= "<song id=\"" . $song->id . "\">\n" .
+                "\t<title><![CDATA[" . $song->title . "]]></title>\n" .
+                "\t<artist id=\"" . $song->artist .
                     '"><![CDATA[' . $song->get_artist_name() .
                     "]]></artist>\n" .
-                "\t<album id=\"" . $song->album . 
+                "\t<album id=\"" . $song->album .
                     '"><![CDATA[' . $song->get_album_name().
                     "]]></album>\n" .
                 $tag_string .
-                "\t<track>$song->track</track>\n" .
-                "\t<time>$song->time</time>\n" .
-                "\t<year>$song->year</year>\n" .
-                "\t<bitrate>$song->bitrate</bitrate>\n".
-                "\t<mode>$song->mode</mode>\n".
-                "\t<mime>$song->mime</mime>\n" .
+                "\t<filename><![CDATA[" . $song->file . "]]></filename>\n" .
+                "\t<track>" . $song->track . "</track>\n" .
+                "\t<time>" . $song->time . "</time>\n" .
+                "\t<year>" . $song->year . "</year>\n" .
+                "\t<bitrate>" . $song->bitrate . "</bitrate>\n".
+                "\t<mode>" . $song->mode . "</mode>\n".
+                "\t<mime>" . $song->mime . "</mime>\n" .
                 "\t<url><![CDATA[" . Song::play_url($song->id) . "]]></url>\n" .
-                "\t<size>$song->size</size>\n".
-                "\t<mbid>$song->mbid</mbid>\n".
-                "\t<album_mbid>$song->album_mbid</album_mbid>\n".
-                "\t<artist_mbid>$song->artist_mbid</artist_mbid>\n".
+                "\t<size>" . $song->size . "</size>\n".
+                "\t<mbid>" . $song->mbid . "</mbid>\n".
+                "\t<album_mbid>" . $song->album_mbid . "</album_mbid>\n".
+                "\t<artist_mbid>" . $song->artist_mbid . "</artist_mbid>\n".
                 "\t<art><![CDATA[" . $art_url . "]]></art>\n" .
                 "\t<preciserating>" . $rating->get_user_rating() . "</preciserating>\n" .
                 "\t<rating>" . $rating->get_user_rating() . "</rating>\n" .
@@ -459,23 +471,22 @@ class XML_Data {
      * @param    array    $videos    (description here...)
      * @return    string    return xml
      */
-    public static function videos($videos) {
-
+    public static function videos($videos)
+    {
         if (count($videos) > self::$limit OR self::$offset > 0) {
             $videos = array_slice($videos,self::$offset,self::$limit);
         }
 
         $string = '';
-
         foreach ($videos as $video_id) {
             $video = new Video($video_id);
             $video->format();
 
-            $string .= "<video id=\"$video->id\">\n" .
-                    "\t<title><![CDATA[$video->title]]></title>\n" .
-                    "\t<mime><![CDATA[$video->mime]]></mime>\n" .
-                    "\t<resolution>$video->f_resolution</resolution>\n" .
-                    "\t<size>$video->size</size>\n" .
+            $string .= "<video id=\"" . $video->id . "\">\n" .
+                    "\t<title><![CDATA[" . $video->title . "]]></title>\n" .
+                    "\t<mime><![CDATA[" . $video->mime . "]]></mime>\n" .
+                    "\t<resolution>" . $video->f_resolution . "</resolution>\n" .
+                    "\t<size>" . $video->size . "</size>\n" .
                     self::tags_string($video->tags) .
                     "\t<url><![CDATA[" . Video::play_url($video->id) . "]]></url>\n" .
                     "</video>\n";
@@ -497,8 +508,8 @@ class XML_Data {
      * @param    array    $object_ids    Object IDs
      * @return    string    return xml
      */
-    public static function democratic($object_ids=array()) {
-
+    public static function democratic($object_ids=array())
+    {
         if (!is_array($object_ids)) { $object_ids = array(); }
 
         $democratic = Democratic::get_current_playlist();
@@ -510,29 +521,27 @@ class XML_Data {
             $song->format();
 
             //FIXME: This is duplicate code and so wrong, functions need to be improved
-            $tag_string = '';
-
             $tag = new Tag($song->tags['0']);
             $song->genre = $tag->id;
             $song->f_genre = $tag->name;
 
             $tag_string = self::tags_string($song->tags);
 
-            $rating = new Rating($song_id,'song');
+            $rating = new Rating($song->id,'song');
 
             $art_url = Art::url($song->album, 'album', $_REQUEST['auth']);
 
-            $string .= "<song id=\"$song->id\">\n" .
-                    "\t<title><![CDATA[$song->title]]></title>\n" .
-                    "\t<artist id=\"$song->artist\"><![CDATA[$song->f_artist_full]]></artist>\n" .
-                    "\t<album id=\"$song->album\"><![CDATA[$song->f_album_full]]></album>\n" .
-                    "\t<genre id=\"$song->genre\"><![CDATA[$song->f_genre]]></genre>\n" .
+            $string .= "<song id=\"" . $song->id . "\">\n" .
+                    "\t<title><![CDATA[" . $song->title . "]]></title>\n" .
+                    "\t<artist id=\"" . $song->artist . "\"><![CDATA[" . $song->f_artist_full . "]]></artist>\n" .
+                    "\t<album id=\"" . $song->album . "\"><![CDATA[" . $song->f_album_full . "]]></album>\n" .
+                    "\t<genre id=\"" . $song->genre . "\"><![CDATA[" . $song->f_genre . "]]></genre>\n" .
                     $tag_string .
-                    "\t<track>$song->track</track>\n" .
-                    "\t<time>$song->time</time>\n" .
-                    "\t<mime>$song->mime</mime>\n" .
+                    "\t<track>" . $song->track . "</track>\n" .
+                    "\t<time>" . $song->time . "</time>\n" .
+                    "\t<mime>" . $song->mime . "</mime>\n" .
                     "\t<url><![CDATA[" . Song::play_url($song->id) . "]]></url>\n" .
-                    "\t<size>$song->size</size>\n" .
+                    "\t<size>" . $song->size . "</size>\n" .
                     "\t<art><![CDATA[" . $art_url . "]]></art>\n" .
                     "\t<preciserating>" . $rating->get_user_rating() . "</preciserating>\n" .
                     "\t<rating>" . $rating->get_user_rating() . "</rating>\n" .
@@ -558,10 +567,12 @@ class XML_Data {
      * @param    string    $description    (not use yet?)
      * @param    string    $date    publish date
      * @return    string    RSS feed xml
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public static function rss_feed($data,$title,$description,$date) {
-
-        $string = "\t<title>$title</title>\n\t<link>" . Config::get('web_path') . "</link>\n\t" .
+    public static function rss_feed($data,$title,$description,$date)
+    {
+        $string = "\t<title>$title</title>\n\t<link>" . AmpConfig::get('web_path') . "</link>\n\t" .
             "<pubDate>" . date("r",$date) . "</pubDate>\n";
 
         // Pass it to the keyed array xml function
@@ -584,21 +595,21 @@ class XML_Data {
      *
      * @return    string    Header xml tag.
      */
-    private static function _header() {
-
+    private static function _header()
+    {
         switch (self::$type) {
             case 'xspf':
                 $header = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" .
                         "<playlist version = \"1\" xmlns=\"http://xspf.org/ns/0/\">\n " .
                         "<title>Ampache XSPF Playlist</title>\n" .
-                        "<creator>" . scrub_out(Config::get('site_title')) . "</creator>\n" .
-                        "<annotation>" . scrub_out(Config::get('site_title')) . "</annotation>\n" .
-                        "<info>". Config::get('web_path') ."</info>\n" .
+                        "<creator>" . scrub_out(AmpConfig::get('site_title')) . "</creator>\n" .
+                        "<annotation>" . scrub_out(AmpConfig::get('site_title')) . "</annotation>\n" .
+                        "<info>". AmpConfig::get('web_path') ."</info>\n" .
                         "<trackList>\n";
             break;
             case 'itunes':
                 $header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-                "<!-- XML Generated by Ampache v." .  Config::get('version') . " -->\n";
+                "<!-- XML Generated by Ampache v." .  AmpConfig::get('version') . " -->\n";
                 "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\"\n" .
                 "\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" .
                 "<plist version=\"1.0\">\n" .
@@ -612,12 +623,12 @@ class XML_Data {
                 "       <dict>\n";
             break;
             case 'rss':
-                $header = "<?xml version=\"1.0\" encoding=\"" . Config::get('site_charset') . "\" ?>\n " .
-                    "<!-- RSS Generated by Ampache v." . Config::get('version') . " on " . date("r",time()) . "-->\n" .
+                $header = "<?xml version=\"1.0\" encoding=\"" . AmpConfig::get('site_charset') . "\" ?>\n " .
+                    "<!-- RSS Generated by Ampache v." . AmpConfig::get('version') . " on " . date("r",time()) . "-->\n" .
                     "<rss version=\"2.0\">\n<channel>\n";
             break;
             default:
-                $header = "<?xml version=\"1.0\" encoding=\"" . Config::get('site_charset') . "\" ?>\n<root>\n";
+                $header = "<?xml version=\"1.0\" encoding=\"" . AmpConfig::get('site_charset') . "\" ?>\n<root>\n";
             break;
         } // end switch
 
@@ -632,8 +643,8 @@ class XML_Data {
      *
      * @return    string    Footer xml tag.
      */
-    private static function _footer() {
-
+    private static function _footer()
+    {
         switch (self::$type) {
             case 'itunes':
                 $footer = "\t\t</dict>\t\n</dict>\n</plist>\n";
@@ -655,5 +666,3 @@ class XML_Data {
     } // _footer
 
 } // XML_Data
-
-?>

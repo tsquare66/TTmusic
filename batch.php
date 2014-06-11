@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,17 +20,22 @@
  *
  */
 
-require_once 'lib/init.php';
-ob_end_clean();
+if (!defined('NO_SESSION')) {
+    require_once 'lib/init.php';
+}
 
+ob_end_clean();
 //test that batch download is permitted
-if (!Access::check_function('batch_download')) {
+if (!defined('NO_SESSION') && !Access::check_function('batch_download')) {
     UI::access_denied();
     exit;
 }
 
 /* Drop the normal Time limit constraints, this can take a while */
 set_time_limit(0);
+
+$media_ids = array();
+$name = "Unknown.zip";
 
 switch ($_REQUEST['action']) {
     case 'tmp_playlist':
@@ -45,19 +50,25 @@ switch ($_REQUEST['action']) {
     case 'smartplaylist':
         $search = new Search('song', $_REQUEST['id']);
         $sql = $search->to_sql();
-        $sql = $sql['base'] . ' ' . $sql['table_sql'] . ' WHERE ' . 
+        $sql = $sql['base'] . ' ' . $sql['table_sql'] . ' WHERE ' .
             $sql['where_sql'];
         $db_results = Dba::read($sql);
-        $media_ids = array();
         while ($row = Dba::fetch_assoc($db_results)) {
             $media_ids[] = $row['id'];
         }
         $name = $search->name;
     break;
     case 'album':
-        $album = new Album($_REQUEST['id']);
-        $media_ids = $album->get_songs();
-        $name = $album->name;
+        foreach ($_REQUEST['id'] as $a) {
+            $album = new Album($a);
+            if (empty($name)) {
+                $name = $album->name;
+            }
+            $asongs = $album->get_songs();
+            foreach ($asongs as $song_id) {
+                $media_ids[] = $song_id;
+            }
+        }
     break;
     case 'artist':
         $artist = new Artist($_REQUEST['id']);
@@ -68,7 +79,6 @@ switch ($_REQUEST['action']) {
         $id = scrub_in($_REQUEST['browse_id']);
         $browse = new Browse($id);
         $browse_media_ids = $browse->get_saved();
-        $media_ids = array();
         foreach ($browse_media_ids as $media_id) {
             switch ($_REQUEST['type']) {
                 case 'album':
@@ -91,7 +101,8 @@ switch ($_REQUEST['action']) {
 
 // Take whatever we've got and send the zip
 $song_files = get_song_files($media_ids);
-set_memory_limit($song_files['1']+32);
-send_zip($name,$song_files['0']);
+if (is_array($song_files['0'])) {
+    set_memory_limit($song_files['1']+32);
+    send_zip($name,$song_files['0']);
+}
 exit;
-?>

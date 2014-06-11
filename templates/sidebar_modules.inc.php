@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,22 +21,21 @@
  */
 ?>
 <ul class="sb2" id="sb_modules">
-<li><h4><?php echo T_('Modules'); ?></h4>
+<li><h4 class="header"><?php echo T_('Modules'); ?><span class="sprite sprite-icon_all <?php echo isset($_COOKIE['sb_modules']) ? $_COOKIE['sb_modules'] : 'expanded'; ?>" id="modules" alt="<?php echo T_('Expand/Collapse'); ?>" title="<?php echo T_('Expand/Collapse'); ?>"></span></h4>
         <ul class="sb3" id="sb_Modules">
         <li id="sb_preferences_mo_localplay"><a href="<?php echo $web_path; ?>/admin/modules.php?action=show_localplay"><?php echo T_('Localplay Modules'); ?></a></li>
+        <li id="sb_preferences_mo_catalog_types"><a href="<?php echo $web_path; ?>/admin/modules.php?action=show_catalog_types"><?php echo T_('Catalog Modules'); ?></a></li>
         <li id="sb_preferences_mo_plugins"><a href="<?php echo $web_path; ?>/admin/modules.php?action=show_plugins"><?php echo T_('Available Plugins'); ?></a></li>
         </ul>
 </li>
-  <li><h4><?php echo T_('Other Tools'); ?></h4>
+  <li><h4 class="header"><?php echo T_('Other Tools'); ?><span class="sprite sprite-icon_all <?php echo isset($_COOKIE['sb_md_other_tools']) ? $_COOKIE['sb_md_other_tools'] : 'expanded'; ?>" id="md_other_tools" alt="<?php echo T_('Expand/Collapse'); ?>" title="<?php echo T_('Expand/Collapse'); ?>"></span></h4>
     <ul class="sb3" id="sb_admin_ot">
       <li id="sb_admin_ot_Duplicates"><a href="<?php echo $web_path; ?>/admin/duplicates.php"><?php echo T_('Find Duplicates'); ?></a></li>
       <li id="sb_admin_ot_Mail"><a href="<?php echo $web_path; ?>/admin/mail.php"><?php echo T_('Mail Users'); ?></a></li>
-      <li id="sb_admin_ot_ManageFlagged"><a href="<?php echo $web_path; ?>/admin/flag.php"><?php echo T_('Manage Flagged'); ?></a></li>
-      <li id="sb_admin_ot_ShowDisabled"><a href="<?php echo $web_path; ?>/admin/flag.php?action=show_disabled"><?php echo T_('Show Disabled'); ?></a></li>
     </ul>
   </li>
 <!--
-<?php if (Config::get('allow_democratic_playback')) { ?>
+<?php if (AmpConfig::get('allow_democratic_playback')) { ?>
   <li><h4><?php echo T_('Democratic'); ?></h4>
     <ul class="sb3" id="sb_home_democratic">
       <li id="sb_home_democratic_playlist"><a href="<?php echo $web_path; ?>/democratic.php?action=manage_playlists"><?php echo T_('Manage Playlist'); ?></a></li>

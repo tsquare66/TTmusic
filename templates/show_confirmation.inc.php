@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -24,15 +24,15 @@ $confirmation = Core::form_register($form_name);
 ?>
 <?php UI::show_box_top(scrub_out($title), 'box box_confirmation'); ?>
 <?php echo $text; ?>
-<br />
+    <br />
     <form method="post" action="<?php echo $path; ?>" style="display:inline;">
-    <input type="submit" value="<?php echo T_('Continue'); ?>" />
-    <?php echo $confirmation; ?>
+        <input type="submit" value="<?php echo T_('Continue'); ?>" />
+        <?php echo $confirmation; ?>
     </form>
 <?php if ($cancel) { ?>
-    <form method="post" action="<?php echo Config::get('web_path') . '/' . return_referer(); ?>" style="display:inline;">
-    <input type="submit" value="<?php echo T_('Cancel'); ?>" />
-    <?php echo $confirmation; ?>
+    <form method="post" action="<?php echo AmpConfig::get('web_path') . '/' . return_referer(); ?>" style="display:inline;">
+        <input type="submit" value="<?php echo T_('Cancel'); ?>" />
+        <?php echo $confirmation; ?>
     </form>
 <?php } ?>
 <?php UI::show_box_bottom(); ?>

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -30,6 +30,7 @@ function refresh()
 {
     <?php echo Ajax::action($ajax_url, ''); ?>;
 }
-
-new PeriodicalExecuter(refresh, refreshInterval);
+$(document).ready(function() {
+window.setInterval(function(){refresh();}, refreshInterval * 1000);
+});
 </script>

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,26 +20,32 @@
  *
  */
 
-$web_path = Config::get('web_path');
-$theme_path = Config::get('theme_path') . '/templates';
+$web_path = AmpConfig::get('web_path');
+$theme_path = AmpConfig::get('theme_path') . '/templates';
 ?>
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/base.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/default.css" type="text/css" media="screen" />
 <?php
-if (is_rtl(Config::get('lang'))
-    && is_file(Config::get('prefix') . '/themes' . $theme_path . '/rtl.css')) {
+if (file_exists(AmpConfig::get('prefix') . $theme_path . '/icons.sprite.css')) {
+?>
+<link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/icons.sprite.css" type="text/css" media="screen" />
+<?php
+}
+?>
+<?php
+if (is_rtl(AmpConfig::get('lang'))
+    && is_file(AmpConfig::get('prefix') . '/themes' . $theme_path . '/rtl.css')) {
 ?>
 <link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/rtl.css type="text/css" media="screen" />
 <?php
 }
 ?>
-<link rel="stylesheet" href="<?php echo $web_path; ?>/modules/tinybox/tinybox.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="<?php echo $web_path; ?>/templates/print.css" type="text/css" media="print" />
 
 <?php if (true == $GLOBALS['isMobile'])
 { ?>
-   <meta name="viewport" content="width=320, user-scalable = no" />
+   <meta name="viewport" content="width=320, initial-scale=1.0, user-scalable=no" />
 <?php } ?>
 
-
-
+<link rel="stylesheet" href="<?php echo $web_path; ?>/modules/prettyPhoto/css/prettyPhoto.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="<?php echo $web_path; ?>/templates/jquery-ui.custom.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="<?php echo $web_path; ?>/templates/print.css" type="text/css" media="print" />

@@ -75,6 +75,7 @@ DROP TABLE IF EXISTS `album`;
 CREATE TABLE `album` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `band` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `prefix` varchar(32) CHARACTER SET utf8 DEFAULT NULL,
   `mbid` varchar(36) COLLATE utf8_unicode_ci DEFAULT NULL,
   `year` int(4) unsigned NOT NULL DEFAULT '1984',
@@ -237,39 +238,6 @@ CREATE TABLE `dynamic_playlist_data` (
 LOCK TABLES `dynamic_playlist_data` WRITE;
 /*!40000 ALTER TABLE `dynamic_playlist_data` DISABLE KEYS */;
 /*!40000 ALTER TABLE `dynamic_playlist_data` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `flagged`
---
-
-DROP TABLE IF EXISTS `flagged`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `flagged` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `object_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `object_type` enum('artist','album','song') CHARACTER SET utf8 DEFAULT NULL,
-  `user` int(11) NOT NULL,
-  `flag` enum('delete','retag','reencode','other') CHARACTER SET utf8 DEFAULT NULL,
-  `date` int(11) unsigned NOT NULL DEFAULT '0',
-  `approved` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `comment` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `date` (`date`,`approved`),
-  KEY `object_id` (`object_id`),
-  KEY `object_type` (`object_type`),
-  KEY `user` (`user`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `flagged`
---
-
-LOCK TABLES `flagged` WRITE;
-/*!40000 ALTER TABLE `flagged` DISABLE KEYS */;
-/*!40000 ALTER TABLE `flagged` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -585,7 +553,7 @@ CREATE TABLE `preference` (
 
 LOCK TABLES `preference` WRITE;
 /*!40000 ALTER TABLE `preference` DISABLE KEYS */;
-INSERT INTO `preference` VALUES (1,'download','0','Allow Downloads',100,'boolean','options'),(4,'popular_threshold','10','Popular Threshold',25,'integer','interface'),(19,'sample_rate','32','Transcode Bitrate',25,'string','streaming'),(22,'site_title','Ampache :: Pour l\'Amour de la Musique','Website Title',100,'string','system'),(23,'lock_songs','0','Lock Songs',100,'boolean','system'),(24,'force_http_play','1','Forces Http play regardless of port',100,'boolean','system'),(25,'http_port','80','Non-Standard Http Port',100,'integer','system'),(41,'localplay_controller','0','Localplay Type',100,'special','options'),(29,'play_type','stream','Type of Playback',25,'special','streaming'),(31,'lang','fr_FR','Language',100,'special','interface'),(32,'playlist_type','m3u','Playlist Type',100,'special','playlist'),(33,'theme_name','classic','Theme',0,'special','interface'),(34,'ellipse_threshold_album','27','Album Ellipse Threshold',0,'integer','interface'),(35,'ellipse_threshold_artist','27','Artist Ellipse Threshold',0,'integer','interface'),(36,'ellipse_threshold_title','27','Title Ellipse Threshold',0,'integer','interface'),(51,'offset_limit','50','Offset Limit',5,'integer','interface'),(40,'localplay_level','0','Localplay Access',100,'special','options'),(44,'allow_stream_playback','1','Allow Streaming',100,'boolean','system'),(45,'allow_democratic_playback','0','Allow Democratic Play',100,'boolean','system'),(46,'allow_localplay_playback','0','Allow Localplay Play',100,'boolean','system'),(47,'stats_threshold','7','Statistics Day Threshold',25,'integer','interface'),(49,'min_object_count','1','Min Element Count',5,'integer','interface'),(52,'rate_limit','8192','Rate Limit',100,'integer','streaming'),(53,'playlist_method','default','Playlist Method',5,'string','playlist'),(55,'transcode','default','Transcoding',25,'string','streaming'),(57,'tags_userlist','','User to track',0,'string','tags'),(69,'show_lyrics','0','Show Lyrics',0,'boolean','interface'),(70,'mpd_active','0','MPD Active Instance',25,'integer','internal'),(71,'httpq_active','0','HTTPQ Active Instance',25,'integer','internal'),(72,'shoutcast_active','0','Shoutcast Active Instance',25,'integer','internal'),(73,'lastfm_user','','Last.FM Username',25,'string','plugins'),(74,'lastfm_pass','','Last.FM Password',25,'string','plugins'),(75,'lastfm_port','','Last.FM Submit Port',25,'string','internal'),(76,'lastfm_host','','Last.FM Submit Host',25,'string','internal'),(77,'lastfm_url','','Last.FM Submit URL',25,'string','internal'),(78,'lastfm_challenge','','Last.FM Submit Challenge',25,'string','internal'),(79,'bandwidth','50','Bandwidth',5,'integer','interface'),(80,'features','50','Features',5,'integer','interface');
+INSERT INTO `preference` VALUES (1,'download','0','Allow Downloads',100,'boolean','options'),(4,'popular_threshold','10','Popular Threshold',25,'integer','interface'),(19,'sample_rate','32','Transcode Bitrate',25,'string','streaming'),(22,'site_title','Ampache :: For the love of Music','Website Title',100,'string','system'),(23,'lock_songs','0','Lock Songs',100,'boolean','system'),(24,'force_http_play','0','Forces Http play regardless of port',100,'boolean','system'),(25,'http_port','80','Non-Standard Http Port',100,'integer','system'),(41,'localplay_controller','0','Localplay Type',100,'special','options'),(29,'play_type','stream','Type of Playback',25,'special','streaming'),(31,'lang','fr_FR','Language',100,'special','interface'),(32,'playlist_type','m3u','Playlist Type',100,'special','playlist'),(33,'theme_name','reborn','Theme',0,'special','interface'),(51,'offset_limit','50','Offset Limit',5,'integer','interface'),(40,'localplay_level','0','Localplay Access',100,'special','options'),(44,'allow_stream_playback','1','Allow Streaming',100,'boolean','system'),(45,'allow_democratic_playback','0','Allow Democratic Play',100,'boolean','system'),(46,'allow_localplay_playback','0','Allow Localplay Play',100,'boolean','system'),(47,'stats_threshold','7','Statistics Day Threshold',25,'integer','interface'),(52,'rate_limit','8192','Rate Limit',100,'integer','streaming'),(53,'playlist_method','default','Playlist Method',5,'string','playlist'),(55,'transcode','default','Transcoding',25,'string','streaming'),(69,'show_lyrics','0','Show Lyrics',0,'boolean','interface'),(70,'mpd_active','0','MPD Active Instance',25,'integer','internal'),(71,'httpq_active','0','HTTPQ Active Instance',25,'integer','internal'),(72,'shoutcast_active','0','Shoutcast Active Instance',25,'integer','internal'),(73,'lastfm_user','','Last.FM Username',25,'string','plugins'),(74,'lastfm_pass','','Last.FM Password',25,'string','plugins'),(75,'lastfm_port','','Last.FM Submit Port',25,'string','internal'),(76,'lastfm_host','','Last.FM Submit Host',25,'string','internal'),(77,'lastfm_url','','Last.FM Submit URL',25,'string','internal'),(78,'lastfm_challenge','','Last.FM Submit Challenge',25,'string','internal'),(80,'features','50','Features',5,'integer','interface');
 /*!40000 ALTER TABLE `preference` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -712,9 +680,9 @@ CREATE TABLE `song` (
   `file` varchar(4096) COLLATE utf8_unicode_ci DEFAULT NULL,
   `catalog` int(11) unsigned NOT NULL DEFAULT '0',
   `album` int(11) unsigned NOT NULL DEFAULT '0',
-  `band` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `year` mediumint(4) unsigned NOT NULL DEFAULT '0',
   `artist` int(11) unsigned NOT NULL DEFAULT '0',
+  `band` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `title` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `bitrate` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `rate` mediumint(8) unsigned NOT NULL DEFAULT '0',
@@ -1012,7 +980,7 @@ CREATE TABLE `user_preference` (
 
 LOCK TABLES `user_preference` WRITE;
 /*!40000 ALTER TABLE `user_preference` DISABLE KEYS */;
-INSERT INTO `user_preference` VALUES (-1,1,'1'),(-1,4,'10'),(-1,19,'32'),(-1,22,'Ampache :: Pour l\'Amour de la Musique'),(-1,23,'0'),(-1,24,'1'),(-1,25,'80'),(-1,41,'mpd'),(-1,29,'stream'),(-1,31,'en_US'),(-1,32,'m3u'),(-1,33,'classic'),(-1,34,'27'),(-1,35,'27'),(-1,36,'27'),(-1,51,'50'),(-1,40,'100'),(-1,44,'1'),(-1,45,'1'),(-1,46,'1'),(-1,47,'7'),(-1,49,'1'),(-1,52,'8192'),(-1,53,'default'),(-1,55,'default'),(-1,57,''),(-1,69,'0'),(-1,70,'0'),(-1,71,'0'),(-1,72,'0'),(-1,73,''),(-1,74,''),(-1,75,''),(-1,76,''),(-1,77,''),(-1,78,''),(1,1,'1'),(1,4,'10'),(1,19,'32'),(1,41,'mpd'),(1,29,'stream'),(1,31,'en_US'),(1,32,'m3u'),(1,33,'classic'),(1,34,'27'),(1,35,'27'),(1,36,'27'),(1,51,'50'),(1,40,'100'),(1,47,'7'),(1,49,'1'),(1,52,'8192'),(1,53,'default'),(1,55,'default'),(1,57,''),(1,69,'0'),(1,70,'0'),(1,71,'0'),(1,72,'0'),(1,73,''),(1,74,''),(1,75,''),(1,76,''),(1,77,''),(1,78,''),(-1,79,'50'),(-1,80,'50'),(1,79,'50'),(1,80,'50');
+INSERT INTO `user_preference` VALUES (-1,1,'1'),(-1,4,'10'),(-1,19,'32'),(-1,22,'Ampache :: For the love of Music'),(-1,23,'0'),(-1,24,'0'),(-1,25,'80'),(-1,41,'mpd'),(-1,29,'stream'),(-1,31,'en_US'),(-1,32,'m3u'),(-1,33,'reborn'),(-1,34,'27'),(-1,35,'27'),(-1,36,'27'),(-1,51,'50'),(-1,40,'100'),(-1,44,'1'),(-1,45,'1'),(-1,46,'1'),(-1,47,'7'),(-1,49,'1'),(-1,52,'8192'),(-1,53,'default'),(-1,55,'default'),(-1,57,''),(-1,69,'0'),(-1,70,'0'),(-1,71,'0'),(-1,72,'0'),(-1,73,''),(-1,74,''),(-1,75,''),(-1,76,''),(-1,77,''),(-1,78,''),(1,1,'1'),(1,4,'10'),(1,19,'32'),(1,41,'mpd'),(1,29,'stream'),(1,31,'en_US'),(1,32,'m3u'),(1,33,'reborn'),(1,34,'27'),(1,35,'27'),(1,36,'27'),(1,51,'50'),(1,40,'100'),(1,47,'7'),(1,49,'1'),(1,52,'8192'),(1,53,'default'),(1,55,'default'),(1,57,''),(1,69,'0'),(1,70,'0'),(1,71,'0'),(1,72,'0'),(1,73,''),(1,74,''),(1,75,''),(1,76,''),(1,77,''),(1,78,''),(-1,79,'50'),(-1,80,'50'),(1,79,'50'),(1,80,'50');
 /*!40000 ALTER TABLE `user_preference` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -48,7 +48,7 @@ $sql = "SELECT `catalog`.`id` FROM `song` INNER JOIN `catalog` ON `song`.`catalo
 $db_results = Dba::read($sql);
 $results = Dba::fetch_assoc($db_results);
 
-$catalog = new Catalog($results['id']);
+$catalog = Catalog::create_from_id($results['id']);
 
 $dir_pattern = $catalog->sort_pattern;
 $file_pattern = $catalog->rename_pattern;

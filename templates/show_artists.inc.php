@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,58 +22,68 @@
 
 session_start();
 
-$web_path = Config::get('web_path');
-
+$web_path = AmpConfig::get('web_path');
+$thcount = 8;
 ?>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
-<table class="tabledata" cellpadding="0" cellspacing="0">
-<colgroup>
-  <col id="col_add" />
-  <col id="col_artist" />
-  <col id="col_songs" />
-  <col id="col_albums" />
-  <col id="col_time" />
-  <col id="col_tags" />
-  <col id="col_rating" />
-  <col id="col_action" />
-</colgroup>
-<tr class="th-top">
-    <th class="cel_add"><?php echo T_('Add'); ?></th>
-    <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=artist&sort=name', T_('Artist'),'artist_sort_name'); ?></th>
-    <th class="cel_songs"><?php echo T_('Songs');  ?></th>
-    <th class="cel_albums"><?php echo T_('Albums'); ?></th>
-    <th class="cel_time"><?php echo T_('Time'); ?></th>
-    <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="cel_rating"> <?php echo T_('Rating'); ?> </th>
-    <th class="cel_action"> <?php echo T_('Action'); ?> </th>
-</tr>
-<?php
-// Cache the ratings we are going to use
-if (Config::get('ratings')) { Rating::build_cache('artist',$object_ids); }
+<?php if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php'; ?>
+<table class="tabledata" cellpadding="0" cellspacing="0" data-objecttype="artist">
+    <thead>
+        <tr class="th-top">
+            <th class="cel_play essential"></th>
+            <th class="cel_artist essential persist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=artist&sort=name', T_('Artist'),'artist_sort_name'); ?></th>
+            <th class="cel_add essential"></th>
+            <th class="cel_songs optional"><?php echo T_('Songs');  ?></th>
+            <th class="cel_albums optional"><?php echo T_('Albums'); ?></th>
+            <th class="cel_time optional"><?php echo T_('Time'); ?></th>
+            <th class="cel_tags optional"><?php echo T_('Tags'); ?></th>
+        <?php if (AmpConfig::get('ratings')) { ++$thcount; ?>
+            <th class="cel_rating optional"><?php echo T_('Rating'); ?></th>
+        <?php } ?>
+        <?php if (AmpConfig::get('userflags')) { ++$thcount; ?>
+            <th class="cel_userflag optional"><?php echo T_('Fav.'); ?></th>
+        <?php } ?>
+            <th class="cel_action essential"><?php echo T_('Action'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        // Cache the ratings we are going to use
+        if (AmpConfig::get('ratings')) { Rating::build_cache('artist',$object_ids); }
+        if (AmpConfig::get('userflags')) { Userflag::build_cache('artist',$object_ids); }
 
-/* Foreach through every artist that has been passed to us */
-foreach ($object_ids as $artist_id) {
-        $artist = new Artist($artist_id, $_SESSION['catalog']);
-        $artist->format();
-?>
-<tr id="artist_<?php echo $artist->id; ?>" class="<?php echo UI::flip_class(); ?>">
-    <?php require Config::get('prefix') . '/templates/show_artist_row.inc.php'; ?>
-</tr>
-<?php } //end foreach ($artists as $artist) ?>
-<?php if (!count($object_ids)) { ?>
-<tr class="<?php echo UI::flip_class(); ?>">
-    <td colspan="5"><span class="fatalerror"><?php echo T_('Not Enough Data'); ?></span></td>
-</tr>
-<?php } ?>
-<tr class="th-bottom">
-    <th class="cel_add"><?php echo T_('Add'); ?></th>
-    <th class="cel_artist"><?php echo Ajax::text('?page=browse&action=set_sort&type=artist&browse_id=' . $browse->id . '&sort=name', T_('Artist'),'artist_sort_name_bottom'); ?></th>
-    <th class="cel_songs"> <?php echo T_('Songs');  ?> </th>
-    <th class="cel_albums"> <?php echo T_('Albums'); ?> </th>
-    <th class="cel_time"> <?php echo T_('Time'); ?> </th>
-    <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="cel_rating"> <?php echo T_('Rating'); ?> </th>
-    <th class="cel_action"> <?php echo T_('Action'); ?> </th>
-</tr>
+        /* Foreach through every artist that has been passed to us */
+        foreach ($object_ids as $artist_id) {
+                $artist = new Artist($artist_id, $_SESSION['catalog']);
+                $artist->format();
+        ?>
+        <tr id="artist_<?php echo $artist->id; ?>" class="<?php echo UI::flip_class(); ?>">
+            <?php require AmpConfig::get('prefix') . '/templates/show_artist_row.inc.php'; ?>
+        </tr>
+        <?php } //end foreach ($artists as $artist) ?>
+        <?php if (!count($object_ids)) { ?>
+        <tr class="<?php echo UI::flip_class(); ?>">
+            <td colspan="<?php echo $thcount; ?>"><span class="nodata"><?php echo T_('No artist found'); ?></span></td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    <tfoot>
+        <tr class="th-bottom">
+            <th class="cel_play essential"></th>
+            <th class="cel_artist essential persist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=artist&sort=name', T_('Artist'),'artist_sort_name'); ?></th>
+            <th class="cel_add essential"></th>
+            <th class="cel_songs optional"><?php echo T_('Songs');  ?></th>
+            <th class="cel_albums optional"><?php echo T_('Albums'); ?></th>
+            <th class="cel_time essential"><?php echo T_('Time'); ?></th>
+            <th class="cel_tags optional"><?php echo T_('Tags'); ?></th>
+        <?php if (AmpConfig::get('ratings')) { ?>
+            <th class="cel_rating optional"><?php echo T_('Rating'); ?></th>
+        <?php } ?>
+        <?php if (AmpConfig::get('userflags')) { ?>
+            <th class="cel_userflag optional"><?php echo T_('Fav.'); ?></th>
+        <?php } ?>
+            <th class="cel_action essential"> <?php echo T_('Action'); ?> </th>
+        </tr>
+    </tfoot>
 </table>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<script src="<?php echo AmpConfig::get('web_path'); ?>/lib/javascript/tabledata.js" language="javascript" type="text/javascript"></script>
+<?php if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php'; ?>

@@ -41,7 +41,7 @@ generate_pot() {
                 --add-comment=HINT: \
                 --msgid-bugs-address="translations@ampache.org" \
                 -L php \
-                --keyword=gettext_noop --keyword=T_ --keyword=T_gettext \
+                --keyword=gettext_noop --keyword=T_ --keyword=T_gettext --keyword=T_ngettext --keyword=ngettext \
                 -o $POTNAME \
                 $(find ../../ -type f -name \*.php -o -name \*.inc | sort)
     if [[ $? -eq 0 ]]; then
@@ -78,6 +78,16 @@ case $1 in
 	for i in $(ls ../ | grep -v base); do
 	    do_msgmerge $i
 	    do_msgfmt $i
+	done
+    ;;
+    '--allformat')
+	for i in $(ls ../ | grep -v base); do
+	    do_msgfmt $i
+	done
+    ;;
+    '--allmerge')
+	for i in $(ls ../ | grep -v base); do
+	    do_msgmerge $i
 	done
     ;;
     '--get'|'-g'|'get')

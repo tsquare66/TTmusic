@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -28,13 +28,14 @@
  */
 
 if (count($results)) {
-$link = Config::get('use_rss') ? ' ' . Ampache_RSS::get_display('nowplaying') : '';
+$link = AmpConfig::get('use_rss') ? ' ' . Ampache_RSS::get_display('nowplaying') : '';
 ?>
 <?php UI::show_box_top(T_('Now Playing') . $link); ?>
 <?php
 foreach ($results as $item) {
     $media = $item['media'];
     $np_user = $item['client'];
+    $np_user->format();
     $agent = $item['agent'];
 
     /* If we've gotten a non-song object just skip this row */
@@ -42,7 +43,7 @@ foreach ($results as $item) {
     if (!$np_user->fullname) { $np_user->fullname = "Ampache User"; }
 ?>
 <div class="np_row">
-<?php require Config::get('prefix') . '/templates/show_now_playing_row.inc.php'; ?>
+<?php require AmpConfig::get('prefix') . '/templates/show_now_playing_row.inc.php'; ?>
 </div>
 <?php
 } // end foreach

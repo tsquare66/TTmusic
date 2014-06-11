@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,16 +20,14 @@
  *
  */
 
-require_once '../lib/init.php';
-
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
     <ShortName>Ampache</ShortName>
-    <Description><?php echo scrub_out(Config::get('site_title')); ?></Description>
-    <Url type="text/html" 
+    <Description><?php echo scrub_out(AmpConfig::get('site_title')); ?></Description>
+    <Url type="text/html"
         method="get"
-        template="<?php echo Config::get('web_path'); ?>/search.php">
+        template="<?php echo AmpConfig::get('web_path'); ?>/search.php">
         <Param name="s_all" value="{searchTerms}"/>
         <Param name="action" value="search"/>
     </Url>

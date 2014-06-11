@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,26 +20,26 @@
  *
  */
 ?>
-<td colspan="6">
-<form method="post" id="edit_playlist_<?php echo $playlist->id; ?>" action="javascript:void(0);">
-<table cellpadding="0" cellspacing="0">
-<tr>
-    <td>
-        <input type="text" name="name" size="25" value="<?php echo scrub_out($playlist->name); ?>" />
-    </td>
-    <td>
-        <?php $name = 'select_' . $playlist->type; ${$name} = ' selected="selected"'; ?>
-        <select name="pl_type">
-            <option value="public"<?php echo $select_public; ?>><?php echo T_('Public'); ?></option>
-            <option value="private"<?php echo $select_private; ?>><?php echo T_('Private'); ?></option>
-        </select>
-    <td>
-    <input type="hidden" name="id" value="<?php echo $playlist->id; ?>" />
-    <input type="hidden" name="type" value="playlist_row" />
-    <?php echo Ajax::button('?action=edit_object&id=' . $playlist->id . '&type=playlist_row','download', T_('Save Changes'),'save_playlist_' . $playlist->id,'edit_playlist_' . $playlist->id); ?>
-    </td>
-</tr>
-</table>
-</form>
-</td>
-
+<div>
+    <form method="post" id="edit_playlist_<?php echo $playlist->id; ?>" class="edit_dialog_content">
+        <table class="tabledata" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('Name') ?></td>
+                <td><input type="text" name="name" value="<?php echo scrub_out($playlist->name); ?>" /></td>
+            </tr>
+            <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('Type') ?></td>
+                <td>
+                    <?php $name = 'select_' . $playlist->type; ?>
+                    <?php ${$name} = ' selected="selected"'; ?>
+                    <select name="pl_type">
+                        <option value="public"<?php echo $select_public; ?>><?php echo T_('Public'); ?></option>
+                        <option value="private"<?php echo $select_private; ?>><?php echo T_('Private'); ?></option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" value="<?php echo $playlist->id; ?>" />
+        <input type="hidden" name="type" value="playlist_row" />
+    </form>
+</div>

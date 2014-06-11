@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -34,9 +34,7 @@ if (isset($_SESSION['iframe']['target'])) {
     $target = $_SESSION['iframe']['target'];
     unset($_SESSION['iframe']['target']);
     header("Location: " . $target);
-}
-else {
+} else {
     // Prevent the update query as it's pointless
     define('NO_SESSION_UPDATE','1');
 }
-?>

@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -91,7 +92,7 @@ class getid3_write_id3v2
 
 								rewind($fp_source);
 								if (!empty($OldThisFileInfo['avdataoffset'])) {
-									fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+									fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 								}
 
 								while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -152,7 +153,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if (is_writable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -187,7 +188,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if ($fp_temp = tmpfile()) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -1793,7 +1794,7 @@ class getid3_write_id3v2
 	}
 
 	public function is_hash($var) {
-		// written by dev-nullØchristophe*vg
+		// written by dev-nullÃ˜christophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
 		if (is_array($var)) {
 			$keys = array_keys($var);
@@ -1808,7 +1809,7 @@ class getid3_write_id3v2
 	}
 
 	public function array_join_merge($arr1, $arr2) {
-		// written by dev-nullØchristophe*vg
+		// written by dev-nullÃ˜christophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
 		if (is_array($arr1) && is_array($arr2)) {
 			// the same -> merge

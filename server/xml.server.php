@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -33,11 +33,11 @@ if ($_REQUEST['action'] != 'handshake') {
 }
 
 /* Set the correct headers */
-header("Content-type: text/xml; charset=" . Config::get('site_charset'));
+header("Content-type: text/xml; charset=" . AmpConfig::get('site_charset'));
 header("Content-Disposition: attachment; filename=information.xml");
 
 // If we don't even have access control on then we can't use this!
-if (!Config::get('access_control')) {
+if (!AmpConfig::get('access_control')) {
     ob_end_clean();
     debug_event('Access Control','Error Attempted to use XML API with Access Control turned off','3');
     echo XML_Data::error('501', T_('Access Control not Enabled'));
@@ -56,7 +56,7 @@ if (!Session::exists('api', $_REQUEST['auth']) AND $_REQUEST['action'] != 'hands
 }
 
 // If the session exists then let's try to pull some data from it to see if we're still allowed to do this
-$username = 
+$username =
     ($_REQUEST['action'] == 'handshake' || $_REQUEST['action'] == 'ping')
     ? $_REQUEST['user']
     : Session::username($_REQUEST['auth']);

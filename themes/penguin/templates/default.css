@@ -2,7 +2,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -580,6 +580,46 @@ a.button {
 .dynamic-star-rating ul {
 	left:16px;
 }
+
+/************************************************/
+/*        Styles for user flags                 */
+/************************************************/
+.userflag
+{
+    position: relative;
+    width:16px;
+    height:16px;
+}
+
+.userflag a {
+    position:absolute;
+    display: inline;
+}
+
+.userflag a.userflag_true
+{
+    width:16px;
+    height: 16px;
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+.userflag a:hover.userflag_true
+{
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a.userflag_false
+{
+    width:16px;
+    height:16px;
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a:hover.userflag_false
+{
+    background: url(../../../images/icon_flag.png) left top;
+}
+
 /************************************************/
 /*              Box Related Styles              */
 /************************************************/
@@ -671,6 +711,29 @@ right: expression(-this.parentNode.offsetWidth%2+"px");
 	height: 0px; 
 	margin: 0px 0px 20px 1px; 
 }
+
+.item_right_info {
+    float: right;
+    max-width: 60%;
+}
+
+.external_links {
+    text-align: right;
+}
+
+.external_links a {
+    margin: 0px 5px 0px 0px;
+    opacity: 0.3;
+}
+
+.external_links a:hover {
+    opacity: 1;
+}
+
+#artist_summary {
+    margin-right: 150px;
+}
+
 /* Specific boxes */
 .box_newest_albums {
 }
@@ -810,6 +873,12 @@ dt:hover, dt:hover + dd {
 .random_album .play_album {
 	display:none;
 }
+
+#random_selection .art_album img {
+    width: 80px;
+    height: 80px;
+}
+
 /************************************************/
 /*          Now Playing                         */
 /************************************************/

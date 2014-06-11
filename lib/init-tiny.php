@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -30,33 +30,36 @@ if (floatval(phpversion()) < 5) {
 
 error_reporting(E_ERROR); // Only show fatal errors in production
 
+$load_time_begin = microtime(true);
+
 $ampache_path = dirname(__FILE__);
 $prefix = realpath($ampache_path . "/../");
 $configfile = $prefix . '/config/ampache.cfg.php';
 require_once $prefix . '/lib/general.lib.php';
-require_once $prefix . '/lib/class/config.class.php';
+require_once $prefix . '/lib/class/ampconfig.class.php';
 require_once $prefix . '/lib/class/core.class.php';
 require_once $prefix . '/modules/php-gettext/gettext.inc';
 
 // Define some base level config options
-Config::set('prefix', $prefix);
+AmpConfig::set('prefix', $prefix);
 
 // Register the autoloader
 spl_autoload_register(array('Core', 'autoload'), true, true);
 
+require_once $prefix . '/modules/requests/Requests.php';
+Requests::register_autoloader();
+
 // Check to see if this is http or https
-if ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ) 
+if ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
     || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')) {
     $http_type = 'https://';
-}
-else {
+} else {
     $http_type = 'http://';
 }
 
 if (isset($_SERVER['HTTP_X_FORWARDED_PORT'])) {
     $http_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
-}
-else if (isset($_SERVER['SERVER_PORT'])) {
+} else if (isset($_SERVER['SERVER_PORT'])) {
     $http_port = $_SERVER['SERVER_PORT'];
 }
 if (!isset($http_port) || !$http_port) {
@@ -86,4 +89,3 @@ UI::flip_class(array('odd', 'even'));
 // Merge GET then POST into REQUEST effectively stripping COOKIE without
 // depending on a PHP setting change for the effect
 $_REQUEST = array_merge($_GET, $_POST);
-?>

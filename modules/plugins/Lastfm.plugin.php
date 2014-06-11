@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -192,10 +192,10 @@ class AmpacheLastfm {
      * This loads up the data we need into this object, this stuff comes 
      * from the preferences.
      */
-    public function load() {
+    public function load($user) {
 
-        $GLOBALS['user']->set_preferences();
-        $data = $GLOBALS['user']->prefs;
+        $user->set_preferences();
+        $data = $user->prefs;
 
         if (strlen(trim($data['lastfm_user']))) {
             $this->username = trim($data['lastfm_user']);
@@ -212,13 +212,13 @@ class AmpacheLastfm {
             return false;
         }
 
-        $this->user_id = $GLOBALS['user']->id;
+        $this->user_id = $user->id;
 
         // If we don't have the other stuff try to get it before giving up
         if (!$data['lastfm_host'] || !$data['lastfm_port'] || !$data['lastfm_url'] || !$data['lastfm_challenge']) {
-            debug_event($this->name,'Running Handshake, missing information','3');
+            debug_event($this->name, 'Running Handshake, missing information', '1');
             if (!$this->set_handshake($this->user_id)) {
-                debug_event($this->name,'Handshake failed, you lose','3');
+                debug_event($this->name, 'Handshake failed, you lose', '3');
                 return false;
             }
         }

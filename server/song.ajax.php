@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -44,11 +44,31 @@ switch ($_REQUEST['action']) {
         $results[$id] = Ajax::button('?page=song&action=flip_state&song_id=' . $song->id,$button, T_(ucfirst($button)),'flip_state_' . $song->id);
 
     break;
+    case 'shouts':
+        ob_start();
+        $type = $_REQUEST['object_type'];
+        $id = $_REQUEST['object_id'];
+
+        if ($type == "song") {
+            $media = new Song($id);
+            $shouts = Shoutbox::get_shouts($type, $id);
+            echo "<script type='text/javascript'>\r\n";
+            echo "shouts = {};\r\n";
+            foreach ($shouts as $id) {
+                $shout = new Shoutbox($id);
+                $key = intval($shout->data);
+                echo "if (shouts['" . $key. "'] == undefined) { shouts['" . $key . "'] = new Array(); }\r\n";
+                echo "shouts['" . $key . "'].push('" . addslashes($shout->get_display(false)) . "');\r\n";
+                echo "$('.waveform-shouts').append('<div style=\'position:absolute; width: 3px; height: 3px; background-color: #2E2EFE; top: 15px; left: " . ((($shout->data / $media->time) * 400) - 1) . "px;\' />');\r\n";
+            }
+            echo "</script>\r\n";
+            }
+        $results['shouts_data'] = ob_get_clean();
+    break;
     default:
         $results['rfc3514'] = '0x1';
     break;
 } // switch on action;
 
 // We always do this
-echo xml_from_array($results);
-?>
+echo xoutput_from_array($results);

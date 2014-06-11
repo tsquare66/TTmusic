@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -24,24 +24,34 @@
  * log_event
  * Logs an event to a defined log file based on config options
  */
-function log_event($username, $event_name, $event_description, $log_name) {
+function log_event($username, $event_name, $event_description, $log_name)
+{
     /* Set it up here to make sure it's _always_ the same */
     $time        = time();
-    // Turn time into strings
-    $log_day    = date('Ymd', $time);
-    $log_time    = date('Y-m-d H:i:s', $time);
+    $log_time    = @date('Y-m-d H:i:s', $time);
 
     /* must have some name */
     $log_name    = $log_name ? $log_name : 'ampache';
     $username    = $username ? $username : 'ampache';
 
-	$prefix = Config::get('prefix');
+    $log_filename = AmpConfig::get('log_filename');
+    if (empty($log_filename)) {
+        $log_filename = "%name.%Y%m%d.log";
+    }
+
+	$prefix = AmpConfig::get('prefix');
 	if ($prefix == "")
 	{
 		$ampache_path = dirname(__FILE__);
 		$prefix = realpath($ampache_path . "/../");
 	}
-    $log_filename    = $prefix."/".Config::get('log_path') . "/$log_name.$log_day.log";
+
+    $log_filename = str_replace("%name", $log_name, $log_filename);
+    $log_filename = str_replace("%Y", @date('Y'), $log_filename);
+    $log_filename = str_replace("%m", @date('m'), $log_filename);
+    $log_filename = str_replace("%d", @date('d'), $log_filename);
+
+    $log_filename    =  $prefix."/". AmpConfig::get('log_path') . "/" . $log_filename;
     $log_line    = "$log_time [$username] ($event_name) -> $event_description \n";
 
     // Do the deed
@@ -59,7 +69,8 @@ function log_event($username, $event_name, $event_description, $log_name) {
  * An error handler for ampache that traps as many errors as it can and logs
  * them.
  */
-function ampache_error_handler($errno, $errstr, $errfile, $errline) {
+function ampache_error_handler($errno, $errstr, $errfile, $errline)
+{
     $level = 1;
 
     switch ($errno) {
@@ -106,7 +117,7 @@ function ampache_error_handler($errno, $errstr, $errfile, $errline) {
         'used as offset, casting to integer'
     );
 
-    foreach($ignores as $ignore) {
+    foreach ($ignores as $ignore) {
         if (strpos($errstr, $ignore) !== false) {
             $error_name = 'Ignored ' . $error_name;
             $level = 7;
@@ -133,9 +144,9 @@ function ampache_error_handler($errno, $errstr, $errfile, $errline) {
  * log_event. It checks config for debug and debug_level and only
  * calls log event if both requirements are met.
  */
-function debug_event($type, $message, $level, $file = '', $username = '') {
-
-    if (!Config::get('debug') || $level > Config::get('debug_level')) {
+function debug_event($type, $message, $level, $file = '', $username = '')
+{
+    if (!AmpConfig::get('debug') || $level > AmpConfig::get('debug_level')) {
         return false;
     }
 
@@ -149,5 +160,3 @@ function debug_event($type, $message, $level, $file = '', $username = '') {
     }
 
 } // debug_event
-
-?>

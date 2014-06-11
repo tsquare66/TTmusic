@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,8 +20,8 @@
  *
  */
 ?>
-<form style="display:inline;" name="f" method="get" action="<?php echo Config::get('web_path') . "/$action"; ?>" enctype="multipart/form-data">
+<form style="display:inline;" name="f" method="get" action="<?php echo AmpConfig::get('web_path') . "/$action"; ?>" enctype="multipart/form-data">
     <label for="match" accesskey="S"><?php echo $text; ?></label>
-    <input type="text" size="5" id="match" name="match" value="<?php echo $match; ?>" />
+    <input type="text" id="match" name="match" value="<?php echo $match; ?>" />
     <input type="hidden" name="action" value="<?php echo scrub_out($_REQUEST['action']); ?>">
 </form>

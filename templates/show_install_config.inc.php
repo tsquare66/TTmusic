@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,97 +21,181 @@
  */
 
 // Try to guess the web path
-$web_path_guess = rtrim(dirname($_SERVER['PHP_SELF']), '\/');
+$web_path_guess = $_REQUEST['web_path'];
+if (empty($web_path_guess)) {
+    $web_path_guess = rtrim(dirname($_SERVER['PHP_SELF']), '\/');
+}
+
+$local_username = scrub_out($_REQUEST['local_username']);
+if (empty($local_username)) {
+    $local_username = scrub_out($_REQUEST['db_username']);
+}
+$local_pass = scrub_out($_REQUEST['local_pass']);
+if (empty($local_pass)) {
+    $local_pass = scrub_out($_REQUEST['db_password']);
+}
 
 require $prefix . '/templates/install_header.inc.php';
 ?>
-    <div class="content">
-        <?php echo T_('Step 1 - Create the Ampache database'); ?><br />
-        <strong><?php echo T_('Step 2 - Create ampache.cfg.php'); ?></strong><br />
-        <dl>
-        <dd><?php printf(T_('This step takes the basic config values and generates the config file. If your config/ directory is writable, you can select "write" to have Ampache write the config file directly to the correct location. If you select "download" it will prompt you to download the config file, and you can then manually place the config file in %s'), $prefix . '/config'); ?></dd>
-        </dl>
-        <?php echo T_('Step 3 - Set up the initial account'); ?><br />
-        <?php Error::display('general'); ?>
-        <br />
+        <div class="jumbotron">
+            <h1><?php echo T_('Install progress'); ?></h1>
+            <div class="progress">
+                <div class="progress-bar progress-bar-warning"
+                    role="progressbar"
+                    aria-valuenow="60"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    style="width: 66%">
+                    66%
+                </div>
+            </div>
+            <p><?php echo T_('Step 1 - Create the Ampache database'); ?></p>
+                <p><strong><?php echo T_('Step 2 - Create configuration files (ampache.cfg.php ...)'); ?></strong></p>
+                <dl>
+                    <dd><?php printf(T_('This step takes the basic config values and generates the config file. If your config/ directory is writable, you can select "write" to have Ampache write the config file directly to the correct location. If you select "download" it will prompt you to download the config file, and you can then manually place the config file in %s'), $prefix); ?></dd>
+                </dl>
+            <ul class="list-unstyled">
+                <li><?php echo T_('Step 3 - Set up the initial account'); ?></li>
+            </ul>
+            </div>
+            <?php Error::display('general'); ?>
 
-<span class="header2"><?php echo T_('Generate Config File'); ?></span>
-<?php Error::display('config'); ?>
-<form method="post" action="<?php echo $web_path . "/install.php?action=create_config"; ?>" enctype="multipart/form-data" >
-<table>
-<tr>
-    <td class="align"><?php echo T_('Web Path'); ?></td>
-    <td class="align"><input type="text" name="web_path" value="<?php echo scrub_out($web_path_guess); ?>" /></td>
-</tr>
-<tr>
-    <td class="align"><?php echo T_('Database Name'); ?></td>
-    <td class="align"><input type="text" name="local_db" value="<?php echo scrub_out($_REQUEST['local_db']); ?>" /></td>
-</tr>
-<tr>
-    <td class="align"><?php echo T_('MySQL Hostname'); ?></td>
-    <td class="align"><input type="text" name="local_host" value="<?php echo scrub_out($_REQUEST['local_host']); ?>" /></td>
-</tr>
-<tr>
-    <td class="align"><?php echo T_('MySQL port (optional)'); ?></td>
-    <td><input type="text" name="local_port" value="<?php echo scrub_out($_REQUEST['local_port']);?>" /></td>
-</tr>
-<tr>
-    <td class="align"><?php echo T_('MySQL Username'); ?></td>
-    <td class="align"><input type="text" name="local_username" value="<?php echo scrub_out($_REQUEST['local_username']); ?>" /></td>
-</tr>
-<tr>
-    <td class="align"><?php echo T_('MySQL Password'); ?></td>
-    <td class="align"><input type="password" name="local_pass" value="" /></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>
-        <input type="submit" name="download" value="<?php echo T_('Download'); ?>" />
-        <input type="submit" name="write" value="<?php echo T_('Write'); ?>" <?php if (!check_config_writable()) { echo "disabled "; } ?>/>
-        <input type="hidden" name="htmllang" value="<?php echo $htmllang; ?>" />
-        <input type="hidden" name="charset" value="<?php echo $charset; ?>" />
-    </td>
-</tr>
-        </table>
-        </form>
-        <br />
-        <table>
-<tr>
-        <td class="align"><?php echo T_('ampache.cfg.php exists?'); ?></td>
-        <td>
-        <?php echo debug_result(is_readable($configfile)); ?>
-        </td>
-</tr>
-<tr>
-        <td class="align">
-                <?php echo T_('ampache.cfg.php configured?'); ?>
-        </td>
-        <td>
-        <?php
-                $results = @parse_ini_file($configfile);
-                echo debug_result(check_config_values($results));
-        ?>
-        </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>
-    <?php $check_url = $web_path . "/install.php?action=show_create_config&amp;htmllang=$htmllang&amp;charset=$charset&amp;local_db=" . $_REQUEST['local_db'] . "&amp;local_host=" . $_REQUEST['local_host']; ?>
-    <a href="<?php echo $check_url; ?>">[<?php echo T_('Recheck Config'); ?>]</a>
-    </td>
-        </tr>
-        </table>
-        <br />
-        <form method="post" action="<?php echo $web_path . "/install.php?action=show_create_account&amp;htmllang=$htmllang&amp;charset=$charset"; ?>" enctype="multipart/form-data">
-        <input type="submit" value="<?php echo T_('Continue to Step 3'); ?>" />
-        </form>
+            <h2><?php echo T_('Generate Config File'); ?></h2>
+            <h3><?php echo T_('Database connection'); ?></h3>
+            <?php Error::display('config'); ?>
+<form method="post" action="<?php echo $web_path . "/install.php?action=create_config"; ?>" enctype="multipart/form-data" autocomplete="off">
+<div class="form-group">
+    <label for="web_path" class="col-sm-4 control-label"><?php echo T_('Web Path'); ?></label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" id="web_path" name="web_path" value="<?php echo scrub_out($web_path_guess); ?>">
     </div>
-    <div id="bottom">
-        <p><strong>Ampache Installation.</strong><br />
-        For the love of Music.</p>
+</div>
+<div class="form-group">
+    <label for="local_db" class="col-sm-4 control-label"><?php echo T_('Database Name'); ?></label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" id="local_db" name="local_db" value="<?php echo scrub_out($_REQUEST['local_db']); ?>">
+    </div>
+</div>
+<div class="form-group">
+    <label for="local_host" class="col-sm-4 control-label"><?php echo T_('MySQL Hostname'); ?></label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" id="local_host" name="local_host" value="<?php echo scrub_out($_REQUEST['local_host']); ?>">
+    </div>
+</div>
+<div class="form-group">
+    <label for="local_port" class="col-sm-4 control-label"><?php echo T_('MySQL Port (optional)'); ?></label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" id="local_port" name="local_port" value="<?php echo scrub_out($_REQUEST['local_port']);?>"/>
+    </div>
+</div>
+<div class="form-group">
+    <label for="local_username" class="col-sm-4 control-label"><?php echo T_('MySQL Username'); ?></label>
+    <div class="col-sm-8">
+        <input type="text" class="form-control" id="local_username" name="local_username" value="<?php echo $local_username; ?>"/>
+    </div>
+</div>
+<div class="form-group">
+    <label for="local_pass" class="col-sm-4 control-label"><?php echo T_('MySQL Password'); ?></label>
+    <div class="col-sm-8">
+        <input type="password" class="form-control" id="local_pass" name="local_pass" value="<?php echo $local_pass; ?>" placeholder="Password">
     </div>
 </div>
 
-</body>
-</html>
+<input type="hidden" name="htmllang" value="<?php echo $htmllang; ?>" />
+<input type="hidden" name="charset" value="<?php echo $charset; ?>" />
 
+<br />
+<h3><?php echo T_('Transcoding'); ?></h3>
+<div>
+    <?php echo T_('Transcoding allows you to convert one type of file to another. Ampache supports on the fly transcoding of all file types based on user, IP address or available bandwidth. In order to transcode Ampache takes advantage of existing binary applications such as ffmpeg. In order for transcoding to work you must first install the supporting applications and ensure that they are executable by the webserver.'); ?>
+    <br />
+    <?php echo T_('This section apply default transcoding configuration according to the application you want to use. You may need to customize settings once this setup ended'); ?>. <a href="https://github.com/ampache/ampache/wiki/Transcoding" target="_blank"><?php echo T_('See wiki page'); ?>.</a>
+</div>
+<br />
+<div class="form-group">
+    <label for="transcode_template" class="col-sm-4 control-label"><?php echo T_('Template Configuration'); ?></label>
+    <div class="col-sm-8">
+        <select class="form-control" id="transcode_template" name="transcode_template">
+        <option value=""><?php echo T_('None'); ?></option>
+        <?php
+            $modes = install_get_transcode_modes();
+            foreach ($modes as $mode) {
+        ?>
+            <option value="<?php echo $mode; ?>" <?php if ($_REQUEST['transcode_template'] == $mode) echo 'selected'; ?>><?php echo $mode; ?></option>
+        <?php } ?>
+        </select>
+        <?php
+        if (count($modes) == 0) {
+        ?>
+        <label><?php echo T_('No default transcoding application found. You may need to install a popular application (ffmpeg, avconv ...) or customize transcoding settings manually after installation.'); ?></label>
+        <?php } ?>
+    </div>
+</div>
+
+<br />
+<h3><?php echo T_('Files'); ?></h3>
+<?php if (install_check_server_apache()) { ?>
+    <div class="col-sm-4">&nbsp;</div><div class="col-sm-8">&nbsp;</div>
+    <div class="col-sm-4 control-label">
+        <?php echo T_('rest/.htaccess action'); ?>
+    </div>
+    <div class="col-sm-8">
+        <button type="submit" class="btn btn-warning" name="download_htaccess_rest"><?php echo T_('Download'); ?></button>
+        <button type="submit" class="btn btn-warning" name="write_htaccess_rest" <?php if (!check_htaccess_rest_writable()) { echo "disabled "; } ?>>
+            <?php echo T_('Write'); ?>
+        </button>
+    </div>
+    <div class="col-sm-4 control-label"><?php echo T_('rest/.htaccess exists?'); ?></div>
+    <div class="col-sm-8"><?php echo debug_result(is_readable($htaccess_rest_file)); ?></div>
+    <div class="col-sm-4 control-label"><?php echo T_('rest/.htaccess configured?'); ?></div>
+    <div class="col-sm-8"><?php echo debug_result(install_check_rewrite_rules($htaccess_rest_file, $web_path_guess)); ?></div>
+
+    <div class="col-sm-4">&nbsp;</div><div class="col-sm-8">&nbsp;</div>
+    <div class="col-sm-4 control-label">
+        <?php echo T_('play/.htaccess action'); ?>
+    </div>
+    <div class="col-sm-8">
+        <button type="submit" class="btn btn-warning" name="download_htaccess_play"><?php echo T_('Download'); ?></button>
+        <button type="submit" class="btn btn-warning" name="write_htaccess_play" <?php if (!check_htaccess_play_writable()) { echo "disabled "; } ?>>
+            <?php echo T_('Write'); ?>
+        </button>
+    </div>
+    <div class="col-sm-4 control-label"><?php echo T_('play/.htaccess exists?'); ?></div>
+    <div class="col-sm-8"><?php echo debug_result(is_readable($htaccess_play_file)); ?></div>
+    <div class="col-sm-4 control-label"><?php echo T_('play/.htaccess configured?'); ?></div>
+    <div class="col-sm-8"><?php echo debug_result(install_check_rewrite_rules($htaccess_play_file, $web_path_guess)); ?></div>
+<?php } ?>
+
+<div class="col-sm-4">&nbsp;</div><div class="col-sm-8">&nbsp;</div>
+<div class="col-sm-4">
+    <?php echo T_('config/ampache.cfg.php action'); ?>
+</div>
+<div class="col-sm-8">
+    <button type="submit" class="btn btn-warning" name="download"><?php echo T_('Download'); ?></button>
+    <button type="submit" class="btn btn-warning" name="write" <?php if (!check_config_writable()) { echo "disabled "; } ?>>
+        <?php echo T_('Write'); ?>
+    </button>
+</div>
+<div class="col-sm-4 control-label"><?php echo T_('config/ampache.cfg.php exists?'); ?></div>
+<div class="col-sm-8"><?php echo debug_result(is_readable($configfile)); ?></div>
+<div class="col-sm-4 control-label"><?php echo T_('config/ampache.cfg.php configured?'); ?></div>
+<div class="col-sm-8"><?php $results = @parse_ini_file($configfile); echo debug_result(check_config_values($results)); ?></div>
+<div class="col-sm-4">&nbsp;</div><div class="col-sm-8">&nbsp;</div>
+
+</form>
+
+<div class="col-sm-4"></div>
+<?php $check_url = $web_path . "/install.php?action=show_create_config&amp;htmllang=$htmllang&amp;charset=$charset&amp;local_db=" . $_REQUEST['local_db'] . "&amp;local_host=" . $_REQUEST['local_host']; ?>
+<div class="col-sm-8">
+    <a href="<?php echo $check_url; ?>">[<?php echo T_('Recheck Config'); ?>]</a>
+</div>
+
+<form
+    method="post"
+    action="<?php echo $web_path . "/install.php?action=show_create_account&amp;htmllang=$htmllang&amp;charset=$charset"; ?>"
+    enctype="multipart/form-data"
+>
+    <button type="submit" class="btn btn-warning"><?php echo T_('Continue to Step 3'); ?></button>
+</form>
+
+<?php require $prefix . '/templates/install_footer.inc.php'; ?>

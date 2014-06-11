@@ -2,7 +2,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  * Copyright 2001 - 2008 Mickael Despesse
  * 
  * This program is free software; you can redistribute it and/or
@@ -435,6 +435,45 @@ input[type=checkbox]  { border:0;background:none; }
 }
 
 /************************************************/
+/*        Styles for user flags                 */
+/************************************************/
+.userflag
+{
+    position: relative;
+    width:16px;
+    height:16px;
+}
+
+.userflag a {
+    position:absolute;
+    display: inline;
+}
+
+.userflag a.userflag_true
+{
+    width:16px;
+    height: 16px;
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+.userflag a:hover.userflag_true
+{
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a.userflag_false
+{
+    width:16px;
+    height:16px;
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a:hover.userflag_false
+{
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+/************************************************/
 /*              Box Related Styles              */
 /************************************************/
 .box-title { 
@@ -518,6 +557,28 @@ input[type=checkbox]  { border:0;background:none; }
 .info-box th {color:#8b3e38;}
 #information_actions { } 
 #information_actions h3 { color:#8b3e38; font-size:1.2em; margin:0.2em; }
+
+.item_right_info {
+    float: right;
+    max-width: 60%;
+}
+
+.external_links {
+    text-align: right;
+}
+
+.external_links a {
+    margin: 0px 5px 0px 0px;
+    opacity: 0.3;
+}
+
+.external_links a:hover {
+    opacity: 1;
+}
+
+#artist_summary {
+    margin-right: 150px;
+}
 
 /* Specific boxes */
 .box_newest_albums  {}
@@ -639,6 +700,11 @@ dt:hover, dt:hover + dd {background-color: #2b293d !important;}
   float:left;
 }
 
+#random_selection .art_album img {
+    width: 80px;
+    height: 80px;
+}
+
 /************************************************/
 /*          Now Playing                         */
 /************************************************/
@@ -719,14 +785,13 @@ div.shout:hover img.shoutboximage{width:75px;height:75px;position:absolute;top:5
 	color: #990033; 
 }
 
-.fatalerror {
+.fatalerror .nodata {
 	padding: 3px;
 	display: table-cell;
 	color: #990033;
 	font-weight:bold;
  	border:2px solid #990033;		
 }
-
 
 /************************************************/
 /*             LocalPlay                        */

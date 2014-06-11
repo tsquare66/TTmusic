@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,11 +22,19 @@
 
 require_once 'lib/init.php';
 
+if (AmpConfig::get('iframes')) {
+    if (!isset($_GET['framed'])) {
+        UI::show_mainframes();
+        exit;
+    }
+}
 UI::show_header();
 
 $action = isset($_REQUEST['action']) ? scrub_in($_REQUEST['action']) : null;
 
-session_start();
+if (!Core::is_session_started()) {
+    session_start();
+}
 $_SESSION['catalog'] = 0;
 
 /**
@@ -34,14 +42,12 @@ $_SESSION['catalog'] = 0;
  * refresh_javascript include. Must be greater then 5, I'm not
  * going to let them break their servers
  */
-if (Config::get('refresh_limit') > 5) {
-    $refresh_limit = Config::get('refresh_limit');
+if (AmpConfig::get('refresh_limit') > 5) {
+    $refresh_limit = AmpConfig::get('refresh_limit');
     $ajax_url = '?page=index&action=reloadnp';
-    require_once Config::get('prefix') . '/templates/javascript_refresh.inc.php';
+    require_once AmpConfig::get('prefix') . '/templates/javascript_refresh.inc.php';
 }
 
-require_once Config::get('prefix') . '/templates/show_index.inc.php';
+require_once AmpConfig::get('prefix') . '/templates/show_index.inc.php';
 
 UI::show_footer();
-
-?>

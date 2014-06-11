@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,15 +20,16 @@
  *
  */
 
-$object_ids = Stats::get_newest('album');
+$sql = Stats::get_newest_sql('album');
 $browse = new Browse();
-$browse->set_type('album');
-$browse->show_objects($object_ids);
+$browse->set_type('album', $sql);
+$browse->set_simple_browse(true);
+$browse->show_objects();
 $browse->store();
 
-$object_ids = Stats::get_newest('artist');
+$sql = Stats::get_newest_sql('artist');
 $browse = new Browse();
-$browse->set_type('artist');
-$browse->show_objects($object_ids);
+$browse->set_type('artist', $sql);
+$browse->set_simple_browse(true);
+$browse->show_objects();
 $browse->store();
-?>

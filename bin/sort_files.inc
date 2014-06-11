@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -55,7 +55,7 @@ $catalogs = array();
 
 while ($r = Dba::fetch_row($db_results)) {
 
-    $catalog = new Catalog($r['0']);
+    $catalog = Catalog::create_from_id($r['0']);
     $songs = $catalog->get_songs();
 
     printf (T_('Starting Catalog: %s'), stripslashes($catalog->name));
@@ -267,13 +267,13 @@ function sort_move_file($song,$fullname) {
         debug_event('copy','Copied ' . $song->file . ' to ' . $fullname,'5');
 
         /* Look for the folder art and copy that as well */
-        if (!Config::get('album_art_preferred_filename') OR strstr(Config::get('album_art_preferred_filename'),"%")) {
+        if (!AmpConfig::get('album_art_preferred_filename') OR strstr(AmpConfig::get('album_art_preferred_filename'),"%")) {
             $folder_art     = $directory . '/folder.jpg';
             $old_art     = $old_dir . '/folder.jpg';
         }
         else {
-            $folder_art     = $directory . "/" . sort_clean_name(Config::get('album_art_preferred_filename'));
-            $old_art     = $old_dir . "/" . sort_clean_name(Config::get('album_art_preferred_filename'));
+            $folder_art     = $directory . "/" . sort_clean_name(AmpConfig::get('album_art_preferred_filename'));
+            $old_art     = $old_dir . "/" . sort_clean_name(AmpConfig::get('album_art_preferred_filename'));
         }
 
         debug_event('copy_art','Copied ' . $old_art . ' to ' . $folder_art,'5');

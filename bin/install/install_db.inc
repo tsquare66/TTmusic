@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -75,7 +75,7 @@ if (!install_check_status($configfile)) {
     }
 } 
 
-Config::set_by_array(array(
+AmpConfig::set_by_array(array(
     'web_path' => $web_path,
     'database_name' => $db_name,
     'database_username' => $db_user,
@@ -85,13 +85,13 @@ Config::set_by_array(array(
 ), true);
 
 // Install the database
-if (!install_insert_db($new_db_user, $new_db_pass, $force)) { 
+if (!install_insert_db($new_db_user, $new_db_pass, true, $force, true)) { 
     echo T_('Database creation failed'), "\n"; 
     echo Error::get('general'), "\n\n"; 
     exit(1); 
 } 
 
-Config::set_by_array(array(
+AmpConfig::set_by_array(array(
     'database_username' => $new_db_user ?: $db_user,
     'database_password' => $new_db_pass ?: $db_pass
 ), true);

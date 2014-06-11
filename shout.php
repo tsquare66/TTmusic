@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -39,25 +39,29 @@ switch ($_REQUEST['action']) {
         }
 
         $shout_id = Shoutbox::create($_POST);
-        header("Location:" . Config::get('web_path'));
+        header("Location:" . AmpConfig::get('web_path'));
     break;
     case 'show_add_shout':
         // Get our object first
         $object = Shoutbox::get_object($_REQUEST['type'],$_REQUEST['id']);
 
-        if (!$object->id) {
+        if (!$object || !$object->id) {
             Error::add('general', T_('Invalid Object Selected'));
             Error::display('general');
             break;
         }
 
+        $object->format();
+        if (strtolower(get_class($object)) == 'song') {
+            $data = $_REQUEST['offset'];
+        }
+
         // Now go ahead and display the page where we let them add a comment etc
-        require_once Config::get('prefix') . '/templates/show_add_shout.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_add_shout.inc.php';
     break;
     default:
-        header("Location:" . Config::get('web_path'));
+        header("Location:" . AmpConfig::get('web_path'));
     break;
 } // end switch on action
 
 UI::show_footer();
-?>

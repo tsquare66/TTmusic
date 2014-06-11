@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -93,6 +93,15 @@
     </td>
 </tr>
 <tr>
+    <td valign="top"><?php echo T_('PHP curl extension'); ?></td>
+    <td valign="top">
+    <?php echo debug_result(check_php_curl()); ?>
+    </td>
+    <td>
+    <?php echo T_('This tests whether you have the curl extension enabled.  This is not strictly necessary, but may result in a better experience.'); ?>
+    </td>
+</tr>
+<tr>
     <td valign="top"><?php echo T_('PHP safe mode disabled'); ?></td>
     <td valign="top">
     <?php echo debug_result(check_php_safemode()); ?>
@@ -138,7 +147,7 @@ if (!defined('INSTALL')) {
     <td valign="top">
     <?php
         $results = @parse_ini_file($configfile);
-        Config::set_by_array($results);
+        AmpConfig::set_by_array($results);
         echo debug_result(check_config_values($results));
     ?>
     </td>
@@ -169,16 +178,10 @@ if (!defined('INSTALL')) {
     <td valign="top"><?php echo T_('Web path'); ?></td>
     <td valign="top">
     <?php
-        if ($results['force_ssl']) {
-            $http_type = 'https://';
-        }
-
-        $results['web_path'] = $http_type . $_SERVER['HTTP_HOST'] . Config::get('web_path');
         if (check_config_values($results)) {
-            echo "&nbsp;&nbsp;&nbsp;<img src=\"" . $results['web_path'] ."/images/icon_enable.png\" />&nbsp;&nbsp;&nbsp;";
-        }
-        else {
-            echo debug_result(false);
+            echo "&nbsp;&nbsp;&nbsp;<img src=\"" . AmpConfig::get('web_path') ."/images/icon_enable.png\" />&nbsp;&nbsp;&nbsp;";
+        } else {
+            echo debug_result(false, "SKIPPED");
         }
 
     ?>

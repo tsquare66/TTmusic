@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,19 +20,27 @@
  *
  */
 ?>
-<td colspan="5">
-<form method="post" id="edit_artist_<?php echo $artist->id; ?>">
-<table class="inline-edit" cellpadding="3" cellspacing="0">
-<tr>
-<td>
-    <input type="text" name="name" value="<?php echo scrub_out($artist->f_full_name); ?>" />
-</td>
-<td>
-    <input type="hidden" name="id" value="<?php echo $artist->id; ?>" />
-    <input type="hidden" name="type" value="artist_row" />
-    <?php echo Ajax::button('?action=edit_object&id=' . $artist->id . '&type=artist_row','download', T_('Save Changes'),'save_artist_' . $artist->id,'edit_artist_' . $artist->id); ?>
-
-</tr>
-</table>
-</form>
-</td>
+<div>
+    <form method="post" id="edit_artist_<?php echo $artist->id; ?>" class="edit_dialog_content">
+        <table class="tabledata" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('Name') ?></td>
+                <td><input type="text" name="name" value="<?php echo scrub_out($artist->f_full_name); ?>" /></td>
+            </tr>
+            <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('MusicBrainz ID') ?></td>
+                <td><input type="text" name="mbid" value="<?php echo $artist->mbid; ?>" /></td>
+            </tr>
+            <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('Tags') ?></td>
+                <td><input type="text" name="edit_tags" id="edit_tags" value="<?php echo Tag::get_display($artist->tags); ?>" /></td>
+            </tr>
+            <tr>
+                <td class="edit_dialog_content_header"></td>
+                <td><input type="checkbox" name="apply_childs" value="checked" /><?php echo T_(' Apply tags to all childs (override tags for albums and songs)') ?></td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" value="<?php echo $artist->id; ?>" />
+        <input type="hidden" name="type" value="artist_row" />
+    </form>
+</div>

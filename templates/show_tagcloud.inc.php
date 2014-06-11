@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,7 +20,7 @@
  *
  */
 
-$web_path = Config::get('web_path');
+$web_path = AmpConfig::get('web_path');
 ?>
 <?php Ajax::start_container('tag_filter'); ?>
 
@@ -32,7 +32,6 @@ $web_path = Config::get('web_path');
 	    foreach ($object_ids as $data) 
 		{
 			$tag = new Tag($data['id']);
-			$tag->format();
 			if ($firsttag == '')
 				$firsttag = intval($tag->id);
 			echo '<option value="'.intval($tag->id).'">' .$tag->name.'</option>';
@@ -41,7 +40,7 @@ $web_path = Config::get('web_path');
 		
 	?>
 </select>
-<?php echo Ajax::observe('genre_select','change',Ajax::action('?page=tag&action=add_filter&browse_id=' . $browse2->id ,'genre_select','genre_form'),'1'); ?>
+<?php echo Ajax::observe('genre_select','change',Ajax::action('?page=tag&action=add_filter&browse_id=' . $browse2->id ,'genre_select','genre_form')); ?>
 </form>
 
 

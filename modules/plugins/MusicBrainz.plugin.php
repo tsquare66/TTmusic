@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,13 +20,16 @@
  *
  */
 
+use MusicBrainz\MusicBrainz;
+use MusicBrainz\Clients\RequestsMbClient;
+
 class AmpacheMusicBrainz {
 
-    public $name        ='MusicBrainz';
-    public $description    ='MusicBrainz metadata integration';
-    public $version        ='000001';
-    public $min_ampache    ='360003';
-    public $max_ampache    ='999999';
+    public $name           = 'MusicBrainz';
+    public $description    = 'MusicBrainz metadata integration';
+    public $version        = '000001';
+    public $min_ampache    = '360003';
+    public $max_ampache    = '999999';
 
     /**
      * Constructor
@@ -57,7 +60,7 @@ class AmpacheMusicBrainz {
      * This is a required plugin function; here it populates the prefs we 
      * need for this object.
      */
-    public function load() {
+    public function load($user) {
         return true;
     } // load
 
@@ -70,11 +73,13 @@ class AmpacheMusicBrainz {
             return null;
         }
 
-        $mbquery = new MusicBrainzQuery();
-        $includes = new mbTrackIncludes();
-        $includes = $includes->artist()->releases();
+        $mb = new MusicBrainz(new RequestsMbClient());
+        $includes = array(
+            'artists',
+            'releases'
+        );
         try {
-            $track = $mbquery->getTrackById($mbid, $includes);
+            $track = $mb->lookup('recording', $mbid, $includes);
         }
         catch (Exception $e) {
             return null;
@@ -82,15 +87,16 @@ class AmpacheMusicBrainz {
 
         $results = array();
 
-        $results['mb_artistid'] = $track->getArtist()->getId();
-        $results['artist'] = $track->getArtist()->getName();
-        $results['title'] = $track->getTitle();
-        if ($track->getNumReleases() == 1) {
-            $release = $track->getReleases();
-            $release = $release[0];
-            $results['album'] = $release->getTitle();
+        if (count($track->{'artist-credit'}) > 0) {
+            $artist = $track->{'artist-credit'}[0];
+            $results['mb_artistid'] = $artist->id;
+            $results['artist'] = $artist->name;
+            $results['title'] = $track->title;
+            if (count($track->releases) == 1) {
+                $release = $track->releases[0];
+                $results['album'] = $release->title;
+            }
         }
-
         return $results;
     } // get_metadata
 

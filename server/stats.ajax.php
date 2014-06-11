@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -32,5 +32,4 @@ switch ($_REQUEST['action']) {
 } // switch on action;
 
 // We always do this
-echo xml_from_array($results);
-?>
+echo xoutput_from_array($results);

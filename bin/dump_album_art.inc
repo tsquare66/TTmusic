@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -38,7 +38,7 @@ if (count($_SERVER['argv']) > 1) {
 $catalogs = Catalog::get_catalogs();
 
 foreach ($catalogs as $catalog_id) {
-    $catalog = new Catalog($catalog_id);
+    $catalog = Catalog::create_from_id($catalog_id);
     $catalog->dump_album_art(array('metadata' => $meta));
 }
 

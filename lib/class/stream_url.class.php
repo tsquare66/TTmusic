@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,19 +23,36 @@
 
 // A class for passing around an URL and associated data
 
-class Stream_URL extends memory_object {
-
-    public $properties = array('url', 'title', 'author', 'time', 'info_url', 'image_url', 'album', 'type');
+class Stream_URL extends memory_object
+{
+    public $properties = array('url', 'title', 'author', 'time', 'info_url', 'image_url', 'album', 'type', 'codec');
 
     /**
      * parse
      *
      * Takes an url and parses out all the chewy goodness.
      */
-    public static function parse($url) {
+    public static function parse($url)
+    {
+        if (AmpConfig::get('stream_beautiful_url')) {
+            $posargs = strpos($url, '/play/');
+            if ($posargs !== false) {
+                $argsstr = substr($url, $posargs + 6);
+                $url = substr($url, 0, $posargs + 6) . 'index.php?';
+                $args = explode('/', $argsstr);
+                for ($i = 0; $i < count($args); $i += 2) {
+                    if ($i > 0)
+                        $url .= '&';
+                    $url .= $args[$i] . '=' . $args[$i + 1];
+                }
+            }
+        }
+
         $query = parse_url($url, PHP_URL_QUERY);
         $elements = explode('&', $query);
         $results = array();
+
+        $results['base_url'] = $url;
 
         foreach ($elements as $element) {
             list($key, $value) = explode('=', $element);
@@ -53,7 +70,22 @@ class Stream_URL extends memory_object {
             }
             $results[$key] = $value;
         }
-
         return $results;
+    }
+
+    /**
+     * format
+     * This format the string url according to settings.
+     */
+    public static function format($url)
+    {
+        if (AmpConfig::get('stream_beautiful_url')) {
+            $url = str_replace('index.php?&', '', $url);
+            $url = str_replace('index.php?', '', $url);
+            $url = str_replace('&', '/', $url);
+            $url = str_replace('=', '/', $url);
+        }
+
+        return $url;
     }
 }

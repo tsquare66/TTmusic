@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,15 +26,20 @@ UI::show_header();
 
 // Switch on Action
 switch ($_REQUEST['action']) {
-    default:
-    case 'show_song':
+    case 'show_lyrics':
         $song = new Song($_REQUEST['song_id']);
         $song->format();
         $song->fill_ext_info();
-        require_once Config::get('prefix') . '/templates/show_song.inc.php';
+        $lyrics = $song->get_lyrics();
+        require_once AmpConfig::get('prefix') . '/templates/show_lyrics.inc.php';
+    break;
+    case 'show_song':
+    default:
+        $song = new Song($_REQUEST['song_id']);
+        $song->format();
+        $song->fill_ext_info();
+        require_once AmpConfig::get('prefix') . '/templates/show_song.inc.php';
     break;
 } // end data collection
 
 UI::show_footer();
-
-?>

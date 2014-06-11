@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,69 +26,58 @@
 
 // Set that this is an ajax include
 define('AJAX_INCLUDE','1');
-
 require_once '../lib/init.php';
 
-/* Set the correct headers */
-header("Content-type: text/xml; charset=" . Config::get('site_charset'));
-header("Content-Disposition: attachment; filename=ajax.xml");
-header("Expires: Tuesday, 27 Mar 1984 05:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Pragma: no-cache");
+xoutput_headers();
 
 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : null;
 
+debug_event('ajax.server.php', 'Called for page: {'.$page.'}', '5');
+
 switch ($page) {
-    case 'flag':
-        require_once Config::get('prefix') . '/server/flag.ajax.php';
-        exit;
-    break;
     case 'stats':
-        require_once Config::get('prefix') . '/server/stats.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/stats.ajax.php';
         exit;
-    break;
     case 'browse':
-        require_once Config::get('prefix') . '/server/browse.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/browse.ajax.php';
         exit;
-    break;
     case 'random':
-        require_once Config::get('prefix') . '/server/random.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/random.ajax.php';
         exit;
-    break;
     case 'playlist':
-        require_once Config::get('prefix') . '/server/playlist.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/playlist.ajax.php';
         exit;
-    break;
     case 'localplay':
-        require_once Config::get('prefix') . '/server/localplay.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/localplay.ajax.php';
         exit;
-    break;
     case 'tag':
-        require_once Config::get('prefix') . '/server/tag.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/tag.ajax.php';
         exit;
-    break;
     case 'stream':
-        require_once Config::get('prefix') . '/server/stream.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/stream.ajax.php';
         exit;
-    break;
     case 'song':
-        require_once Config::get('prefix') . '/server/song.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/song.ajax.php';
         exit;
-    break;
     case 'democratic':
-        require_once Config::get('prefix') . '/server/democratic.ajax.php';
+        require_once AmpConfig::get('prefix') . '/server/democratic.ajax.php';
         exit;
-    break;
     case 'index':
-        require_once Config::get('prefix') . '/server/index.ajax.php';
-       exit;
-   break;
-  	case 'musicbrainz':
-		require_once Config::get('prefix') . '/server/musicbrainz.php';
-		exit;
-	break;
-	default:
+        require_once AmpConfig::get('prefix') . '/server/index.ajax.php';
+        exit;
+    case 'catalog':
+        require_once AmpConfig::get('prefix') . '/server/catalog.ajax.php';
+        exit;
+    case 'search':
+        require_once AmpConfig::get('prefix') . '/server/search.ajax.php';
+        exit;
+    case 'player':
+        require_once AmpConfig::get('prefix') . '/server/player.ajax.php';
+        exit;
+    case 'musicbrainz':
+    	require_once AmpConfig::get('prefix') . '/server/musicbrainz.php';
+        exit;
+    default:
         // A taste of compatibility
     break;
 } // end switch on page
@@ -98,73 +87,13 @@ switch ($_REQUEST['action']) {
         $results['rightbar'] = UI::ajax_include('rightbar.inc.php');
     break;
     /* Controls the editing of objects */
-    case 'show_edit_object':
-
-        // Set the default required level
-        $level = '50';
-
-        switch ($_GET['type']) {
-            case 'album_row':
-                $key = 'album_' . $_GET['id'];
-                $album = new Album($_GET['id']);
-                $album->format();
-            break;
-            case 'artist_row':
-                $key = 'artist_' . $_GET['id'];
-                $artist = new Artist($_GET['id']);
-                $artist->format();
-            break;
-            case 'song_row':
-                $key = 'song_' . $_GET['id'];
-                $song = new Song($_GET['id']);
-                $song->format();
-            break;
-            case 'live_stream_row':
-                $key = 'live_stream_' . $_GET['id'];
-                $radio = new Radio($_GET['id']);
-                $radio->format();
-            break;
-            case 'playlist_row':
-            case 'playlist_title':
-                $key = 'playlist_row_' . $_GET['id'];
-                $playlist = new Playlist($_GET['id']);
-                $playlist->format();
-                // If the current user is the owner, only user is required
-                if ($playlist->user == $GLOBALS['user']->id) {
-                    $level = '25';
-                }
-            break;
-            case 'smartplaylist_row':
-            case 'smartplaylist_title':
-                $key = 'playlist_row_' . $_GET['id'];
-                $playlist = new Search('song', $_GET['id']);
-                $playlist->format();
-                if ($playlist->user == $GLOBALS['user']->id) {
-                    $level = '25';
-                }
-            break;
-            default:
-                $key = 'rfc3514';
-                echo xml_from_array(array($key=>'0x1'));
-                exit;
-            break;
-        } // end switch on type
-
-        // Make sure they got them rights
-        if (!Access::check('interface',$level)) {
-            $results['rfc3514'] = '0x1';
-            break;
-        }
-
-        ob_start();
-        require Config::get('prefix') . '/templates/show_edit_' . $_GET['type'] . '.inc.php';
-        $results[$key] = ob_get_contents();
-        ob_end_clean();
-    break;
     case 'edit_object':
+        debug_event('ajax_server', "Editing object...", '5');
+
         // Scrub the data
         foreach ($_POST as $key => $data) {
-            //$_POST[$key] = scrub_in($data);
+            $_POST[$key] = unhtmlentities(scrub_in($data));
+            debug_event('ajax_server', $key.'='.$_POST[$key], '5');
         }
 
         $level = '50';
@@ -175,20 +104,21 @@ switch ($_REQUEST['action']) {
                 $level = '25';
             }
         }
-        if ($_POST['type'] == 'smartplaylist_row' || 
+        if ($_POST['type'] == 'smartplaylist_row' ||
             $_POST['type'] == 'smartplaylist_title') {
-            $playlist = new Search('song', $_POST['id']);
-            if ($GLOBALS['user']->id == $playlist->user) {
+            $smartpl = new Search('song', $_POST['id']);
+            if ($GLOBALS['user']->id == $smartpl->user) {
                 $level = '25';
             }
         }
 
         // Make sure we've got them rights
-        if (!Access::check('interface',$level) || Config::get('demo_mode')) {
+        if (!Access::check('interface', $level) || AmpConfig::get('demo_mode')) {
             $results['rfc3514'] = '0x1';
             break;
         }
 
+        $new_id = '';
         switch ($_POST['type']) {
             case 'album_row':
                 $key = 'album_' . $_POST['id'];
@@ -224,7 +154,6 @@ switch ($_REQUEST['action']) {
             case 'song_row':
                 $key = 'song_' . $_POST['id'];
                 $song = new Song($_POST['id']);
-                Flag::add($song->id,'song','retag','Inline Single Song Update');
                 $song->update($_POST);
 
                 $album = new Album($_POST['album']);
@@ -237,17 +166,21 @@ switch ($_REQUEST['action']) {
             case 'playlist_row':
             case 'playlist_title':
                 $key = 'playlist_row_' . $_POST['id'];
-                $playlist->update($_POST);
-                $playlist->format();
-                $count = $playlist->get_song_count();
+                if (isset($playlist)) {
+                    $playlist->update($_POST);
+                    $playlist->format();
+                    $count = $playlist->get_song_count();
+                }
             break;
             case 'smartplaylist_row':
             case 'smartplaylist_title':
-                $key = 'playlist_row_' . $_POST['id'];
-                $playlist->name = $_POST['name'];
-                $playlist->type = $_POST['pl_type'];
-                $playlist->update();
-                $playlist->format();
+                $key = 'smartplaylist_row_' . $_POST['id'];
+                if (isset($smartpl)) {
+                    $smartpl->name = $_POST['name'];
+                    $smartpl->type = $_POST['pl_type'];
+                    $smartpl->update();
+                    $smartpl->format();
+                }
             break;
             case 'live_stream_row':
                 $key = 'live_stream_' . $_POST['id'];
@@ -255,17 +188,33 @@ switch ($_REQUEST['action']) {
                 $radio = new Radio($_POST['id']);
                 $radio->format();
             break;
+            case 'channel_row':
+                $key = 'channel_row_' . $_POST['id'];
+                $channel = new Channel($_POST['id']);
+                $channel->update($_POST);
+            break;
+            case 'broadcast_row':
+                $key = 'broadcast_row_' . $_POST['id'];
+                $broadcast = new Broadcast($_POST['id']);
+                $broadcast->update($_POST);
+            break;
+            case 'tag_row':
+                $tag = new Tag($_POST['id']);
+                $tag->update($_POST['name']);
+                if ($_POST['select_tags']) {
+                    $merge_to = Tag::construct_from_name($_POST['select_tags']);
+                    if ($merge_to->id) {
+                        $tag->merge($merge_to->id, ($_POST['merge_persist'] == '1'));
+                    }
+                }
+            break;
             default:
                 $key = 'rfc3514';
-                echo xml_from_array(array($key=>'0x1'));
+                echo xoutput_from_array(array($key=>'0x1'));
                 exit;
-            break;
         } // end switch on type
 
-        ob_start();
-        require Config::get('prefix') . '/templates/show_' . $_POST['type'] . '.inc.php';
-        $results[$key] = ob_get_contents();
-        ob_end_clean();
+        $results['id'] = $new_id;
     break;
     case 'current_playlist':
         switch ($_REQUEST['type']) {
@@ -280,13 +229,21 @@ switch ($_REQUEST['action']) {
     case 'basket':
         switch ($_REQUEST['type']) {
             case 'album':
+                foreach ($_REQUEST['id'] as $i) {
+                    $object = new $_REQUEST['type']($i);
+                    $songs = $object->get_songs();
+                    foreach ($songs as $song_id) {
+                        $GLOBALS['user']->playlist->add_object($song_id, 'song');
+                    }
+                }
+            break;
             case 'artist':
             case 'tag':
                 $object = new $_REQUEST['type']($_REQUEST['id']);
                 $songs = $object->get_songs();
                 foreach ($songs as $song_id) {
                     $GLOBALS['user']->playlist->add_object($song_id,'song');
-                } // end foreach
+                }
             break;
             case 'browse_set':
                 $browse = new Browse($_REQUEST['browse_id']);
@@ -296,6 +253,16 @@ switch ($_REQUEST['action']) {
                 }
             break;
             case 'album_random':
+                $data = explode('_',$_REQUEST['type']);
+                $type = $data['0'];
+                foreach ($_REQUEST['id'] as $i) {
+                    $object = new $type($i);
+                    $songs = $object->get_random_songs();
+                    foreach ($songs as $song_id) {
+                        $GLOBALS['user']->playlist->add_object($song_id, 'song');
+                    }
+                }
+            break;
             case 'artist_random':
             case 'tag_random':
                 $data = explode('_',$_REQUEST['type']);
@@ -337,15 +304,22 @@ switch ($_REQUEST['action']) {
                     $GLOBALS['user']->playlist->add_object($object->id,'radio');
                 }
             break;
-            case 'dynamic':
-                $random_id = Random::get_type_id($_REQUEST['random_type']);
-                $GLOBALS['user']->playlist->add_object($random_id,'random');
-            break;
             case 'video':
                 $GLOBALS['user']->playlist->add_object($_REQUEST['id'],'video');
             break;
-            default:
+            case 'album_preview':
+                $songs = Song_preview::get_song_previews($_REQUEST['mbid']);
+                foreach ($songs as $song) {
+                    if (!empty($song->file)) {
+                        $GLOBALS['user']->playlist->add_object($song->id, 'song_preview');
+                    }
+                }
+            break;
+            case 'song_preview':
+                $GLOBALS['user']->playlist->add_object($_REQUEST['id'],'song_preview');
+            break;
             case 'song':
+            default:
                 $GLOBALS['user']->playlist->add_object($_REQUEST['id'],'song');
             break;
         } // end switch
@@ -362,12 +336,35 @@ switch ($_REQUEST['action']) {
         $results[$key] = ob_get_contents();
         ob_end_clean();
     break;
+    /* Setting userflags */
+    case 'set_userflag':
+        ob_start();
+        $userflag = new Userflag($_GET['object_id'], $_GET['userflag_type']);
+        $userflag->set_flag($_GET['userflag']);
+        Userflag::show($_GET['object_id'], $_GET['userflag_type']);
+        $key = "userflag_" . $_GET['object_id'] . "_" . $_GET['userflag_type'];
+        $results[$key] = ob_get_contents();
+        ob_end_clean();
+    break;
+    case 'action_buttons':
+        ob_start();
+        if (AmpConfig::get('ratings')) {
+            echo " <div id='rating_" . $_GET['object_id'] . "_" . $_GET['object_type'] . "'>";
+            Rating::show($_GET['object_id'], $_GET['object_type']);
+            echo "</div> |";
+        }
+        if (AmpConfig::get('userflags')) {
+            echo " <div id='userflag_" . $_GET['object_id'] . "_" . $_GET['object_type'] . "'>";
+            Userflag::show($_GET['object_id'], $_GET['object_type']);
+            echo "</div>";
+        }
+        $results['action_buttons'] = ob_get_contents();
+        ob_end_clean();
+    break;
     default:
         $results['rfc3514'] = '0x1';
     break;
 } // end switch action
 
 // Go ahead and do the echo
-echo xml_from_array($results);
-
-?>
+echo xoutput_from_array($results);

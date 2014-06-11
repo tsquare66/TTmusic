@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,7 +21,7 @@
  */
 
 /* Create some variables we are going to need */
-$web_path = Config::get('web_path');
+$web_path = AmpConfig::get('web_path');
 $base_url = '?action=set_rating&rating_type=' . $rating->type . '&object_id=' . $rating->id;
 $othering = false;
 $rate = $rating->get_user_rating();
@@ -43,18 +43,16 @@ if (!$rate) {
     echo T_('Current rating: ');
     if ($rate <= 0) {
         echo T_('not rated yet') . "</li>\n";
-    }
-    else printf(T_('%s of 5'), $rate); echo "</li>\n";
+    } else printf(T_('%s of 5'), $rate); echo "</li>\n";
 
-    for ($i = 1; $i < 6; $i++)
-    {
+    for ($i = 1; $i < 6; $i++) {
     ?>
       <li>
-          <?php echo Ajax::text($base_url . '&rating=' . $i, '', 'rating' . $i . '_' . $rating->id, '', 'star' . $i); ?>
+          <?php echo Ajax::text($base_url . '&rating=' . $i, '', 'rating' . $i . '_' . $rating->id . '_' . $rating->type, '', 'star' . $i); ?>
       </li>
     <?php
     }
     ?>
   </ul>
-       <?php echo Ajax::text($base_url . '&rating=-1', '', 'rating0_' . $rating->id, '', 'star0'); ?>
+       <?php echo Ajax::text($base_url . '&rating=-1', '', 'rating0_' . $rating->id . '_' . $rating->type, '', 'star0'); ?>
 </div>

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,61 +20,67 @@
  *
  */
 
-$web_path = Config::get('web_path');
+$web_path = AmpConfig::get('web_path');
 ?>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
-<table class="tabledata" cellpadding="0" cellspacing="0">
-<colgroup>
-  <col id="col_add" />
-  <col id="col_track" />
-  <col id="col_song" />
-  <col id="col_artist" />
-  <col id="col_album" />
-  <col id="col_genre" />
-  <col id="col_track" />
-  <col id="col_time" />
-  <col id="col_rating" />
-  <col id="col_action" />
-</colgroup>
-<tr class="th-top">
-    <th class="cel_add">&nbsp;</th>
-    <th class="cel_track"><?php echo T_('Track'); ?></th>
-    <th class="cel_song"><?php echo T_('Song Title'); ?></th>
-    <th class="cel_artist"><?php echo T_('Artist'); ?></th>
-    <th class="cel_album"><?php echo T_('Album'); ?></th>
-    <th class="cel_genre"><?php echo T_('Genre'); ?></th>
-    <th class="cel_track"><?php echo T_('Track'); ?></th>
-    <th class="cel_time"><?php echo T_('Time'); ?></th>
-<?php if (Config::get('ratings')) {
-        Rating::build_cache('song', array_map(create_function('$i', 'return $i[\'object_id\'];'), $object_ids));
-?>
-        <th class="cel_rating"><?php echo T_('Rating'); ?></th>
-<?php } ?>
-    <th class="cel_action"><?php echo T_('Action'); ?></th>
-</tr>
-<?php
-    foreach ($object_ids as $object) {
-        $song = new Song($object['object_id']);
-        $song->format();
-        $playlist_track = $object['track'];
-?>
-<tr class="<?php echo UI::flip_class(); ?>" id="track_<?php echo $object['track_id']; ?>">
-    <?php require Config::get('prefix') . '/templates/show_playlist_song_row.inc.php'; ?>
-</tr>
-<?php } ?>
-<tr class="th-bottom">
-    <th class="cel_add">&nbsp;</th>
-    <th class="cel_track"><?php echo T_('Track'); ?></th>
-    <th class="cel_song"><?php echo T_('Song Title'); ?></th>
-    <th class="cel_artist"><?php echo T_('Artist'); ?></th>
-    <th class="cel_album"><?php echo T_('Album'); ?></th>
-    <th class="cel_genre"><?php echo T_('Genre'); ?></th>
-    <th class="cel_track"><?php echo T_('Track'); ?></th>
-    <th class="cel_time"><?php echo T_('Time'); ?></th>
-<?php if (Config::get('ratings')) { ?>
-        <th class="cel_rating"><?php echo T_('Rating'); ?></th>
-<?php } ?>
-    <th class="cel_action"><?php echo T_('Action'); ?></th>
-</tr>
-</table>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<?php if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php'; ?>
+<form method="post" id="reorder_playlist_<?php echo $playlist->id; ?>">
+    <table id="reorder_playlist_table" class="tabledata" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr class="th-top">
+                <th class="cel_play essential"></th>
+                <th class="cel_song essential persist"><?php echo T_('Song Title'); ?></th>
+                <th class="cel_add essential"></th>
+                <th class="cel_artist essential"><?php echo T_('Artist'); ?></th>
+                <th class="cel_album optional"><?php echo T_('Album'); ?></th>
+                <th class="cel_tags optional"><?php echo T_('Tags'); ?></th>
+                <th class="cel_time optional"><?php echo T_('Time'); ?></th>
+            <?php if (AmpConfig::get('ratings')) {
+                Rating::build_cache('song', array_map(create_function('$i', '$i=(array) $i; return $i[\'object_id\'];'), $object_ids));
+            ?>
+                <th class="cel_rating"><?php echo T_('Rating'); ?></th>
+            <?php } ?>
+            <?php if (AmpConfig::get('userflags')) {
+                Userflag::build_cache('song', array_map(create_function('$i', '$i=(array) $i; return $i[\'object_id\'];'), $object_ids));
+            ?>
+                <th class="cel_userflag essential"><?php echo T_('Fav.'); ?></th>
+            <?php } ?>
+                <th class="cel_action essential"><?php echo T_('Action'); ?></th>
+                <th class="cel_drag essential"></th>
+            </tr>
+        </thead>
+        <tbody id="sortableplaylist_<?php echo $playlist->id; ?>">
+            <?php foreach ($object_ids as $object) {
+                    if (!is_array($object)) {
+                        $object = (array) $object;
+                    }
+                    $song = new Song($object['object_id']);
+                    $song->format();
+                    $playlist_track = $object['track'];
+            ?>
+                    <tr class="<?php echo UI::flip_class(); ?>" id="track_<?php echo $object['track_id']; ?>">
+                        <?php require AmpConfig::get('prefix') . '/templates/show_playlist_song_row.inc.php'; ?>
+                    </tr>
+            <?php } ?>
+        </tbody>
+        <tfoot>
+            <tr class="th-bottom">
+                <th class="cel_play"><?php echo T_('Play'); ?></th>
+                <th class="cel_song"><?php echo T_('Song Title'); ?></th>
+                <th class="cel_add"></th>
+                <th class="cel_artist"><?php echo T_('Artist'); ?></th>
+                <th class="cel_album"><?php echo T_('Album'); ?></th>
+                <th class="cel_tags"><?php echo T_('Tags'); ?></th>
+                <th class="cel_time"><?php echo T_('Time'); ?></th>
+            <?php if (AmpConfig::get('ratings')) { ?>
+                <th class="cel_rating"><?php echo T_('Rating'); ?></th>
+            <?php } ?>
+            <?php if (AmpConfig::get('userflags')) { ?>
+                <th class="cel_userflag"><?php echo T_('Fav.'); ?></th>
+            <?php } ?>
+                <th class="cel_action"><?php echo T_('Action'); ?></th>
+                <th class="cel_drag"></th>
+            </tr>
+        </tfoot>
+    </table>
+</form>
+<?php if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php'; ?>

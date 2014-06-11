@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -41,16 +41,17 @@ switch ($action) {
             Error::add('general', T_('Password has not been sent'));
         }
 
-        require Config::get('prefix') . '/templates/show_login_form.inc.php';
+        require AmpConfig::get('prefix') . '/templates/show_login_form.inc.php';
         break;
     default:
-        require Config::get('prefix') . '/templates/show_lostpassword_form.inc.php';
+        require AmpConfig::get('prefix') . '/templates/show_lostpassword_form.inc.php';
 }
 
-function send_newpassword($email,$current_ip){
+function send_newpassword($email,$current_ip)
+{
     /* get the Client and set the new password */
     $client = User::get_from_email($email);
-    if ($client->email == $email) {
+    if ($client && $client->email == $email) {
         $newpassword = generate_password(6);
         $client->update_password($newpassword);
 
@@ -69,4 +70,3 @@ function send_newpassword($email,$current_ip){
     }
     return false;
 }
-?>

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,24 +20,24 @@
  *
  */
 
-$htmllang = str_replace("_","-",Config::get('lang'));
-$web_path = Config::get('web_path');
+$htmllang = str_replace("_","-",AmpConfig::get('lang'));
+$web_path = AmpConfig::get('web_path');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $htmllang; ?>" lang="<?php echo $htmllang; ?>">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo Config::get('site_charset'); ?>" />
-<title><?php echo Config::get('site_title'); ?> - <?php echo T_('Registration'); ?></title>
-<link rel="stylesheet" href="<?php echo Config::get('web_path'); ?>/templates/install.css" type="text/css" media="screen" />
-<link rel="shortcut icon" href="<?php echo Config::get('web_path'); ?>/favicon.ico" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo AmpConfig::get('site_charset'); ?>" />
+<title><?php echo AmpConfig::get('site_title'); ?> - <?php echo T_('Registration'); ?></title>
+<link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?>/templates/install.css" type="text/css" media="screen" />
+<link rel="shortcut icon" href="<?php echo AmpConfig::get('web_path'); ?>/favicon.ico" />
 </head>
 <body>
 <div id="header">
-<h1><?php echo Config::get('site_title'); ?></h1>
+<h1><?php echo AmpConfig::get('site_title'); ?></h1>
 <?php echo T_('Registration'); ?>...
 </div>
 
-<script src="<?php echo $web_path; ?>/modules/prototype/prototype.js" language="javascript" type="text/javascript"></script>
+<script src="<?php echo $web_path; ?>/modules/jquery/jquery.min.js" language="javascript" type="text/javascript"></script>
 <script src="<?php echo $web_path; ?>/lib/javascript/base.js" language="javascript" type="text/javascript"></script>
 <script src="<?php echo $web_path; ?>/lib/javascript/ajax.js" language="javascript" type="text/javascript"></script>
 
@@ -50,7 +50,7 @@ $web_path = Config::get('web_path');
 <p>
     <?php
     /* HINT: Start A tag, End A tag */
-     printf(T_('This User ID is activated and can be used %sLogin%s'), '<a href="' . Config::get('web_path'). '/login.php">', '</a>'); ?>
+     printf(T_('This User ID is activated and can be used %sLogin%s'), '<a href="' . AmpConfig::get('web_path'). '/login.php">', '</a>'); ?>
 </p>
 <?php } else { ?>
 <h3><?php echo T_('Validation Failed'); ?></h3>
@@ -59,7 +59,7 @@ $web_path = Config::get('web_path');
 </div><!--end <div>id="maincontainer-->
 <div id="bottom">
 <p><strong>Ampache</strong><br />
-Pour l'Amour de la Musique.</p>
+For the love of Music.</p>
 </div>
 </body>
 </html>

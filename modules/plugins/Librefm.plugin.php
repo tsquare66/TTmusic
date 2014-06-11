@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -139,7 +139,7 @@ class Ampachelibrefm {
         if (!$scrobbler->submit_tracks()) {
             debug_event($this->name,'Error Submit Failed: ' . $scrobbler->error_msg,'3');
             if ($scrobbler->reset_handshake) {
-                debug_event($this->name,'Re-running Handshake due to error','3');
+                debug_event($this->name, 'Re-running Handshake due to error', '1');
                 $this->set_handshake($this->user_id);
                 // Try try again
                 if ($scrobbler->submit_tracks()) {
@@ -191,10 +191,10 @@ class Ampachelibrefm {
      * This loads up the data we need into this object, this stuff comes 
      * from the preferences.
      */
-    public function load() {
+    public function load($user) {
 
-        $GLOBALS['user']->set_preferences();
-        $data = $GLOBALS['user']->prefs;
+        $user->set_preferences();
+        $data = $user->prefs;
 
         if (strlen(trim($data['librefm_user']))) {
             $this->username = trim($data['librefm_user']);
@@ -211,7 +211,7 @@ class Ampachelibrefm {
             return false;
         }
 
-        $this->user_id = $GLOBALS['user']->id;
+        $this->user_id = $user->id;
 
         // If we don't have the other stuff try to get it before giving up
         if (!$data['librefm_host'] || !$data['librefm_port'] || !$data['librefm_url'] || !$data['librefm_challenge']) {

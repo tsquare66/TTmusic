@@ -1,6 +1,128 @@
 CHANGELOG
 =========
 
+3.7
+----------
+- Added Scrutinizer analyze
+- Fixed playlist play with disabled songs (reported by stebe)
+- Improved user auto-registration to optionally avoid email validation
+- Fixed date.timezone php warnings breaking Ampache API (reported by redcap1)
+- Fixed playlist browse with items > 1000 (reported by Tetram67)
+- Fixed Amazon API Image support (thanks jbrain)
+- Fixed id3v2 multiples genres (reported by Rouzax)
+- Improved democratic playlist view to select the first one by default
+- Improved German translation (thanks Psy-Virus)
+- Fixed playlist view of all users for administrator accounts (reported by stonie08)
+- Added option to regroup album disks to one album view
+- Changed Ampache logo
+- Fixed email validation on user registration (reported by redcap1)
+- Added local charset setting
+- Improved installation steps and design (thanks changi67)
+- Improved Recently Played to not filter songs to one display only
+- Fixed Subsonic transcoding support
+- Fixed Subsonic offline storage file path (reported by Tetram76)
+- Added optional top dock menu
+- Added html5 web audio api visualizer and equalizer
+- Added `Play List` to localplay mode
+- Fixed encoding issue in batch download
+- Added pagination to democratic playlists
+- Added an option to group albums discs to an unique album
+- Added alphabeticalByName and alphabeticalByArtist browse view in Subsonic API
+- Fixed album art on xspf generated playlist
+- Added stats, playlist and new authentication method to Ampache XML API
+- Added responsive tables to automatically hide optional information on small screen
+- Added song action buttons (user favorite, rating, ...) to the web player
+- Added sortable capability to the web player playlist
+- Added Growl notification/scrobbler plugin
+- Added artist slideshow photos plugin from Flickr
+- Added setting to change Ampache log file name
+- Added playlists to Quick and Advanced search
+- Added pls, asx and xspf playlist file format import
+- Fixed playlist import with song file absolute path (reported by ricksorensen)
+- Fixed playlist import with same song file names (reported by captainark)
+- Added shoutcast notification at specific time when playing a song with a waveform
+- Added Tag edit/delete capability
+- Added several search engine links
+- Added myPlex support on Plex API
+- Added cache on LastFM data
+- Added custom buttons play actions
+- Added artist pictures slideshow for current playing artist
+- Added Broadcast feature
+- Added Channel feature with Icecast compatibility
+- Replaced Muses Radio Player by jPlayer to keep one web player for all
+- Added missing artists in similar artists for Wanted feature
+- Added concerts information from LastFM
+- Added tabs on artist information
+- Added 'add to playlist' direct button on browse items
+- Added avatar on users and Gravatar/Libravatar plugins
+- Fixed playlist visibility (reported by stonie08)
+- Added OpenID authentication
+- Fixed m3u import to playlist on catalog creation (reported by jaydoes)
+- Improved missing/wanted albums with the capability to browse missing artists
+- Added share feature
+- Updated French translation
+- Added options per browse view (alphabetic, infinite scroll, number of items per page...)
+- Fixed several Subsonic players (SubHub, Jamstash...)
+- Added option to get beautiful stream url with url rewriting
+- Added check to use a new thread for scrobbling if available
+- Added confirmation option when closing the currently playing web player
+- Added auto-pause web player option between several browse tabs
+- Fixed similar artists list with disabled catalogs (reported by stebe)
+- Improved Shoutbox (css fix, real time notifications...)
+- Fixed iframe basket play action reload
+- Fixed wanted album auto-remove
+- Fixed MusicBrainz get album art from releases
+- Added Waveform feature on songs
+- Added AutoUpdate Ampache version check
+- Added auto-completion in global Ampache search
+- Added option to 'lock' header/sidebars UI
+- Fixed catalog export when 'All' selected
+- Fixed XBMC Local Play (reported by nakinigit)
+- Fixed artist search
+- Fixed Random Advanced (reported by stebe)
+- Changed song preview directplay icons
+- Added Headphones Automatic Music Downloader support as a 'Wanted Process' plugin
+- Updated PHPMailer to version 5.2.7
+- Updated getID3 to version 1.9.7
+- Added 'Song Preview' feature on missing albums tracks, with EchoNest api
+- Added 'Missing Albums' / 'Wanted List' feature
+- Upgraded to MusicBrainz api v2
+- Replaced Snoopy project with Requests project
+- Added user-agent on recently played
+- Added option to show/hide recently played, time and user-agent per user
+- Updated French language
+- Added option for iframe or popup web player mode
+- Improved Song/Video web player with jPlayer, Radio player with Muse Radio Player
+- Added 'add media' to the currently played playlist on web player
+- Added dedicated 'Recently Played' page
+- Added enable/disable feature on catalogs
+- Fixed Config class conflict with PEAR
+- Improved recommended artists/songs loading using ajax
+- Added a new modern 'Reborn' theme
+- Improved Subsonic api backend support (json, ...)
+- Added Plex api backend support
+- Added artist art/summary when using LastFM api
+- Added 'all' link when browsing
+- Added option to enable/disable web player technology (flash / html5)
+- Fixed artist/song edition
+- Improved tag edition
+- Added song re-order on album / playlists
+- Replaced Prototype with jQuery
+- Added 'Favorite' feature on songs/albums/artists
+- Added 'Direct Play' feature to play songs without using a playlist
+- Added Lyrics plugins (ChartLyrics and LyricWiki)
+- Fixed ShoutBox enable/disable (reported by cipriant)
+- Added SoundCloud, Dropbox, Subsonic and Google Music catalog plugins
+- Improved Catalogs using plug-ins
+- Added browse paging to all information pages
+- Fixed LDAP authentication with password containing '&' (reported by bruth2)
+- Added directories to zip archives
+- Improved project code style and added Travis builds
+- Added albums default sort preference
+- Added number of times an artist/album/song was played
+- Fixed installation process without database creation
+- Removed administrative flags
+
 3.6-FUTURE
 ----------
 - Fixed issue with long session IDs that affected OS X Mavericks and possibly

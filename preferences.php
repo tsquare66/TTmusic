@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,8 +22,12 @@
 
 require_once 'lib/init.php';
 
+$title = "";
+$text = "";
+$next_url = "";
+
 // Switch on the action
-switch($_REQUEST['action']) {
+switch ($_REQUEST['action']) {
     case 'update_preferences':
         if ($_POST['method'] == 'admin' && !Access::check('interface','100')) {
             UI::access_denied();
@@ -35,14 +39,14 @@ switch($_REQUEST['action']) {
             exit;
         }
 
+        $system = false;
         /* Reset the Theme */
         if ($_POST['method'] == 'admin') {
             $user_id = '-1';
             $system = true;
             $fullname = T_('Server');
             $_REQUEST['action'] = 'admin';
-        }
-        else {
+        } else {
             $user_id = $GLOBALS['user']->id;
             $fullname = $GLOBALS['user']->fullname;
         }
@@ -70,7 +74,7 @@ switch($_REQUEST['action']) {
         }
 
         update_preferences($_POST['user_id']);
-        header("Location: " . Config::get('web_path') . "/admin/users.php?action=show_preferences&user_id=" . scrub_out($_POST['user_id']));
+        header("Location: " . AmpConfig::get('web_path') . "/admin/users.php?action=show_preferences&user_id=" . scrub_out($_POST['user_id']));
     break;
     case 'admin':
         // Make sure only admins here
@@ -92,7 +96,7 @@ switch($_REQUEST['action']) {
     break;
     case 'update_user':
         // Make sure we're a user and they came from the form
-        if (!Access::check('interface','25') OR !Config::get('use_auth')) {
+        if (!Access::check('interface','25') OR !AmpConfig::get('use_auth')) {
             UI::access_denied();
             exit;
         }
@@ -111,12 +115,11 @@ switch($_REQUEST['action']) {
 
         if (!$GLOBALS['user']->update($_POST)) {
             Error::add('general', T_('Error Update Failed'));
-        }
-        else {
+        } else {
             $_REQUEST['action'] = 'confirm';
             $title = T_('Updated');
             $text = T_('Your Account has been updated');
-            $next_url = Config::get('web_path') . '/preferences.php?tab=account';
+            $next_url = AmpConfig::get('web_path') . '/preferences.php?tab=account';
         }
     break;
     default:
@@ -136,9 +139,8 @@ switch ($_REQUEST['action']) {
     break;
     default:
         // Show the default preferences page
-        require Config::get('prefix') . '/templates/show_preferences.inc.php';
+        require AmpConfig::get('prefix') . '/templates/show_preferences.inc.php';
     break;
 } // end switch on action
 
 UI::show_footer();
-?>

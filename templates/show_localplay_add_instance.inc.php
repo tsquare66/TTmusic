@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -21,7 +21,7 @@
  */
 ?>
 <?php UI::show_box_top(T_('Add Localplay Instance'), 'box box_localplay_add_instance'); ?>
-<form method="post" action="<?php echo Config::get('web_path'); ?>/localplay.php?action=add_instance">
+<form method="post" action="<?php echo AmpConfig::get('web_path'); ?>/localplay.php?action=add_instance">
 <table cellpadding="3" cellspacing="0" class="tabledata">
 <?php foreach ($fields as $key=>$field) { ?>
 <tr>

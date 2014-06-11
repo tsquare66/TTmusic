@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,7 +22,7 @@
 
 UI::show_box_top(T_('Preference Administration'));
 ?>
-<form method="post" action="<?php echo Config::get('web_path'); ?>/admin/preferences.php" enctype="multipart/form-data">
+<form method="post" action="<?php echo AmpConfig::get('web_path'); ?>/admin/preferences.php" enctype="multipart/form-data">
 <table class="tabledata" cellpadding="0" cellspacing="0">
 <colgroup>
   <col id="col_preference" />

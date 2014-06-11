@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -47,6 +47,8 @@ switch ($_REQUEST['action']) {
     case 'live_stream':
     case 'video':
     case 'song':
+    case 'channel':
+    case 'broadcast':
         $browse->set_type($_REQUEST['action']);
         $browse->set_simple_browse(true);
     break;
@@ -54,11 +56,14 @@ switch ($_REQUEST['action']) {
 
 UI::show_header();
 
-switch($_REQUEST['action']) {
+switch ($_REQUEST['action']) {
     case 'file':
     break;
     case 'album':
         $browse->set_filter('catalog',$_SESSION['catalog']);
+        if (AmpConfig::get('catalog_disable')) {
+            $browse->set_filter('catalog_enabled', '1');
+        }
         $browse->set_sort('name','ASC');
         $browse->show_objects();
     break;
@@ -67,35 +72,39 @@ switch($_REQUEST['action']) {
         $browse->set_sort('count','ASC');
         // This one's a doozy
         $browse->set_simple_browse(false);
-        //$browse->save_objects(Tag::get_tags(Config::get('offset_limit'),array()));
-        $browse->save_objects(Tag::get_tags(0,array()));
+        $browse->save_objects(Tag::get_tags(/*AmpConfig::get('offset_limit')*/));   // Should add a pager?
         $object_ids = $browse->get_saved();
         $keys = array_keys($object_ids);
         Tag::build_cache($keys);
-        
+        UI::show_box_top(T_('Tag Cloud'), 'box box_tag_cloud');
         $browse2 = new Browse();
         $browse2->set_type('song');
-        
-        UI::show_box_top(T_('Tag Cloud'), 'box box_tag_cloud');
-        require_once Config::get('prefix') . '/templates/show_tagcloud.inc.php';      
+        $browse2->store();
+        require_once AmpConfig::get('prefix') . '/templates/show_tagcloud.inc.php';
         UI::show_box_bottom();
-        
-        $browse2->set_filter('tag',$firsttag );
-        $object_ids = $browse2->get_objects();
-		$browse2->show_objects($object_ids);
-		$browse2->store();
+        $type = $browse2->get_type();
+        require_once AmpConfig::get('prefix') . '/templates/browse_content.inc.php';
     break;
     case 'artist':
         $browse->set_filter('catalog',$_SESSION['catalog']);
+        if (AmpConfig::get('catalog_disable')) {
+            $browse->set_filter('catalog_enabled', '1');
+        }
         $browse->set_sort('name','ASC');
         $browse->show_objects();
     break;
     case 'song':
         $browse->set_filter('catalog',$_SESSION['catalog']);
+        if (AmpConfig::get('catalog_disable')) {
+            $browse->set_filter('catalog_enabled', '1');
+        }
         $browse->set_sort('title','ASC');
         $browse->show_objects();
     break;
     case 'live_stream':
+        if (AmpConfig::get('catalog_disable')) {
+            $browse->set_filter('catalog_enabled', '1');
+        }
         $browse->set_sort('name','ASC');
         $browse->show_objects();
     break;
@@ -112,7 +121,18 @@ switch($_REQUEST['action']) {
         $browse->set_filter('playlist_type','1');
         $browse->show_objects();
     break;
+    case 'channel':
+        $browse->set_sort('id', 'ASC');
+        $browse->show_objects();
+    break;
+    case 'broadcast':
+        $browse->set_sort('id', 'ASC');
+        $browse->show_objects();
+    break;
     case 'video':
+        if (AmpConfig::get('catalog_disable')) {
+            $browse->set_filter('catalog_enabled', '1');
+        }
         $browse->set_sort('title','ASC');
         $browse->show_objects();
     break;
@@ -125,4 +145,3 @@ $browse->store();
 
 /* Show the Footer */
 UI::show_footer();
-?>

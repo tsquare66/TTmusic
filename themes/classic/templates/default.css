@@ -2,7 +2,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -36,7 +36,6 @@ a img, :link img, :visited img { border: 0; } /* no blue linked image borders */
 body { 
 	background:#d3d3d3;
 	font-family:Arial, Helvetica, Sans-Serif;
-	min-width:1000px;
 }
 p { 
 	color: #000;
@@ -437,6 +436,45 @@ a.button{padding:1px 3px;}
 }
 
 /************************************************/
+/*        Styles for user flags                 */
+/************************************************/
+.userflag
+{
+    position: relative;
+    width:16px;
+    height:16px;
+}
+
+.userflag a {
+    position:absolute;
+    display: inline;
+}
+
+.userflag a.userflag_true
+{
+    width:16px;
+    height: 16px;
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+.userflag a:hover.userflag_true
+{
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a.userflag_false
+{
+    width:16px;
+    height:16px;
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a:hover.userflag_false
+{
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+/************************************************/
 /*              Box Related Styles              */
 /************************************************/
 
@@ -457,6 +495,7 @@ a.button{padding:1px 3px;}
 	float:left;
 	clear:left;
 	height:1%; /* IE6 : Holly Hack comes to rescue once again */
+    width: 95%;
 }
 .box-inside { 
 	background: url(../images/right.gif) top right repeat-y;
@@ -507,6 +546,28 @@ a.button{padding:1px 3px;}
 #information_actions { margin-left:5px; font-size:0.7em; float:left; } 
 #information_actions h3 { font-size:1.2em; margin:0.2em; }
 
+.item_right_info {
+    float: right;
+    max-width: 60%;
+}
+
+.external_links {
+    text-align: right;
+}
+
+.external_links a {
+    margin: 0px 5px 0px 0px;
+    opacity: 0.3;
+}
+
+.external_links a:hover {
+    opacity: 1;
+}
+
+#artist_summary {
+    margin-right: 150px;
+}
+
 /* Specific boxes */
 .box_newest_albums  {}
 .box_newest_artists {clear:none;}
@@ -528,7 +589,7 @@ a.button{padding:1px 3px;}
 
 .tableform select { 
 	width: 150px; 
-} 
+}
 
 /* table rows */
 .tabledata .odd, .tabledata .odd td,
@@ -538,11 +599,28 @@ a.button{padding:1px 3px;}
 }
 .tabledata .even:hover, .tabledata .odd:hover { 
 	background:#9cf;
-} 
+}
+
+table.tabledata .cel_drag {
+	max-width: 16px;
+    width: 16px !important;
+}
+
+table.tabledata .cel_drag img:hover {
+	cursor: pointer;
+}
+
+table.tabledata .cel_agent {
+    text-align: right;
+}
+
+table.tabledata .cel_agent img:hover {
+    cursor: help;
+}
+
 .row-highlight:hover { 
 	background:#c33;
-} 
-	
+}
 
 /* Misc */
 .border 	{ background: #000; }
@@ -598,6 +676,11 @@ dt:hover, dt:hover + dd {background:#9cf;}
 
 .random_album .play_album{
 	display:none;
+}
+
+#random_selection .art_album img {
+    width: 80px;
+    height: 80px;
 }
 
 /************************************************/
@@ -674,14 +757,13 @@ img.shoutboximage {	margin:0 3px;}
 	color:#903; 
 }
 
-.fatalerror {
+.fatalerror .nodata {
 	display:table-cell;
 	padding:3px;
 	color:#903; 
 	font-weight:bold;
 	font-size:1.2em;
 }
-
 
 /************************************************/
 /*             LocalPlay                        */
@@ -696,9 +778,9 @@ td.lp_current a {
 } 
 
 /************************************************/
-/*             HTML5 Player                     */
+/*             Web Player                     */
 /************************************************/
-#html5_player #playlist
+#web_player #playlist
 {
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -869,12 +951,10 @@ textarea:focus{
 	background: url(../images/ajax-loader.gif) no-repeat;
 	display: none;
 	text-indent:-9999em;
-} 
+}
 
 .information,.information a { 
 	font-size: 0.9em; 
 	font-style: italic; 
 	color: #c0c0c0; 
-} 
-
-
+}

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,17 +26,18 @@
  *
  * @return void
  */
-function load_gettext() {
-    $lang = Config::get('lang');
-    $charset = Config::get('site_charset') ?: 'UTF-8';
+function load_gettext()
+{
+    $lang = AmpConfig::get('lang');
+    $charset = AmpConfig::get('site_charset') ?: 'UTF-8';
     $locale = $lang . '.' . $charset;
-    debug_event('i18n', 'Setting locale to ' . $locale, 5);
+    //debug_event('i18n', 'Setting locale to ' . $locale, 5);
     T_setlocale(LC_MESSAGES, $locale);
     /* Bind the Text Domain */
-    T_bindtextdomain('messages', Config::get('prefix') . "/locale/");
+    T_bindtextdomain('messages', AmpConfig::get('prefix') . "/locale/");
     T_bind_textdomain_codeset('messages', $charset);
     T_textdomain('messages');
-    debug_event('i18n', 'gettext is ' . (locale_emulation() ? 'emulated' : 'native'), 5);
+    //debug_event('i18n', 'gettext is ' . (locale_emulation() ? 'emulated' : 'native'), 5);
 } // load_gettext
 
 /**
@@ -45,8 +46,7 @@ function load_gettext() {
  * @param    string    $string
  * @return    string
  */
-function gettext_noop($string) {
+function gettext_noop($string)
+{
     return $string;
 }
-
-?>

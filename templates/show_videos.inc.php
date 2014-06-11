@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -20,51 +20,51 @@
  *
  */
 
-$web_path = Config::get('web_path');
+$web_path = AmpConfig::get('web_path');
+if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php';
 ?>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
-<table class="tabledata" cellpadding="0" cellspacing="0">
-<colgroup>
-  <col id="col_add" />
-  <col id="col_title" />
-  <col id="col_codec" />
-  <col id="col_resolution" />
-  <col id="col_length" />
-  <col id="col_tags" />
-  <col id="col-action" />
-</colgroup>
-<tr class="th-top">
-    <th class="cel_add"><?php echo T_('Add'); ?></th>
-    <th class="cel_title"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=title', T_('Title'),'sort_video_title'); ?></th>
-    <th class="cel_codec"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=codec', T_('Codec'),'sort_video_codec'); ?></th>
-    <th class="cel_resolution"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=resolution', T_('Resolution'),'sort_video_rez'); ?></th>
-    <th class="cel_length"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=length', T_('Time'),'sort_video_length'); ?></th>
-    <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="cel_action"><?php echo T_('Action'); ?></th>
-</tr>
-<?php
-/* Foreach through every artist that has been passed to us */
-foreach ($object_ids as $video_id) {
-        $video = new Video($video_id);
-        $video->format();
-?>
-<tr id="video_<?php echo $video->id; ?>" class="<?php echo UI::flip_class(); ?>">
-    <?php require Config::get('prefix') . '/templates/show_video_row.inc.php'; ?>
-</tr>
-<?php } //end foreach  ?>
-<?php if (!count($object_ids)) { ?>
-<tr class="<?php echo UI::flip_class(); ?>">
-    <td colspan="7"><span class="fatalerror"><?php echo T_('Not Enough Data'); ?></span></td>
-</tr>
-<?php } ?>
-<tr class="th-bottom">
-    <th class="cel_add"><?php echo T_('Add'); ?></th>
-    <th class="cel_title"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=title', T_('Title'),'sort_video_title'); ?></th>
-    <th class="cel_codec"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=codec', T_('Codec'),'sort_video_codec'); ?></th>
-    <th class="cel_resolution"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=resolution', T_('Resolution'),'sort_video_rez'); ?></th>
-    <th class="cel_length"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=length', T_('Time'),'sort_video_length'); ?></th>
-    <th class="cel_tags"><?php echo T_('Tags'); ?></th>
-    <th class="cel_action"><?php echo T_('Action'); ?></th>
-</tr>
+<table class="tabledata" cellpadding="0" cellspacing="0" data-objecttype="video">
+    <thead>
+        <tr class="th-top">
+            <th class="cel_play essential"></th>
+            <th class="cel_title essential persist"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=title', T_('Title'),'sort_video_title'); ?></th>
+            <th class="cel_add essential"></th>
+            <th class="cel_codec optional"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=codec', T_('Codec'),'sort_video_codec'); ?></th>
+            <th class="cel_resolution optional"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=resolution', T_('Resolution'),'sort_video_rez'); ?></th>
+            <th class="cel_length optional"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=length', T_('Time'),'sort_video_length'); ?></th>
+            <th class="cel_tags optional"><?php echo T_('Tags'); ?></th>
+            <th class="cel_action essential"><?php echo T_('Action'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        /* Foreach through every artist that has been passed to us */
+        foreach ($object_ids as $video_id) {
+                $video = new Video($video_id);
+                $video->format();
+        ?>
+        <tr id="video_<?php echo $video->id; ?>" class="<?php echo UI::flip_class(); ?>">
+            <?php require AmpConfig::get('prefix') . '/templates/show_video_row.inc.php'; ?>
+        </tr>
+        <?php } //end foreach  ?>
+        <?php if (!count($object_ids)) { ?>
+        <tr class="<?php echo UI::flip_class(); ?>">
+            <td colspan="8"><span class="nodata"><?php echo T_('No video found'); ?></span></td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    <tfoot>
+        <tr class="th-bottom">
+            <th class="cel_play"></th>
+            <th class="cel_title"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=title', T_('Title'),'sort_video_title'); ?></th>
+            <th class="cel_add"></th>
+            <th class="cel_codec"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=codec', T_('Codec'),'sort_video_codec'); ?></th>
+            <th class="cel_resolution"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=resolution', T_('Resolution'),'sort_video_rez'); ?></th>
+            <th class="cel_length"><?php echo Ajax::text('?page=browse&action=set_sort&browse_id=' . $browse->id . '&type=video&sort=length', T_('Time'),'sort_video_length'); ?></th>
+            <th class="cel_tags"><?php echo T_('Tags'); ?></th>
+            <th class="cel_action"><?php echo T_('Action'); ?></th>
+        </tr>
+    </tfoot>
 </table>
-<?php require Config::get('prefix') . '/templates/list_header.inc.php'; ?>
+<script src="<?php echo AmpConfig::get('web_path'); ?>/lib/javascript/tabledata.js" language="javascript" type="text/javascript"></script>
+<?php if ($browse->get_show_header()) require AmpConfig::get('prefix') . '/templates/list_header.inc.php'; ?>

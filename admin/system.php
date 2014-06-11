@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -22,7 +22,7 @@
 
 require_once '../lib/init.php';
 
-if (!Access::check('interface',100) OR Config::get('demo_mode')) {
+if (!Access::check('interface',100) OR AmpConfig::get('demo_mode')) {
     UI::access_denied();
     exit();
 }
@@ -36,20 +36,22 @@ switch ($_REQUEST['action']) {
      */
     case 'generate_config':
         ob_end_clean();
-        $current = parse_ini_file(Config::get('prefix') . '/config/ampache.cfg.php');
+        $current = parse_ini_file(AmpConfig::get('prefix') . '/config/ampache.cfg.php');
         $final = generate_config($current);
         $browser = new Horde_Browser();
-        $browser->downloadHeaders('ampache.cfg.php','text/plain',false,filesize(Config::get('prefix') . '/config/ampache.cfg.php.dist'));
+        $browser->downloadHeaders('ampache.cfg.php','text/plain',false,filesize(AmpConfig::get('prefix') . '/config/ampache.cfg.php.dist'));
         echo $final;
         exit;
-    break;
     case 'reset_db_charset':
         Dba::reset_db_charset();
-        show_confirmation(T_('Database Charset Updated'), T_('Your Database and associated tables have been updated to match your currently configured charset'), Config::get('web_path').'/admin/system.php?action=show_debug');
+        show_confirmation(T_('Database Charset Updated'), T_('Your Database and associated tables have been updated to match your currently configured charset'), AmpConfig::get('web_path').'/admin/system.php?action=show_debug');
     break;
     case 'show_debug':
-        $configuration = Config::get_all();
-        require_once Config::get('prefix') . '/templates/show_debug.inc.php';
+        $configuration = AmpConfig::get_all();
+        if ($_REQUEST['autoupdate'] == 'force') {
+            $version = AutoUpdate::get_latest_version(true);
+        }
+        require_once AmpConfig::get('prefix') . '/templates/show_debug.inc.php';
     break;
     default:
         // Rien a faire
@@ -57,5 +59,3 @@ switch ($_REQUEST['action']) {
 } // end switch
 
 UI::show_footer();
-
-?>

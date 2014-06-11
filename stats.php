@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -29,33 +29,35 @@ switch ($_REQUEST['action']) {
     // Show a Users "Profile" page
     case 'show_user':
         $client = new User($_REQUEST['user_id']);
-        require_once Config::get('prefix') . '/templates/show_user.inc.php';
-    break;
-    case 'user_stats':
-        /* Get em! */
-        $working_user = new User($_REQUEST['user_id']);
-
-        /* Pull favs */
-        $favorite_artists       = $working_user->get_favorites('artist');
-        $favorite_albums        = $working_user->get_favorites('album');
-        $favorite_songs         = $working_user->get_favorites('song');
-
-        require_once Config::get('prefix') . '/templates/show_user_stats.inc.php';
-
+        require_once AmpConfig::get('prefix') . '/templates/show_user.inc.php';
     break;
     // Show stats
     case 'newest':
-        require_once Config::get('prefix') . '/templates/show_newest.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_newest.inc.php';
     break;
     case 'popular':
-        require_once Config::get('prefix') . '/templates/show_popular.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_popular.inc.php';
+    break;
+    case 'highest':
+        require_once AmpConfig::get('prefix') . '/templates/show_highest.inc.php';
+    break;
+    case 'userflag':
+        require_once AmpConfig::get('prefix') . '/templates/show_userflag.inc.php';
+    break;
+    case 'recent':
+        $user_id = $_REQUEST['user_id'];
+        require_once AmpConfig::get('prefix') . '/templates/show_recent.inc.php';
+    break;
+    case 'wanted':
+        require_once AmpConfig::get('prefix') . '/templates/show_wanted.inc.php';
+    break;
+    case 'share':
+        require_once AmpConfig::get('prefix') . '/templates/show_shares.inc.php';
     break;
     case 'show':
     default:
-        require_once Config::get('prefix') . '/templates/show_stats.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_stats.inc.php';
     break;
 } // end switch on action
 
 UI::show_footer();
-
-?>

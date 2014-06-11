@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -24,16 +24,16 @@ define('NO_SESSION','1');
 require_once 'lib/init.php';
 
 /* Check Perms */
-if (!Config::get('allow_public_registration') || Config::get('demo_mode')) {
+if (!AmpConfig::get('allow_public_registration') || AmpConfig::get('demo_mode')) {
     debug_event('DENIED','Error Attempted registration','1');
     UI::access_denied();
     exit();
 }
 
 /* Don't even include it if we aren't going to use it */
-if (Config::get('captcha_public_reg')) {
+if (AmpConfig::get('captcha_public_reg')) {
     define ("CAPTCHA_INVERSE", 1);
-    require_once Config::get('prefix') . '/modules/captcha/captcha.php';
+    require_once AmpConfig::get('prefix') . '/modules/captcha/captcha.php';
 }
 
 
@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
     case 'validate':
         $username     = scrub_in($_GET['username']);
         $validation    = scrub_in($_GET['auth']);
-        require_once Config::get('prefix') . '/templates/show_user_activate.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_user_activate.inc.php';
     break;
     case 'add_user':
         /**
@@ -57,26 +57,26 @@ switch ($_REQUEST['action']) {
         $fullname         = scrub_in($_POST['fullname']);
         $username        = scrub_in($_POST['username']);
         $email             = scrub_in($_POST['email']);
+        $website             = scrub_in($_POST['website']);
         $pass1             = scrub_in($_POST['password_1']);
         $pass2             = scrub_in($_POST['password_2']);
 
         /* If we're using the captcha stuff */
-        if (Config::get('captcha_public_reg')) {
+        if (AmpConfig::get('captcha_public_reg')) {
                 $captcha         = captcha::solved();
-            if(!isset ($captcha)) {
+            if (!isset ($captcha)) {
                 Error::add('captcha', T_('Error Captcha Required'));
             }
             if (isset ($captcha)) {
                 if ($captcha) {
                     $msg="SUCCESS";
-                }
-                    else {
+                } else {
                         Error::add('captcha', T_('Error Captcha Failed'));
                     }
             } // end if we've got captcha
         } // end if it's enabled
 
-        if (Config::get('user_agreement')) {
+        if (AmpConfig::get('user_agreement')) {
             if (!$_POST['accept_agreement']) {
                 Error::add('user_agreement', T_("You <U>must</U> accept the user agreement"));
             }
@@ -86,12 +86,12 @@ switch ($_REQUEST['action']) {
             Error::add('username', T_("You did not enter a username"));
         }
 
-        if(!$fullname) {
+        if (!$fullname) {
             Error::add('fullname', T_("Please fill in your full name (Firstname Lastname)"));
         }
 
         // Check the mail for correct address formation.
-        if (!Mailer::validate_address($email)) { 
+        if (!Mailer::validate_address($email)) {
             Error::add('email', T_('Invalid email address'));
         }
 
@@ -99,7 +99,7 @@ switch ($_REQUEST['action']) {
             Error::add('password', T_("You must enter a password"));
         }
 
-        if ( $pass1 != $pass2 ) {
+        if ($pass1 != $pass2) {
             Error::add('password', T_("Your passwords do not match"));
         }
 
@@ -109,45 +109,46 @@ switch ($_REQUEST['action']) {
 
         // If we've hit an error anywhere up there break!
         if (Error::occurred()) {
-            require_once Config::get('prefix') . '/templates/show_user_registration.inc.php';
+            require_once AmpConfig::get('prefix') . '/templates/show_user_registration.inc.php';
             break;
         }
 
         /* Attempt to create the new user */
         $access = '5';
-        switch (Config::get('auto_user')) {
+        switch (AmpConfig::get('auto_user')) {
             case 'admin':
                 $access = '100';
             break;
             case 'user':
                 $access = '25';
             break;
-            default:
             case 'guest':
+            default:
                 $access = '5';
             break;
         } // auto-user level
 
 
-        $new_user = User::create($username, $fullname, $email, $pass1,
-            $access, Config::get('admin_enable_required'));
+        $new_user = User::create($username, $fullname, $email, $website, $pass1,
+            $access, AmpConfig::get('admin_enable_required'));
 
         if (!$new_user) {
             Error::add('duplicate_user', T_("Error: Insert Failed"));
-            require_once Config::get('prefix') . '/templates/show_user_registration.inc.php';
+            require_once AmpConfig::get('prefix') . '/templates/show_user_registration.inc.php';
             break;
         }
 
-        $client = new User($new_user);
-        $validation = md5(uniqid(rand(), true));
-        $client->update_validation($validation);
+        if (!AmpConfig::get('admin_enable_required') && !AmpConfig::get('user_no_email_confirm')) {
+            $client = new User($new_user);
+            $validation = md5(uniqid(rand(), true));
+            $client->update_validation($validation);
 
-        Registration::send_confirmation($username, $fullname, $email, $pass1, $validation);
-        require_once Config::get('prefix') . '/templates/show_registration_confirmation.inc.php';
+            Registration::send_confirmation($username, $fullname, $email, $website, $pass1, $validation);
+        }
+        require_once AmpConfig::get('prefix') . '/templates/show_registration_confirmation.inc.php';
     break;
     case 'show_add_user':
     default:
-        require_once Config::get('prefix') . '/templates/show_user_registration.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_user_registration.inc.php';
     break;
 } // end switch on action
-?>

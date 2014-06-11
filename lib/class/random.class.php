@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,33 +24,24 @@
 /**
  * Random Class
  *
- * All of the 'random' type events, elements, voodoo done by Ampache is done
- * by this class. There isn't a table for this class so most of its functions
- * are static.
+ * All of the 'random' type events, elements
  */
-class Random implements media {
-
-    public $type;
-    public $id;
-
-    /**
-     * Constructor
-     * nothing to see here, move along
-     */
-    public function __construct($id) {
-
-        $this->type = Random::get_id_type($id);
-        $this->id = intval($id);
-
-    } // constructor
-
+class Random
+{
     /**
      * artist
      * This returns the ID of a random artist, nothing special here for now
      */
-    public static function artist() {
-
-        $sql = "SELECT `id` FROM `artist` ORDER BY RAND() LIMIT 1";
+    public static function artist()
+    {
+        $sql = "SELECT `artist`.`id` FROM `artist` " .
+            "LEFT JOIN `song` ON `song`.`artist` = `artist`.`id` ";
+        if (AmpConfig::get('catalog_disable')) {
+            $sql .= "LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog` " .
+                "WHERE `catalog`.`enabled` = '1' ";
+        }
+        $sql .= "GROUP BY `artist`.`id` " .
+            "ORDER BY RAND() LIMIT 1";
         $db_results = Dba::read($sql);
 
         $results = Dba::fetch_assoc($db_results);
@@ -64,8 +55,8 @@ class Random implements media {
      * This returns a random Playlist with songs little bit of extra
      * logic require
      */
-    public static function playlist() {
-
+    public static function playlist()
+    {
         $sql = "SELECT `playlist`.`id` FROM `playlist` LEFT JOIN `playlist_data` " .
             " ON `playlist`.`id`=`playlist_data`.`playlist` WHERE `playlist_data`.`object_id` IS NOT NULL " .
             " ORDER BY RAND()";
@@ -78,37 +69,15 @@ class Random implements media {
     } // playlist
 
     /**
-     * play_url
-     *
-     * This generates a random play url based on the passed type
-     * and returns it
-     */
-    public static function play_url($id) {
-        if (!$type = self::get_id_type($id)) {
-            return false;
-        }
-
-        $uid = $GLOBALS['user']->id;
-
-        $url = Stream::get_base_url() . "type=song&random=1&random_type=$type&uid=$uid";
-
-        return $url;
-
-    } // play_url
-
-    /**
      * get_single_song
      * This returns a single song pulled based on the passed random method
      */
-    public static function get_single_song($type) {
-
-        if (!$type = self::validate_type($type)) {
-            return false;
-        }
-
+    public static function get_single_song($type)
+    {
+        $song_id = 0;
         $method_name = 'get_' . $type;
 
-        if (method_exists('Random',$method_name)) {
+        if (method_exists('Random', $method_name)) {
             $song_ids = self::$method_name(1);
             $song_id = array_pop($song_ids);
         }
@@ -122,11 +91,20 @@ class Random implements media {
      * This just randomly picks a song at whim from all catalogs
      * nothing special here...
      */
-    public static function get_default($limit) {
-
+    public static function get_default($limit = '')
+    {
         $results = array();
 
-        $sql = "SELECT `id` FROM `song` ORDER BY RAND() LIMIT $limit";
+        if (empty($limit)) {
+            $limit = AmpConfig::get('offset_limit') ? AmpConfig::get('offset_limit') : '25';
+        }
+
+        $sql = "SELECT `song`.`id` FROM `song` ";
+        if (AmpConfig::get('catalog_disable')) {
+            $sql .= "LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog` " .
+                "WHERE `catalog`.`enabled` = '1' ";
+        }
+        $sql .= "ORDER BY RAND() LIMIT $limit";
         $db_results = Dba::read($sql);
 
         while ($row = Dba::fetch_assoc($db_results)) {
@@ -142,17 +120,25 @@ class Random implements media {
      * This looks at the last album played by the current user and
      * picks something else in the same album
      */
-    public static function get_album($limit) {
-
+    public static function get_album($limit)
+    {
         $results = array();
 
-        // Get the last album playbed by us
-        $data = $GLOBALS['user']->get_recently_played('1','album');
-        if ($data['0']) {
-            $where_sql = " WHERE `album`='" . $data['0'] . "' ";
+        // Get the last album played by us
+        $data = $GLOBALS['user']->get_recently_played('1', 'album');
+        $where_sql = "";
+        if ($data[0]) {
+            $where_sql = " AND `song`.`album`='" . $data[0] . "' ";
         }
 
-        $sql = "SELECT `id` FROM `song` $where_sql ORDER BY RAND() LIMIT $limit";
+        $sql = "SELECT `song`.`id` FROM `song` ";
+        if (AmpConfig::get('catalog_disable')) {
+            $sql .= "LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog` " .
+                "WHERE `catalog`.`enabled` = '1' ";
+        } else {
+            $sql .= "WHERE '1' = '1' ";
+        }
+        $sql .= "$where_sql ORDER BY RAND() LIMIT $limit";
         $db_results = Dba::read($sql);
 
         while ($row = Dba::fetch_assoc($db_results)) {
@@ -168,16 +154,24 @@ class Random implements media {
      * This looks at the last artist played and then randomly picks a song from the
      * same artist
      */
-    public static function get_artist($limit) {
-
+    public static function get_artist($limit)
+    {
         $results = array();
 
         $data = $GLOBALS['user']->get_recently_played('1','artist');
-        if ($data['0']) {
-            $where_sql = " WHERE `artist`='" . $data['0'] . "' ";
+        $where_sql = "";
+        if ($data[0]) {
+            $where_sql = " AND `song`.`artist`='" . $data[0] . "' ";
         }
 
-        $sql = "SELECT `id` FROM `song` $where_sql ORDER BY RAND() LIMIT $limit";
+        $sql = "SELECT `song`.`id` FROM `song` ";
+        if (AmpConfig::get('catalog_disable')) {
+            $sql .= "LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog` " .
+                "WHERE `catalog`.`enabled` = '1' ";
+        } else {
+            $sql .= "WHERE '1' = '1' ";
+        }
+        $sql .= "$where_sql ORDER BY RAND() LIMIT $limit";
         $db_results = Dba::read($sql);
 
         while ($row = Dba::fetch_assoc($db_results)) {
@@ -193,16 +187,16 @@ class Random implements media {
      * This processes the results of a post from a form and returns an
      * array of song items that were returned from said randomness
      */
-    public static function advanced($type, $data) {
-
+    public static function advanced($type, $data)
+    {
         /* Figure out our object limit */
         $limit = intval($data['random']);
 
         // Generate our matchlist
 
         /* If they've passed -1 as limit then get everything */
-        if ($data['random'] == "-1") { unset($data['random']); }
-        else { $limit_sql = "LIMIT " . Dba::escape($limit); }
+        $limit_sql = "";
+        if ($data['random'] == "-1") { unset($data['random']); } else { $limit_sql = "LIMIT " . Dba::escape($limit); }
 
         $search_data = Search::clean_request($data);
 
@@ -214,13 +208,24 @@ class Random implements media {
             $search_info = $search->to_sql();
         }
 
+        $sql = "";
         switch ($type) {
             case 'song':
                 $sql = "SELECT `song`.`id`, `size`, `time` " .
                     "FROM `song` ";
                 if ($search_info) {
                     $sql .= $search_info['table_sql'];
-                    $sql .= ' WHERE ' . $search_info['where_sql'];
+                }
+                if (AmpConfig::get('catalog_disable')) {
+                    $sql .= " LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog`";
+                    $sql .= " WHERE `catalog`.`enabled` = '1'";
+                }
+                if ($search_info) {
+                    if (AmpConfig::get('catalog_disable')) {
+                        $sql .= ' AND ' . $search_info['where_sql'];
+                    } else {
+                        $sql .= ' WHERE ' . $search_info['where_sql'];
+                    }
                 }
             break;
             case 'album':
@@ -230,7 +235,17 @@ class Random implements media {
                 }
                 if ($search_info) {
                     $sql .= $search_info['table_sql'];
-                    $sql .= ' WHERE ' . $search_info['where_sql'];
+                }
+                if (AmpConfig::get('catalog_disable')) {
+                    $sql .= " LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog`";
+                    $sql .= " WHERE `catalog`.`enabled` = '1'";
+                }
+                if ($search_info) {
+                    if (AmpConfig::get('catalog_disable')) {
+                        $sql .= ' AND ' . $search_info['where_sql'];
+                    } else {
+                        $sql .= ' WHERE ' . $search_info['where_sql'];
+                    }
                 }
                 $sql .= ' GROUP BY `album`.`id`';
             break;
@@ -241,7 +256,17 @@ class Random implements media {
                 }
                 if ($search_info) {
                     $sql .= $search_info['table_sql'];
-                    $sql .= ' WHERE ' . $search_info['where_sql'];
+                }
+                if (AmpConfig::get('catalog_disable')) {
+                    $sql .= " LEFT JOIN `catalog` ON `catalog`.`id` = `song`.`catalog`";
+                    $sql .= " WHERE `catalog`.`enabled` = '1'";
+                }
+                if ($search_info) {
+                    if (AmpConfig::get('catalog_disable')) {
+                        $sql .= ' AND ' . $search_info['where_sql'];
+                    } else {
+                        $sql .= ' WHERE ' . $search_info['where_sql'];
+                    }
                 }
                 $sql .= ' GROUP BY `artist`.`id`';
             break;
@@ -252,6 +277,10 @@ class Random implements media {
         $db_results = Dba::read($sql);
         $results = array();
 
+        $size_total = 0;
+        $fuzzy_size = 0;
+        $time_total = 0;
+        $fuzzy_time = 0;
         while ($row = Dba::fetch_assoc($db_results)) {
 
             // If size limit is specified
@@ -311,7 +340,6 @@ class Random implements media {
         switch ($type) {
             case 'song':
                 return $results;
-            break;
             case 'album':
                 $songs = array();
                 foreach ($results as $result) {
@@ -319,7 +347,6 @@ class Random implements media {
                     $songs = array_merge($songs, $album->get_songs());
                 }
                 return $songs;
-            break;
             case 'artist':
                 $songs = array();
                 foreach ($results as $result) {
@@ -327,111 +354,9 @@ class Random implements media {
                     $songs = array_merge($songs, $artist->get_songs());
                 }
                 return $songs;
-            break;
             default:
                 return false;
-            break;
         }
     } // advanced
 
-    /**
-     * get_type_name
-     * This returns a 'purrty' name for the different random types
-     */
-    public static function get_type_name($type) {
-
-        switch ($type) {
-            case 'album':
-                return T_('Related Album');
-            break;
-            case 'genre':
-                return T_('Related Genre');
-            break;
-            case 'artist':
-                return T_('Related Artist');
-            break;
-            default:
-                return T_('Pure Random');
-            break;
-        } // end switch
-
-    } // get_type_name
-
-    /**
-     * get_type_id
-     * This takes random type and returns the ID
-     * MOTHER OF PEARL THIS MAKES BABY JESUS CRY
-     * HACK HACK HACK HACK HACK HACK HACK HACK
-     */
-    public static function get_type_id($type) {
-
-        switch ($type) {
-            case 'album':
-                return '1';
-            break;
-            case 'artist':
-                return '2';
-            break;
-            case 'tag':
-                return '3';
-            break;
-            default:
-                return '4';
-            break;
-        }
-
-    } // get_type_id
-
-    /**
-     * get_id_name
-     * This takes an ID and returns the 'name' of the random dealie
-     * HACK HACK HACK HACK HACK HACK HACK
-     * Can you tell I don't like this code?
-     */
-    public static function get_id_type($id) {
-
-        switch ($id) {
-            case '1':
-                return 'album';
-            break;
-            case '2':
-                return 'artist';
-            break;
-            case '3':
-                return 'tag';
-            break;
-            default:
-                return 'default';
-            break;
-        } // end switch
-
-    } // get_id_name
-
-    /**
-     * validate_type
-     * this validates the random type
-     */
-    public static function validate_type($type) {
-
-        switch ($type) {
-            case 'default':
-            case 'genre':
-            case 'album':
-            case 'artist':
-            case 'rated':
-                return $type;
-            break;
-        } // end switch
-
-        return 'default';
-
-    } // validate_type
-
-    public function get_stream_types() { }
-    public function get_transcode_settings($target = null) { }
-    public function has_flag() { }
-    public function format() { }
-
 } //end of random class
-
-?>

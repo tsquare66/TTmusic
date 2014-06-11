@@ -18,7 +18,7 @@ class archive {
 
 	/**
  	 * constructor
-	 * This function is the constructor for the arcive class
+	 * This function is the constructor for the archive class
 	 */
 	public function archive($name) {
 		$this->options = array (
@@ -44,8 +44,11 @@ class archive {
 
 	public function set_options($options) {
 
-		foreach ($options as $key => $value)
+		foreach ($options as $key => $value) {
 			$this->options[$key] = $value;
+            debug_event("archive.lib.php", "Setting option ".$key."[".$value."]...", "5");
+        }
+        
 		if (!empty ($this->options['basedir']))
 		{
 			$this->options['basedir'] = str_replace("\\", "/", $this->options['basedir']);
@@ -92,8 +95,9 @@ class archive {
 				return 0;
 			}
 		}
-		else
+		else {
 			$this->archive = "";
+        }
 
 		switch ($this->options['type'])
 		{
@@ -139,8 +143,9 @@ class archive {
 		if ($this->options['inmemory'] == 0)
 		{
 			fclose($this->archive);
-			if ($this->options['type'] == "gzip" || $this->options['type'] == "bzip")
+			if ($this->options['type'] == "gzip" || $this->options['type'] == "bzip") {
 				unlink($this->options['basedir'] . "/" . $this->options['tmpname'] . ".tmp");
+            }
 		}
 
 		return true;
@@ -170,11 +175,21 @@ class archive {
 		unset ($this->exclude, $this->storeonly);
 	}
 
-	function add_files($list)
+	function add_files($list, $prepend = '')
 	{
+        // Change the preprend directory temporary
+        if (!empty($prepend)) {
+            $oldprepend = $this->options['prepend'];
+            $this->set_options(array('prepend' => $prepend));
+        }
 		$temp = $this->list_files($list);
 		foreach ($temp as $current)
 			$this->files[] = $current;
+        
+        // Restore previous prepend directory
+        if (isset($oldprepend)) {
+            $this->set_options(array('prepend' => $oldprepend));
+        }
 	}
 
 	function exclude_files($list)
@@ -207,34 +222,39 @@ class archive {
 
 		foreach ($list as $current)
 		{
+            debug_event("archive.lib.php", "Listing file {".$current."}...", "5");
+            
 			$current = str_replace("\\", "/", $current);
 			$current = preg_replace("/\/+/", "/", $current);
 			$current = preg_replace("/\/$/", "", $current);
 			if (substr($current, 0, 1) == "/" ) { $current = "/" . $current; } 
-			if (strstr($current, "*"))
-			{
+			if (strstr($current, "*")) {
 				$regex = preg_replace("/([\\\^\$\.\[\]\|\(\)\?\+\{\}\/])/", "\\\\\\1", $current);
 				$regex = str_replace("*", ".*", $regex);
 				$dir = strstr($current, "/") ? substr($current, 0, strrpos($current, "/")) : ".";
 				$temp = $this->parse_dir($dir);
-				foreach ($temp as $current2)
-					if (preg_match("/^{$regex}$/i", $current2['name']))
+				foreach ($temp as $current2) {
+					if (preg_match("/^{$regex}$/i", $current2['name'])) {
 						$files[] = $current2;
+                    }
+                }
 				unset ($regex, $dir, $temp, $current);
 			}
-			else if (@is_dir($current))
-			{
+			else if (@is_dir($current)) {
 				$temp = $this->parse_dir($current);
-				foreach ($temp as $file)
+				foreach ($temp as $file) {
 					$files[] = $file;
+                }
 				unset ($temp, $file);
 			}
-			else if (@file_exists($current))
-				$files[] = array ('name' => $current, 'name2' => $this->options['prepend'] .
-					preg_replace("/(\.+\/+)+/", "", ($this->options['storepaths'] == 0 && strstr($current, "/")) ?
-					substr($current, strrpos($current, "/") + 1) : $current),
+			else if (@file_exists($current)) {
+				$files[] = array ('name' => $current,
+                    'name2' => $this->options['prepend'] . preg_replace("/(\.+\/+)+/",
+                    "",
+                    ($this->options['storepaths'] == 0 && strstr($current, "/")) ? substr($current, strrpos($current, "/") + 1) : $current),
 					'type' => @is_link($current) && $this->options['followlinks'] == 0 ? 2 : 0,
 					'ext' => substr($current, strrpos($current, ".")), 'stat' => stat($current));
+            }
 		}
 
 		chdir($pwd);
@@ -246,33 +266,37 @@ class archive {
 
 	function parse_dir($dirname)
 	{
-		if ($this->options['storepaths'] == 1 && !preg_match("/^(\.+\/*)+$/", $dirname))
+		if ($this->options['storepaths'] == 1 && !preg_match("/^(\.+\/*)+$/", $dirname)) {
 			$files = array (array ('name' => $dirname, 'name2' => $this->options['prepend'] .
 				preg_replace("/(\.+\/+)+/", "", ($this->options['storepaths'] == 0 && strstr($dirname, "/")) ?
 				substr($dirname, strrpos($dirname, "/") + 1) : $dirname), 'type' => 5, 'stat' => stat($dirname)));
-		else
+        }
+		else {
 			$files = array ();
+        }
+        
 		$dir = @opendir($dirname);
 
 		while ($file = @readdir($dir))
 		{
 			$fullname = $dirname . "/" . $file;
-			if ($file == "." || $file == "..")
+			if ($file == "." || $file == "..") {
 				continue;
-			else if (@is_dir($fullname))
-			{
+            }
+			else if (@is_dir($fullname)) {
 				if (empty ($this->options['recurse']))
 					continue;
 				$temp = $this->parse_dir($fullname);
 				foreach ($temp as $file2)
 					$files[] = $file2;
 			}
-			else if (@file_exists($fullname))
+			else if (@file_exists($fullname)) {
 				$files[] = array ('name' => $fullname, 'name2' => $this->options['prepend'] .
 					preg_replace("/(\.+\/+)+/", "", ($this->options['storepaths'] == 0 && strstr($fullname, "/")) ?
 					substr($fullname, strrpos($fullname, "/") + 1) : $fullname),
 					'type' => @is_link($fullname) && $this->options['followlinks'] == 0 ? 2 : 0,
 					'ext' => substr($file, strrpos($file, ".")), 'stat' => stat($fullname));
+            }
 		}
 
 		@closedir($dir);
@@ -303,25 +327,25 @@ class archive {
 
 		if ($this->options['inmemory'] == 0) {
 
-                        $full_arc_name = $this->options['basedir']."/".$this->options['tmpname'];
+            $full_arc_name = $this->options['basedir']."/".$this->options['tmpname'];
 			if (file_exists($full_arc_name)) {
-	                        $fsize = filesize($full_arc_name);
+                $fsize = filesize($full_arc_name);
 
-	                        //Send some headers which can be useful...
-	                        $header = "Content-Disposition: attachment; filename=\"";
-	                        $header .= strstr($this->options['name'], "/") ? substr($this->options['name'], strrpos($this->options['name'], "/") + 1) : $this->options['name'];
-	                        $header .= "\"";
-	                        header($header);
-	                        header("Content-Length: " . $fsize);
-	                        header("Content-Transfer-Encoding: binary");
-	                        header("Cache-Control: no-cache, must-revalidate, max-age=60");
-	                        header("Expires: Sat, 01 Jan 2000 12:00:00 GMT");
+                //Send some headers which can be useful...
+                $header = "Content-Disposition: attachment; filename=\"";
+                $header .= strstr($this->options['name'], "/") ? substr($this->options['name'], strrpos($this->options['name'], "/") + 1) : $this->options['name'];
+                $header .= "\"";
+                header($header);
+                header("Content-Length: " . $fsize);
+                header("Content-Transfer-Encoding: binary");
+                header("Cache-Control: no-cache, must-revalidate, max-age=60");
+                header("Expires: Sat, 01 Jan 2000 12:00:00 GMT");
 
-	                        readfile($full_arc_name);
+                readfile($full_arc_name);
 
-	                        //Now delete tempory file
-	                        unlink($full_arc_name);
-			} 
+                //Now delete tempory file
+                unlink($full_arc_name);
+			}
 			else { 
 				debug_event('ERROR','Archive does not exist, unable to download','1');
 				return false; 
@@ -607,14 +631,24 @@ class zip_file extends archive
 				$offset += strlen($temp);
 				unset ($temp);
 			}
-			else
+			else {
 				$this->error[] = "Could not open sfx module from {$this->options['sfx']}.";
+            }
 
 		$pwd = getcwd();
 		chdir($this->options['basedir']);
 
 		foreach ($this->files as $current)
 		{
+            foreach ($current as $key => $value) {
+                debug_event("archive.lib.php", "Processing ".$key."[".$value."]...", "5");
+            }
+            
+            if (function_exists('iconv')) {
+                // Fix encoding issue for zip archives
+                $current['name2'] = iconv('UTF-8', 'CP852', $current['name2']);
+            }
+
 			if ($current['name'] == $this->options['name'])
 				continue;
 
@@ -673,8 +707,9 @@ class zip_file extends archive
 				$files++;
 				$offset += (30 + strlen($current['name2']) + $size);
 			}
-			else
+			else {
 				$this->error[] = "Could not open file {$current['name']} for reading. It was not added.";
+            }
 		}
 
 		$this->add_data($central);

@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -26,7 +26,7 @@ $name = 'catalog_' . $_REQUEST['export_catalog'];
 ${$name} = ' selected="selected"';
 
 UI::show_box_top(T_('Export Catalog'), 'box box_export'); ?>
-<form name="duplicates" action="<?php echo Config::get('web_path'); ?>/admin/export.php?action=export" method="post" enctype="multipart/form-data" >
+<form name="duplicates" action="<?php echo AmpConfig::get('web_path'); ?>/admin/export.php?action=export" method="post" enctype="multipart/form-data" >
 <table class="tableform" cellspacing="0" cellpadding="3">
 <tr>
     <td valign="top"><strong><?php echo T_('Catalog'); ?>:</strong></td>
@@ -36,7 +36,7 @@ UI::show_box_top(T_('Export Catalog'), 'box box_export'); ?>
 <?php
         $catalog_ids = Catalog::get_catalogs();
         foreach ($catalog_ids as $catalog_id) {
-            $catalog = new Catalog($catalog_id);
+            $catalog = Catalog::create_from_id($catalog_id);
             $current_name = 'catalog_' . $catalog->id;
 
 ?>

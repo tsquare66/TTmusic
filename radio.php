@@ -3,7 +3,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -32,11 +32,11 @@ switch ($_REQUEST['action']) {
             exit;
         }
 
-        require_once Config::get('prefix') . '/templates/show_add_live_stream.inc.php';
+        require_once AmpConfig::get('prefix') . '/templates/show_add_live_stream.inc.php';
 
     break;
     case 'create':
-        if (!Access::check('interface', 75) || Config::get('demo_mode')) {
+        if (!Access::check('interface', 75) || AmpConfig::get('demo_mode')) {
             UI::access_denied();
             exit;
         }
@@ -50,16 +50,13 @@ switch ($_REQUEST['action']) {
         $results = Radio::create($_POST);
 
         if (!$results) {
-            require_once Config::get('prefix') . '/templates/show_add_live_stream.inc.php';
-        }
-        else {
+            require_once AmpConfig::get('prefix') . '/templates/show_add_live_stream.inc.php';
+        } else {
             $body = T_('Radio Station Added');
             $title = '';
-            show_confirmation($title,$body,Config::get('web_path') . '/index.php');
+            show_confirmation($title,$body,AmpConfig::get('web_path') . '/browse.php?action=live_stream');
         }
     break;
 } // end data collection
 
 UI::show_footer();
-
-?>

@@ -2,7 +2,7 @@
 /**
  *
  * LICENSE: GNU General Public License, version 2 (GPLv2)
- * Copyright 2001 - 2013 Ampache.org
+ * Copyright 2001 - 2014 Ampache.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License v2
@@ -123,8 +123,13 @@ hr {
 	width:180px;
 	margin-top:32px;
 	right:10px;
+    
     /* Set position to fixed to 'pin' the playlist */
-	/*position:fixed;*/
+	/*position:fixed;
+    max-height: 85%;
+    overflow-x: hidden;
+	overflow-y: scroll;*/
+    
     position: absolute;
 	clear:both;
 }
@@ -157,7 +162,7 @@ hr {
 
 #header .box-inside
 {
-	width:550px;
+	width:auto;
 	text-align:right;
 	float:right;
 }
@@ -193,6 +198,7 @@ hr {
 
 #header #loginInfo
 {
+    display: block;
 	color:#eee;
 }
 
@@ -432,7 +438,7 @@ hr {
 	display: none;
 }
 
-.box-content h3.box-title,#browse_content .box h3.box-title
+.box-content h3.box-title,.browse_content .box h3.box-title
 {
 	display:block;
 	background:#888;
@@ -445,17 +451,17 @@ hr {
 	margin-bottom: 0px;
 }
 
-#browse_content .box.browse_song h3.box-title
+.browse_content .box.browse_song h3.box-title
 {
 	background:#66B717;
 }
 
-#browse_content .box.browse_album h3.box-title
+.browse_content .box.browse_album h3.box-title
 {
 	background:#09c;
 }
 
-#browse_content .box.browse_artist h3.box-title
+.browse_content .box.browse_artist h3.box-title
 {
 	background:#c60;
 }
@@ -470,16 +476,17 @@ hr {
 
 table.tabledata
 {
-	width:100%;
+    width:100%;
 	text-align:left;
-	border:1px solid #bbb;
+    color: #eee;
+    margin-bottom: 20px;
 }
 
 table.tabledata th
 {
-	border:1px solid #bbb;
+	/*border:1px solid #bbb;
 	border-left:1px solid #ccc;
-	border-right:1px solid #ccc;
+	border-right:1px solid #ccc;*/
 	background:#eee;
 	font-weight:700;
 	font-size:11px;
@@ -487,7 +494,12 @@ table.tabledata th
 	padding:7px 10px;
 }
 
-#browse_content table.tabledata th, #browse_content table.tabledata
+table.tabledata tr
+{
+    height: 25px;
+}
+
+.browse_content table.tabledata th, .browse_content table.tabledata
 {
     border-top: 0px;
 }
@@ -503,14 +515,15 @@ table .th-bottom {
 
 table.tabledata tbody td
 {
-	vertical-align:middle;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	padding:4px 10px;
+	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 3px 10px 3px 0;
+    color: #686868;
 }
 
-#browse_content table.tabledata tbody tr:hover
+.browse_content table.tabledata tbody tr:hover
 {
 	background:#b3d6f7;
 }
@@ -520,36 +533,86 @@ table.tabledata tbody .odd
 	background:#eee;
 }
 
-table.tabledata tbody .cel_add
-{
-	width:14px;
-	text-align: center;
+table.tabledata tbody .cel_play {
+	max-width: 40px;
+    width: 40px !important;
+    text-align: right;
 }
 
-table.tabledata tbody .cel_artist
-{
-	min-width:120px;
+table.tabledata tbody .cel_play_content {
+    display: block;
 }
 
-table.tabledata tbody .cel_action
-{
-	width:70px;
+table.tabledata tbody .cel_play_hover {
+    display: none;
 }
 
-table.tabledata tbody td.cel_rating
-{
-	min-width:93px;
-	padding:4px 3px;
+table.tabledata tbody tr:hover .cel_play_hover, table.tabledata tbody tr:focus .cel_play_hover {
+    display: block;
+}
+table.tabledata tbody tr:hover .cel_play_content, table.tabledata tbody tr:focus .cel_play_content {
+    display: none;
 }
 
-table.tabledata tbody .cel_tags
-{
-	max-width:80px;
+table.tabledata tbody .cel_add {
+    max-width: 60px;
+    width: 60px !important;
+    text-align: right;
+}
+
+table.tabledata tbody .cel_item_add {
+    display: none;
+}
+
+table.tabledata tbody tr:hover .cel_item_add, table.tabledata tbody tr:focus .cel_item_add {
+    display: block;
+}
+
+table.tabledata tbody .cel_time {
+    min-width: 40px;
+    width: 40px !important;
+}
+
+table.tabledata tbody .cel_action {
+	width: 130px !important;
+    max-width: 100%;
+}
+
+table.tabledata tbody td.cel_rating {
+    width: 100px !important;
+    max-width: 100px;
+}
+
+table.tabledata tbody td.cel_userflag {
+    width: 40px !important;
+    max-width: 40px;
+}
+
+table.tabledata tbody .cel_tags {
+    width: 150px !important;
+	max-width: 150px;
 }
 
 table.tabledata tbody .cel_cover img
 {
     border: 4px double #bbb;
+}
+
+table.tabledata .cel_drag {
+	max-width: 16px;
+    width: 16px !important;
+}
+
+table.tabledata .cel_drag img:hover {
+	cursor: pointer;
+}
+
+table.tabledata .cel_agent {
+    text-align: right;
+}
+
+table.tabledata .cel_agent img:hover {
+    cursor: help;
 }
 
 .box_preferences h4
@@ -560,6 +623,11 @@ table.tabledata tbody .cel_cover img
 	font-weight:400;
 	border:1px solid #333;
 	padding:5px;
+}
+
+span.page-nb {
+    font-weight: bold;
+    font-size: 1.3em;
 }
 
 /***********************************************
@@ -615,16 +683,26 @@ table.tabledata tbody .cel_cover img
 	clear:left;
 }
 
+#random_selection .art_album img {
+    width: 80px;
+    height: 80px;
+}
+
 /***********************************************
     Content (now playing)                 
 ***********************************************/
 #now_playing {
     margin-bottom: 20px;
-    width: 430px;
+    width: auto;
 }
 
 #now_playing .np_group {
-    float: right;
+    float: left;
+}
+
+#now_playing .np_row {
+    display: table;
+    margin-bottom: 10px;
 }
 
 #now_playing .np_cell {
@@ -632,6 +710,10 @@ table.tabledata tbody .cel_cover img
 }
 
 #now_playing .cel_rating label {
+    display: none;
+}
+
+#now_playing .cel_userflag label {
     display: none;
 }
 
@@ -665,6 +747,13 @@ table.tabledata tbody .cel_cover img
     color: #0099CC;
 }
 
+#now_playing .similars {
+    margin-right: 10px;
+    padding-right: 5px;
+    margin-left: 10px;
+    padding-left: 5px;
+}
+
 /***********************************************
     Content (Tag cloud)                
 ***********************************************/
@@ -685,6 +774,12 @@ span.fatalerror {
     color: #c60;
     padding: 5px;
     display: block;
+}
+
+span.nodata {
+    padding: 5px;
+    display: block;
+    font-style: italic;
 }
 
 .box-content #tag_filter span
@@ -757,6 +852,28 @@ span.fatalerror {
 	color:#09c;
 }
 
+.item_right_info {
+    float: right;
+    max-width: 60%;
+}
+
+.external_links {
+    text-align: right;
+}
+
+.external_links a {
+    margin: 0px 5px 0px 0px;
+    opacity: 0.3;
+}
+
+.external_links a:hover {
+    opacity: 1;
+}
+
+#artist_summary {
+    margin-right: 150px;
+}
+
 /************************************************/
 /*        Styles for the star ratings           */
 /************************************************/
@@ -772,7 +889,7 @@ span.fatalerror {
 .star-rating a:hover,
 .star-rating .current-rating
 {
-    background: url(../../../themes/fresh/images/ratings/star_rating.png) left -1000px repeat-x;
+    background: url(../images/ratings/star_rating.png) left -1000px repeat-x;
 }
 .star-rating ul
 {
@@ -832,6 +949,45 @@ span.fatalerror {
     left:16px;
 }
 
+/************************************************/
+/*        Styles for user flags                 */
+/************************************************/
+.userflag
+{
+    position: relative;
+    width:16px;
+    height:16px;
+}
+
+.userflag a {
+    position:absolute;
+    display: inline;
+}
+
+.userflag a.userflag_true
+{
+    width:16px;
+    height: 16px;
+    background: url(../../../images/icon_flag.png) left top;
+}
+
+.userflag a:hover.userflag_true
+{
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a.userflag_false
+{
+    width:16px;
+    height:16px;
+    background: url(../../../images/icon_flag_off.png) left top;
+}
+
+.userflag a:hover.userflag_false
+{
+    background: url(../../../images/icon_flag.png) left top;
+}
+
 /***********************************************
         Content (Track view)                                
 ***********************************************/
@@ -881,7 +1037,7 @@ dl.song_details a:hover
 ***********************************************/
 #loginPage #header
 {
-    padding-left: 20px;
+    padding-left: 0px;
     border: 1px solid #000;
 }
 
@@ -1015,9 +1171,9 @@ table.tabledata .cel_php_setting, table.tabledata .cel_configuration, .cel_prefe
 }
 
 /************************************************/
-/*             HTML5 Player                     */
+/*             Web Player                     */
 /************************************************/
-#html5_player #playlist
+#web_player #playlist
 {
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -1064,4 +1220,36 @@ ins,#rightbar a
 #localplay-control span,.box-content #tag_filter span
 {
 	cursor:pointer;
+}
+
+.browse-options {
+    float: right;
+}
+
+.browse-options form {
+    display: inline;
+}
+
+.browse-options input[type=text] {
+    width: 50px;
+}
+
+.jscroll-next {
+    width:50%;
+    display:block;
+    border:1px solid #ccc;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius: 10px;
+    background-color:#eee;
+    color:#999;
+    font-weight:bold;
+    text-align:center;
+    padding:10px 0;
+    cursor:pointer;
+    margin: auto; 
+}
+
+.jscroll-next:hover  {
+    color:#666;
 }
