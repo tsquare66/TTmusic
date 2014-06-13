@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /* vim:set softtabstop=4 shiftwidth=4 expandtab: */
 /**
  *
@@ -206,7 +206,8 @@ class Query
             'album' => array(
                 'name',
                 'year',
-                'artist'
+                'artist',
+                'album_artist'
             ),
             'playlist' => array(
                 'name',
@@ -634,6 +635,8 @@ class Query
         if (!in_array($sort, self::$allowed_sorts[$this->get_type()])) {
             return false;
         }
+
+        $this->reset_join();
 
         if ($order) {
             $order = ($order == 'DESC') ? 'DESC' : 'ASC';
@@ -1494,6 +1497,11 @@ class Query
                 switch ($field) {
                     case 'name':
                         $sql = "`album`.`name` $order, `album`.`disk`";
+                    break;
+                    case 'album_artist':
+                        $sql = "`artist`.`name`";
+                        $this->set_join('left', '`song`', '`song`.`album`', '`album`.`id`', 100);
+                        $this->set_join('left', '`artist`', '`song`.`album_artist`', '`artist`.`id`', 100);
                     break;
                     case 'artist':
                         $sql = "`artist`.`name`";
