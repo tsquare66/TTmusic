@@ -609,3 +609,20 @@ function show_now_playing()
     require_once AmpConfig::get('prefix') . '/templates/show_now_playing.inc.php';
 
 } // show_now_playing
+
+/**
+ * get_allowed_dirname
+*/
+function get_allowed_dirname($dirname)
+{
+    $not_allowed = array("/", "\\", "*", ":","?","<",">","\"");
+    $album_path .= str_replace($not_allowed, " ", $dirname);
+
+    if ("." == substr($album_path, -1, 1))
+    {
+        $album_path = substr($album_path, 0, -1);
+    }
+	return $album_path;
+
+} // get_allowed_dirname
+

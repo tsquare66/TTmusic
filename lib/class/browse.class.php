@@ -98,7 +98,9 @@ class Browse extends Query
             $this->save_objects($object_ids);
         }
 
-        // Limit is based on the user's preferences if this is not a
+        $total_count = $this->get_total();
+        
+        // Limit is based on the user's preferences if this is not a 
         // simple browse because we've got too much here
         if ((count($object_ids) > $this->get_start()) &&
             ! $this->is_simple() &&
@@ -136,6 +138,9 @@ class Browse extends Query
             $catalog = Catalog::create_from_id($filter_value);
             $match = ' (' . $catalog->name . ')';
         }
+        
+        if ($total_count)
+            $match = $match.' - '.T_('Item count').': '.$total_count;
 
         $type = $this->get_type();
 
@@ -198,9 +203,14 @@ class Browse extends Query
                 $box_req = AmpConfig::get('prefix') . '/templates/show_manage_shoutbox.inc.php';
             break;
             case 'tag':
-                Tag::build_cache($object_ids);
-                $box_title = T_('Tag Cloud');
-                $box_req = AmpConfig::get('prefix') . '/templates/show_tagcloud.inc.php';
+               /* Tag::build_cache($tags);
+                UI::show_box_top(T_('Tag Cloud'),$class);
+                require_once AmpConfig::get('prefix') . '/templates/show_tagcloud.inc.php';
+                UI::show_box_bottom();*/
+            	UI::show_box_top(T_('Songs').$match, $class);
+            	Song::build_cache($object_ids);
+            	require_once AmpConfig::get('prefix') . '/templates/show_songs.inc.php';
+            	UI::show_box_bottom();
             break;
             case 'video':
                 Video::build_cache($object_ids);

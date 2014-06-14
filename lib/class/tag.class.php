@@ -353,6 +353,29 @@ class Tag extends database_object
 
     } // tag_map_exists
 
+
+	/**
+	 */
+	public static function update_tag_map($type,$object_id,$tag_id) {
+	
+		$object_id = Dba::escape($object_id);
+		$tag_id = Dba::escape($tag_id);
+		$type = Dba::escape($type);
+	
+		$sql = "UPDATE `tag_map` SET `tag_id`='$tag_id' WHERE `object_id`='$object_id' AND `object_type`='$type'";
+		$db_results = Dba::write($sql);
+	
+		$sql = "SELECT * FROM `tag_map` WHERE `tag_id`='$tag_id' AND `object_id`='$object_id' AND `object_type`='$type'";
+		$db_results = Dba::read($sql);
+
+		$results = Dba::fetch_assoc($db_results);
+			
+		parent::add_to_cache('tag_map_' . $type,$results['id'],$results);
+	
+		return $results['id'];
+	
+	} // 
+	
     /**
      * get_top_tags
      * This gets the top tags for the specified object using limit
@@ -472,6 +495,25 @@ class Tag extends database_object
 
     } // get_tags
 
+    /**
+     * get_tag_names
+     * This is a non-object non type depedent function that just returns tags
+     * we've got, it can take filters (this is used by the tag cloud)
+     */
+    public static function get_tag_names($filters=array()) {
+    
+    	$sql = "SELECT `id`,`name` FROM `tag` ORDER BY `name` ASC ";
+    	$db_results = Dba::read($sql);
+    
+    	$results = array();
+    	while ($row = Dba::fetch_assoc($db_results)) {
+    		$results[] = $row;
+    	}
+    
+    	return $results;
+    
+    } // get_tag_names
+    
     /**
      * get_display
      * This returns a human formated version of the tags that we are given

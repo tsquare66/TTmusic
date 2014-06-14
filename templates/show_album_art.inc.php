@@ -21,18 +21,25 @@
  */
 
 // Gotta do some math here!
+
+if (true == $GLOBALS['isMobile'])
+    $pics_per_row = 1;
+else
+    $pics_per_row = 4;
 $total_images = count($images);
-$rows = floor($total_images/4);
+$rows = floor($total_images/$pics_per_row);
 $i = 0;
 ?>
 <?php UI::show_box_top(T_('Select New Album Art'), 'box box_album_art'); ?>
 <table class="table-data">
 <tr>
 <?php
+
+
 while ($i <= $rows) {
     $j=0;
-    while ($j < 4) {
-        $key = $i*4+$j;
+    while ($j < $pics_per_row) {
+        $key = $i*$pics_per_row+$j;
         $image_url = AmpConfig::get('web_path') . '/image.php?type=session&amp;image_index=' . $key;
         $dimensions = Core::image_dimensions(Art::get_from_source($_SESSION['form']['images'][$key], 'album'));
         if (!isset($images[$key])) { echo "<td>&nbsp;</td>\n"; } else {

@@ -1561,7 +1561,8 @@ dl.song_details dt {
 
 dl.song_details dd {
     margin: 10px 0 10px 250px;
-    height: 24px;
+    //height: 24px;
+    min-height: 24px;
 }
 
 /***********************************************

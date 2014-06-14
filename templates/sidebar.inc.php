@@ -28,6 +28,11 @@ $class_name = 'sidebar_' . $_SESSION['state']['sidebar_tab'];
 // List of buttons ( id, title, icon, access level)
 $sidebar_items[] = array('id'=>'home', 'title' => T_('Home'), 'icon'=>'home', 'access'=>5);
 $sidebar_items[] = array('id'=>'localplay', 'title' => T_('Localplay'), 'icon'=>'volumeup', 'access'=>5);
+
+if (true == $GLOBALS['isMobile']){
+    $sidebar_items[] = array('id'=>'basket', 'title'=>'Basket', 'icon'=>'feed', 'access'=>5);
+}
+
 $sidebar_items[] = array('id'=>'preferences', 'title' => T_('Preferences'), 'icon'=>'edit', 'access'=>5);
 $sidebar_items[] = array('id'=>'modules','title' => T_('Modules'),'icon'=>'plugin','access'=>100);
 $sidebar_items[] = array('id'=>'admin', 'title' => T_('Admin'), 'icon'=>'admin', 'access'=>100);
@@ -110,3 +115,22 @@ $(document).ready(function() {
     }
 });
 </script>
+
+<?php if (true == $GLOBALS['isMobile']){
+    if ($_REQUEST['action'] == 'sidebar') {
+        if ($_SESSION['state']['sidebar_tab'] == "basket") {
+            echo '<div id="sidebar-page">';
+            echo '<div id="rightbar">';
+            require_once AmpConfig::get('prefix') . '/templates/rightbar.inc.php';
+            echo '</div><!-- End rightbar -->';
+            echo '</div><!-- End sidebar-page -->';
+            echo '</div><!-- End sidebar -->';
+        } else {
+            echo '<div id="sidebar-page">';
+            require_once AmpConfig::get('prefix') . '/templates/sidebar_' . $_SESSION['state']['sidebar_tab'] . '.inc.php';
+            echo '</div><!-- End sidebar-page -->';
+            echo '</div><!-- End sidebar -->';
+        }
+    }
+}
+?>

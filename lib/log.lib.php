@@ -39,12 +39,18 @@ function log_event($username, $event_name, $event_description, $log_name)
         $log_filename = "%name.%Y%m%d.log";
     }
 
+    $prefix = AmpConfig::get('prefix');
+    if ($prefix == "") {
+        $ampache_path = dirname(__FILE__);
+        $prefix = realpath($ampache_path . "/../");
+    }
+
     $log_filename = str_replace("%name", $log_name, $log_filename);
     $log_filename = str_replace("%Y", @date('Y'), $log_filename);
     $log_filename = str_replace("%m", @date('m'), $log_filename);
     $log_filename = str_replace("%d", @date('d'), $log_filename);
 
-    $log_filename    = AmpConfig::get('log_path') . "/" . $log_filename;
+    $log_filename    =  $prefix."/". AmpConfig::get('log_path') . "/" . $log_filename;
     $log_line    = "$log_time [$username] ($event_name) -> $event_description \n";
 
     // Do the deed

@@ -74,6 +74,9 @@ switch ($page) {
     case 'player':
         require_once AmpConfig::get('prefix') . '/server/player.ajax.php';
         exit;
+    case 'musicbrainz':
+        require_once AmpConfig::get('prefix') . '/server/musicbrainz.php';
+        exit;
     default:
         // A taste of compatibility
     break;
@@ -134,6 +137,14 @@ switch ($_REQUEST['action']) {
                 $new_id = $album->update($_POST);
                 if ($new_id != $_POST['id']) {
                     $album = new Album($new_id);
+                    foreach ($songs as $song_id) {
+                        Flag::add($song_id,'song','retag','Inline Album Update');
+                        $song = new Song($song_id); 
+                        $song->format();   
+                        $id3 = new vainfo($song->file);
+                        $tag_data['album'] = $album->full_name;
+                        $id3->write_id3($tag_data);
+                    }
                 }
                 $album->format();
             break;
@@ -149,10 +160,15 @@ switch ($_REQUEST['action']) {
             break;
             case 'song_row':
                 $key = 'song_' . $_POST['id'];
-                if (isset($song)) {
-                    $song->update($_POST);
-                    $song->format();
-                }
+                $song = new Song($_POST['id']);
+                $song->update($_POST);
+
+                $album = new Album($_POST['album']);
+                $song->format();   
+                $id3 = new vainfo($song->file);
+                $tag_data['album'] = $album->full_name;
+                $id3->write_id3($tag_data);
+                
             break;
             case 'playlist_row':
             case 'playlist_title':

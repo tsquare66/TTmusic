@@ -9,6 +9,13 @@ if ($iframed) {
 <?php
 }
 
+if (true == $GLOBALS['isMobile']) { 
+?>
+	<link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?>/templates/jplayer.mobile.css" type="text/css" />
+<?php
+}
+	
+
 require_once AmpConfig::get('prefix') . '/templates/stylesheets.inc.php';
 ?>
 <link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?>/templates/jquery-editdialog.css" type="text/css" media="screen" />

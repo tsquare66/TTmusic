@@ -28,6 +28,7 @@ $ampache_path = dirname(__FILE__);
 $prefix = realpath($ampache_path . "/../");
 require_once $prefix . '/lib/init-tiny.php';
 
+require_once $prefix .  '/lib/is_mobile.php';
 // Explicitly load and enable the custom session handler.
 // Relying on autoload may not always load it before sessiony things are done.
 require_once $prefix . '/lib/class/session.class.php';
@@ -109,6 +110,8 @@ require_once $prefix . '/modules/musicbrainz/Exception.php';
 require_once $prefix . '/modules/musicbrainz/Clients/MbClient.php';
 require_once $prefix . '/modules/musicbrainz/Clients/RequestsMbClient.php';
 require_once $prefix . '/modules/ampacheapi/AmpacheApi.lib.php';
+
+require_once $prefix . '/modules/php_musicbrainz/mbQuery.php';
 
 require_once $prefix . '/modules/EchoNest/Autoloader.php';
 EchoNest_Autoloader::register();

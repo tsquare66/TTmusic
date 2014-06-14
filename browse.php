@@ -72,18 +72,24 @@ switch ($_REQUEST['action']) {
         $browse->set_sort('count','ASC');
         // This one's a doozy
         $browse->set_simple_browse(false);
-        $browse->save_objects(Tag::get_tags(/*AmpConfig::get('offset_limit')*/));   // Should add a pager?
+        //$browse->save_objects(Tag::get_tags(/*AmpConfig::get('offset_limit')*/));   // Should add a pager?
+        $browse->save_objects(Tag::get_tags(0,array()));
         $object_ids = $browse->get_saved();
         $keys = array_keys($object_ids);
         Tag::build_cache($keys);
         UI::show_box_top(T_('Tag Cloud'), 'box box_tag_cloud');
         $browse2 = new Browse();
         $browse2->set_type('song');
-        $browse2->store();
+        //$browse2->store();
         require_once AmpConfig::get('prefix') . '/templates/show_tagcloud.inc.php';
         UI::show_box_bottom();
-        $type = $browse2->get_type();
-        require_once AmpConfig::get('prefix') . '/templates/browse_content.inc.php';
+        //$type = $browse2->get_type();
+        //require_once AmpConfig::get('prefix') . '/templates/browse_content.inc.php';
+        $browse2->set_filter('tag',$firsttag );
+        $object_ids = $browse2->get_objects();
+        $browse2->show_objects($object_ids);
+        $browse2->store();
+
     break;
     case 'artist':
         $browse->set_filter('catalog',$_SESSION['catalog']);

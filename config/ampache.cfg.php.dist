@@ -28,6 +28,9 @@ config_version = 16
 ; DEFAULT: ""
 ;web_path 	= ""
 
+; Path to Album Folder
+album_path = "C:\\Daten\\tmp\Alben\\"
+
 ;##############################
 ; Session and Login Variables #
 ;##############################
@@ -482,7 +485,7 @@ debug_level = 5
 ; the specified directory exists and your HTTP server has
 ; write access.
 ; DEFAULT: NULL
-;log_path = "/var/log/ampache"
+log_path = "/log/"
 
 ; Log filename pattern
 ; This defines where the log file name pattern.

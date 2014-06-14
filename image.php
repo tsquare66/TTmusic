@@ -100,7 +100,17 @@ if (isset($_GET['type'])) {
             $mime = $_SESSION['form']['images'][$filename]['mime'];
             $typeManaged = true;
         break;
-    }
+        case 'song_tag':
+            $typeManaged = true;
+            Session::check();
+            $song_id = $_REQUEST['song_id'];
+            $song = new Song($song_id);
+            $filename = $song->file;
+            $art = Song::get_art_from_tag($filename);
+            $image = $art['raw'];
+            $mime = $art['mime'];
+        break;
+   }
 }
 if (!$typeManaged) {
     $media = new $type($_GET['id']);

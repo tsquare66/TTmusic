@@ -20,9 +20,18 @@
  *
  */
 ?>
-                <div style="clear:both;">
-                </div>
-            </div>
+
+<div style="clear:both;"></div>
+</div> <!-- end id="content"-->
+
+<?php  if (true == $GLOBALS['isMobile']) { ?>
+        <div id="footer">
+            <br>
+           <h3> <?php echo AmpConfig::get('version'); ?></h3>
+        </div>
+    </div> <!-- end id="maincontainer"-->
+ </div> 
+<?php } else {?>
         </div> <!-- end id="maincontainer"-->
         <?php
             $count_temp_playlist = 1;
@@ -43,5 +52,6 @@
         ?>
             | <?php echo T_('Load time:'); ?><?php echo $load_time; ?>
         </div>
+<?php } ?>
     </body>
 </html>

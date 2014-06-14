@@ -329,6 +329,7 @@ class Catalog_local extends Catalog
                 }
 
                 // Check to make sure the filename is of the expected charset
+                    /*
                 if (function_exists('iconv')) {
                     $convok = false;
                     $site_charset = AmpConfig::get('site_charset');
@@ -345,13 +346,13 @@ class Catalog_local extends Catalog
                     }
                     if (!$convok) {
                         debug_event('read', $full_file . ' has non-' . $site_charset . ' characters and can not be indexed, converted filename:' . $enc_full_file, '1');
-                        /* HINT: FullFile */
                         Error::add('catalog_add', sprintf(T_('%s does not match site charset'), $full_file));
                         continue;
                     }
                     $full_file = $enc_full_file;
                 } // end if iconv
-
+				*/
+                    
                 if ($is_playlist) {
                     debug_event('read', 'Found playlist file to import: ' . $file, '5');
                     $this->_playlists[] = $full_file;
@@ -617,6 +618,7 @@ class Catalog_local extends Catalog
                 UI::update_text('clean_count_' . $this->id, $count);
                 UI::update_text('clean_dir_' . $this->id, scrub_out($file));
             }
+            $results['file'] = utf8_decode($results['file']);
             $file_info = filesize($results['file']);
             if (!file_exists($results['file']) || $file_info < 1) {
                 debug_event('clean', 'File not found or empty: ' . $results['file'], 5);
@@ -676,7 +678,7 @@ class Catalog_local extends Catalog
         if (isset($options['license'])) {
             $results['license'] = $options['license'];
         }
-
+        $results['file'] = utf8_encode($results['file']);
         return Song::insert($results);
     }
 

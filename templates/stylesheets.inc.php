@@ -40,6 +40,11 @@ if (is_rtl(AmpConfig::get('lang'))
 <?php
 }
 ?>
+<?php if (true == $GLOBALS['isMobile'])
+{ ?>
+   <meta name="viewport" content="width=320, initial-scale=1.0, user-scalable=no" />
+<?php } ?>
+
 <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/prettyPhoto/css/prettyPhoto.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/jquery-ui.custom.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/print.css" type="text/css" media="print" />

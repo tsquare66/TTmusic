@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
         // If we got something back insert it
         if ($image_data) {
             $art = new Art($album->id,'album');
-            $art->insert($image_data,$_FILES['file']['type']);
+            $art->insert($image_data,$_FILES['file']['type'],true);
             show_confirmation(T_('Album Art Inserted'),'',"/albums.php?action=show&amp;album=" . $album->id);
         }
         // Else it failed

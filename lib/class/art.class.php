@@ -251,8 +251,8 @@ class Art extends database_object
      * This takes the string representation of an image and inserts it into
      * the database. You must also pass the mime type.
      */
-    public function insert($source, $mime)
-    {
+    public function insert($source, $mime, $insert_id3) {
+
         // Disabled in demo mode cause people suck and upload porn
         if (AmpConfig::get('demo_mode')) { return false; }
 
@@ -264,6 +264,13 @@ class Art extends database_object
 
         // Default to image/jpeg if they don't pass anything
         $mime = $mime ? $mime : 'image/jpeg';
+
+        if($this->type == 'album') {
+            $album = new Album($this->uid );
+            debug_event('Art', 'Inserting image Album: '.$album->name, 1);
+            if(true == $insert_id3)
+                $album->update_art($source, $mime);
+        }
 
         $image = Dba::escape($source);
         $mime = Dba::escape($mime);
@@ -675,15 +682,18 @@ class Art extends database_object
      * This function retrieves art based on MusicBrainz' Advanced
      * Relationships
      */
-    public function gather_musicbrainz($limit = 5)
+    public function gather_musicbrainz($limit = 5, Album $album)
     {
         $images    = array();
         $num_found = 0;
 
-        if ($this->type == 'album') {
-            $album = new Album($this->uid);
-        } else {
-            return $images;
+        if (!isset($album))
+        {
+            if ($this->type == 'album') {
+                $album = new Album($this->uid);
+            }  else {
+                return $images;
+            }
         }
 
         if ($album->mbid) {
@@ -1135,33 +1145,42 @@ class Art extends database_object
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function gather_google($limit = 5)
-    {
+    public function gather_google() {
+
         $images = array();
         $media = new $this->type($this->uid);
         $media->format();
 
-        $search = $media->full_name;
-
-        if ($media->artist_count == '1')
-            $search = $media->artist_name . ', ' . $search;
+        $search_artist = $media->artist_name;
+        $pos = strpos($search_artist, " feat");
+		if( $pos > 0)
+			$search_artist = substr($search_artist,0,$pos);
+                
+        $search = $search_artist . ', ' .  $media->full_name;;
 
         $search = rawurlencode($search);
 
-        $size = '&imgsz=m'; // Medium
-        //$size = '&imgsz=l'; // Large
+        $url = 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0';
+        $url .= '&q='.$search;
+        //$url .= '&imgsz=medium|large';
+        $url .= '&tbs=isz:lt,islt:qsvga';
+        $url .= '&as_filetype=jpg';
+        $url .= '&rsz=8';
+        
+        $html = file_get_contents($url."&start=0");
 
-        $html = file_get_contents("http://images.google.com/images?source=hp&q=$search&oq=&um=1&ie=UTF-8&sa=N&tab=wi&start=0&tbo=1$size");
+        $data = json_decode($html);
 
-        if(preg_match_all("|\ssrc\=\"(http.+?)\"|", $html, $matches, PREG_PATTERN_ORDER))
-            foreach ($matches[1] as $match) {
-                $extension = "image/jpeg";
-
-                if (strrpos($extension, '.') !== false) $extension = substr($extension, strrpos($extension, '.') + 1);
-
-                $images[] = array('url' => $match, 'mime' => $extension);
-            }
-
+        $html = file_get_contents($url."&start=1");
+        $data2 = json_decode($html);
+        
+        // Add the results we got to the current set
+        $results = array_merge($data->responseData->results, $data2->responseData->results);
+        
+        foreach ($results as $result) {
+        	$images[] = array('url' => $result->url, 'mime' => "image/jpeg");
+        }
+        
         return $images;
 
     } // gather_google

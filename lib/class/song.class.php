@@ -158,6 +158,9 @@ class Song extends database_object implements media
 
         $song_id = Dba::insert_id();
 
+        if (!is_array($tags)) {
+            $tags[1] = '--Empty--';
+        }
         if (is_array($tags)) {
             foreach ($tags as $tag) {
                 $tag = trim($tag);
@@ -288,6 +291,7 @@ class Song extends database_object implements media
             }
 
             parent::add_to_cache('song', $id, $results);
+            $results['file'] = utf8_decode($results['file']);
             return $results;
         }
 
@@ -713,6 +717,15 @@ class Song extends database_object implements media
     } // update_album_artist
 
     /**
+     * update_file
+     * updates the file field
+    */
+    public static function update_file($new_file,$song_id)
+    {
+        self::_update_item('file',$new_file,$song_id,'50');
+    } // update_file
+
+    /**
      * update_bitrate
      * updates the bitrate field
      */
@@ -1019,6 +1032,27 @@ class Song extends database_object implements media
     } // get_from_path
 
     /**
+     * get_art_from_tag
+    */
+    public static function get_art_from_tag($file)
+    {
+        $getID3 = new getID3();
+        try { $id3 = $getID3->analyze($file); }
+        catch (Exception $error) {
+            debug_event('getid3', $error->message, 1);
+        }
+
+        if (isset($id3['id3v2']['APIC'])) {
+            $data = array(
+            'song' => $file,
+            'raw' => $id3['id3v2']['APIC'][0]['data'],
+            'mime' => $id3['id3v2']['APIC'][0]['mime']);
+        }
+        return ($data);
+    }
+
+
+    /**
      *    @function    get_rel_path
      *    @discussion    returns the path of the song file stripped of the catalog path
      *            used for mpd playback
@@ -1161,6 +1195,9 @@ class Song extends database_object implements media
             debug_event('song.class.php', 'Target format ' . $target . ' is not properly configured', 2);
             return false;
         }
+        
+        $path = AmpConfig::get('prefix') . "/bin/transcode/";
+        $cmd = $path . $cmd;
 
         debug_event('song.class.php', 'Command: ' . $cmd . ' Arguments: ' . $args, 5);
         return array('format' => $target, 'command' => $cmd . ' ' . $args);
