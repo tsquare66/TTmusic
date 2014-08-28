@@ -2,6 +2,7 @@
 
 namespace MusicBrainz\Filters;
 
+use MusicBrainz\MusicBrainz;
 use MusicBrainz\Tag;
 
 /**
@@ -11,21 +12,29 @@ use MusicBrainz\Tag;
  */
 class TagFilter extends AbstractFilter implements FilterInterface
 {
-    protected $validArgTypes =
-        array(
-            'tag'
-        );
+    protected $validArgTypes = array(
+        'tag'
+    );
 
+    /**
+     * @return string
+     */
     public function getEntity()
     {
         return 'tag';
     }
 
-    public function parseResponse(array $response)
+    /**
+     * @param array       $response
+     * @param MusicBrainz $brainz
+     *
+     * @return Tag[]
+     */
+    public function parseResponse(array $response, MusicBrainz $brainz)
     {
         $tags = array();
         foreach ($response['tags'] as $tag) {
-            $tags[] = new Tag($tag);
+            $tags[] = new Tag($tag, $brainz);
         }
 
         return $tags;

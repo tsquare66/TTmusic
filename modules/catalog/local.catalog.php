@@ -32,6 +32,10 @@ class Catalog_local extends Catalog
     private $type           = 'local';
     private $description    = 'Local Catalog';
 
+    private $count;
+    private $added_songs_to_gather;
+    private $added_videos_to_gather;
+
     /**
      * get_description
      * This returns the description of this catalog
@@ -312,7 +316,7 @@ class Catalog_local extends Catalog
             if ($is_audio_file OR $is_video_file OR $is_playlist) {
 
                 /* Now that we're sure its a file get filesize  */
-                $file_size = filesize($full_file);
+                $file_size = Core::get_filesize($full_file);
 
                 if (!$file_size) {
                     debug_event('read', "Unable to get filesize for $full_file", 2);
@@ -329,7 +333,7 @@ class Catalog_local extends Catalog
                 }
 
                 // Check to make sure the filename is of the expected charset
-                    /*
+                /*
                 if (function_exists('iconv')) {
                     $convok = false;
                     $site_charset = AmpConfig::get('site_charset');
@@ -351,20 +355,30 @@ class Catalog_local extends Catalog
                     }
                     $full_file = $enc_full_file;
                 } // end if iconv
-				*/
-                    
+                */
+
                 if ($is_playlist) {
                     debug_event('read', 'Found playlist file to import: ' . $file, '5');
                     $this->_playlists[] = $full_file;
                 } // if it's a playlist
 
                 else {
-                    if ($is_audio_file) {
-                        $this->_insert_local_song($full_file, $file_size, $options);
-                    } else { $this->insert_local_video($full_file,$file_size); }
+                    if (count($this->get_gather_types('music')) > 0) {
+                        if ($is_audio_file) {
+                        $this->insert_local_song($full_file, $options);
+                        } else {
+                            debug_event('read', $full_file . " ignored, bad media type for this catalog.", 5);
+                        }
+                    } else if (count($this->get_gather_types('video')) > 0) {
+                        if ($is_video_file) {
+                            $this->insert_local_video($full_file, $options);
+                        } else {
+                            debug_event('read', $full_file . " ignored, bad media type for this catalog.", 5);
+                        }
+                    }
 
                     $this->count++;
-                    $file = str_replace(array('(',')','\''),'',$full_file);
+                    $file = str_replace(array('(', ')', '\''), '', $full_file);
                     if (UI::check_ticker()) {
                         UI::update_text('add_count_' . $this->id, $this->count);
                         UI::update_text('add_dir_' . $this->id, scrub_out($file));
@@ -408,6 +422,8 @@ class Catalog_local extends Catalog
         }
 
         $this->count = 0;
+        $this->added_songs_to_gather = array();
+        $this->added_videos_to_gather = array();
 
         require AmpConfig::get('prefix') . '/templates/show_adds_catalog.inc.php';
         flush();
@@ -442,7 +458,7 @@ class Catalog_local extends Catalog
             $catalog_id = $this->id;
             require AmpConfig::get('prefix') . '/templates/show_gather_art.inc.php';
             flush();
-            $this->gather_art();
+            $this->gather_art($this->added_songs_to_gather, $this->added_videos_to_gather);
         }
 
         /* Update the Catalog last_update */
@@ -453,7 +469,7 @@ class Catalog_local extends Catalog
 
         UI::show_box_top();
         echo "\n<br />" .
-        printf(T_('Catalog Update Finished.  Total Time: [%s] Total Songs: [%s] Songs Per Second: [%s]'),
+        printf(T_('Catalog Update Finished.  Total Time: [%s] Total Media: [%s] Media Per Second: [%s]'),
             date('i:s', $time_diff), $this->count, $rate);
         echo '<br /><br />';
         UI::show_box_bottom();
@@ -472,6 +488,7 @@ class Catalog_local extends Catalog
         $stats = self::get_stats($this->id);
         $number = $stats['videos'] + $stats['songs'];
         $total_updated = 0;
+        $this->count = 0;
 
         require_once AmpConfig::get('prefix') . '/templates/show_verify_catalog.inc.php';
 
@@ -566,6 +583,7 @@ class Catalog_local extends Catalog
 
         $dead_total = 0;
         $stats = self::get_stats($this->id);
+        $this->count = 0;
         foreach (array('video', 'song') as $media_type) {
             $total = $stats[$media_type . 's']; // UGLY
             if ($total == 0) {
@@ -619,7 +637,7 @@ class Catalog_local extends Catalog
                 UI::update_text('clean_dir_' . $this->id, scrub_out($file));
             }
             $results['file'] = utf8_decode($results['file']);
-            $file_info = filesize($results['file']);
+            $file_info = Core::get_filesize($results['file']);
             if (!file_exists($results['file']) || $file_info < 1) {
                 debug_event('clean', 'File not found or empty: ' . $results['file'], 5);
                 Error::add('general', sprintf(T_('Error File Not Found or 0 Bytes: %s'), $results['file']));
@@ -638,13 +656,13 @@ class Catalog_local extends Catalog
     } //_clean_chunk
 
     /**
-     * _insert_local_song
+     * insert_local_song
      *
      * Insert a song that isn't already in the database.
      */
-    private function _insert_local_song($file, $file_info, $options)
+    private function insert_local_song($file, $options = array())
     {
-        $vainfo = new vainfo($file, '', '', '', $this->sort_pattern, $this->rename_pattern);
+        $vainfo = new vainfo($file, $this->get_gather_types('music'), '', '', '', $this->sort_pattern, $this->rename_pattern);
         $vainfo->get_info();
 
         $key = vainfo::get_tag_type($vainfo->tags);
@@ -679,7 +697,10 @@ class Catalog_local extends Catalog
             $results['license'] = $options['license'];
         }
         $results['file'] = utf8_encode($results['file']);
-        return Song::insert($results);
+        $id = Song::insert($results);
+        $this->added_songs_to_gather[] = $id;
+
+        return $id;
     }
 
     /**
@@ -688,29 +709,30 @@ class Catalog_local extends Catalog
      * information we can get is super sketchy so it's kind of a crap shoot
      * here
      */
-    public function insert_local_video($file,$filesize)
+    public function insert_local_video($file, $options = array())
     {
         /* Create the vainfo object and get info */
-        $vainfo     = new vainfo($file,'','','',$this->sort_pattern,$this->rename_pattern);
+        $gtypes = $this->get_gather_types('video');
+        $vainfo     = new vainfo($file, $gtypes,'','','',$this->sort_pattern,$this->rename_pattern);
         $vainfo->get_info();
 
-        $tag_name = vainfo::get_tag_type($vainfo->tags);
+        $tag_name = vainfo::get_tag_type($vainfo->tags, 'metadata_order_video');
         $results = vainfo::clean_tag_info($vainfo->tags,$tag_name,$file);
+        $results['catalog'] = $this->id;
 
-        $rezx         = intval($results['resolution_x']);
-        $rezy         = intval($results['resolution_y']);
-        // UNUSED CURRENTLY
-        $comment    = $results['comment'];
-        $year        = $results['year'];
-        $disk        = $results['disk'];
+        $id = Video::insert($results, $gtypes, $options);
+        if ($results['art']) {
+            $art = new Art($id, 'video');
+            $art->insert_url($results['art']);
 
-        $sql = "INSERT INTO `video` (`file`,`catalog`,`title`,`video_codec`,`audio_codec`,`resolution_x`,`resolution_y`,`size`,`time`,`mime`) " .
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $params = array($file, $this->id, $results['title'], $results['video_codec'], $results['audio_codec'], $rezx, $rezy, $filesize, $results['time'], $results['mime']);
-        $db_results = Dba::write($sql, $params);
+            if (AmpConfig::get('generate_video_preview')) {
+                Video::generate_preview($id);
+            }
+        } else {
+            $this->added_videos_to_gather[] = $id;
+        }
 
-        return true;
-
+        return $id;
     } // insert_local_video
 
     /**

@@ -202,3 +202,58 @@ msgstr ""
 msgid "Flickr api key"
 msgstr ""
 
+#: Database words
+msgid "Clear democratic votes of expired user sessions"
+msgstr ""
+
+#: Database words
+msgid "Show donate button in footer"
+msgstr ""
+
+#: Database words
+msgid "Uploads catalog destination"
+msgstr ""
+
+#: Database words
+msgid "Allow users to upload media"
+msgstr ""
+
+#: Database words
+msgid "Upload: create a subdirectory per user (recommended)"
+msgstr ""
+
+#: Database words
+msgid "Upload: consider the user sender as the track's artist"
+msgstr ""
+
+#: Database words
+msgid "Upload: run the following script after upload (current directory = upload target directory)"
+msgstr ""
+
+#: Database words
+msgid "Upload: allow users to edit uploaded songs"
+msgstr ""
+
+#: Database words
+msgid "Use DAAP backend"
+msgstr ""
+
+#: Database words
+msgid "DAAP backend password"
+msgstr ""
+
+#: Database words
+msgid "Use UPnP backend"
+msgstr ""
+
+#: Database words
+msgid "Allow video features"
+msgstr ""
+
+#: Database words
+msgid "Album - Group per release type"
+msgstr ""
+
+#: Database words
+msgid "Ajax page load"
+msgstr ""

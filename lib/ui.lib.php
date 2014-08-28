@@ -185,7 +185,7 @@ function show_preference_box($preferences)
  * This displays a select of every album that we've got in Ampache (which can be
  * hella long). It's used by the Edit page and takes a $name and a $album_id
  */
-function show_album_select($name='album',$album_id=0,$allow_add=0,$song_id=0)
+function show_album_select($name='album',$album_id=0,$allow_add=false,$song_id=0)
 {
     static $album_id_cnt = 0;
 
@@ -230,17 +230,21 @@ function show_album_select($name='album',$album_id=0,$allow_add=0,$song_id=0)
  * This is the same as show_album_select except it's *gasp* for artists! How
  * inventive!
  */
-function show_artist_select($name='artist', $artist_id=0, $allow_add=0, $song_id=0)
+function show_artist_select($name='artist', $artist_id=0, $allow_add=false, $song_id=0, $allow_none=false)
 {
     static $artist_id_cnt = 0;
     // Generate key to use for HTML element ID
     if ($song_id) {
-        $key = "artist_select_" . $song_id;
+        $key = $name . "_select_" . $song_id;
     } else {
-        $key = "artist_select_c" . ++$artist_id_cnt;
+        $key = $name . "_select_c" . ++$artist_id_cnt;
     }
 
     echo "<select name=\"$name\" id=\"$key\">\n";
+
+    if ($allow_none) {
+        echo "\t<option value=\"-2\"></option>\n";
+    }
 
     $sql = "SELECT `id`, `name`, `prefix` FROM `artist` ORDER BY `name`";
     $db_results = Dba::read($sql);
@@ -264,6 +268,91 @@ function show_artist_select($name='artist', $artist_id=0, $allow_add=0, $song_id
     echo "</select>\n";
 
 } // show_artist_select
+
+/**
+ * show_tvshow_select
+ * This is the same as show_album_select except it's *gasp* for tvshows! How
+ * inventive!
+ */
+function show_tvshow_select($name='tvshow', $tvshow_id=0, $allow_add=false, $season_id=0, $allow_none=false)
+{
+    static $tvshow_id_cnt = 0;
+    // Generate key to use for HTML element ID
+    if ($season_id) {
+        $key = $name . "_select_" . $season_id;
+    } else {
+        $key = $name . "_select_c" . ++$tvshow_id_cnt;
+    }
+
+    echo "<select name=\"$name\" id=\"$key\">\n";
+
+    if ($allow_none) {
+        echo "\t<option value=\"-2\"></option>\n";
+    }
+
+    $sql = "SELECT `id`, `name` FROM `tvshow` ORDER BY `name`";
+    $db_results = Dba::read($sql);
+
+    while ($r = Dba::fetch_assoc($db_results)) {
+        $selected = '';
+        if ($r['id'] == $tvshow_id) {
+            $selected = "selected=\"selected\"";
+        }
+
+        echo "\t<option value=\"" . $r['id'] . "\" $selected>" . scrub_out($r['name']) . "</option>\n";
+
+    } // end while
+
+    if ($allow_add) {
+        // Append additional option to the end with value=-1
+        echo "\t<option value=\"-1\">Add New...</option>\n";
+    }
+
+    echo "</select>\n";
+
+} // show_tvshow_select
+
+function show_tvshow_season_select($name='tvshow_season', $season_id, $allow_add=false, $video_id=0, $allow_none=false)
+{
+    if (!$season_id)
+        return false;
+    $season = new TVShow_Season($season_id);
+
+    static $season_id_cnt = 0;
+    // Generate key to use for HTML element ID
+    if ($video_id) {
+        $key = $name . "_select_" . $video_id;
+    } else {
+        $key = $name . "_select_c" . ++$season_id_cnt;
+    }
+
+    echo "<select name=\"$name\" id=\"$key\">\n";
+
+    if ($allow_none) {
+        echo "\t<option value=\"-2\"></option>\n";
+    }
+
+    $sql = "SELECT `id`, `season_number` FROM `tvshow_season` WHERE `tvshow` = ? ORDER BY `season_number`";
+    $db_results = Dba::read($sql, array($season->tvshow));
+
+    while ($r = Dba::fetch_assoc($db_results)) {
+        $selected = '';
+        if ($r['id'] == $season_id) {
+            $selected = "selected=\"selected\"";
+        }
+
+        echo "\t<option value=\"" . $r['id'] . "\" $selected>" . scrub_out($r['season_number']) . "</option>\n";
+
+    } // end while
+
+    if ($allow_add) {
+        // Append additional option to the end with value=-1
+        echo "\t<option value=\"-1\">Add New...</option>\n";
+    }
+
+    echo "</select>\n";
+
+}
 
 /**
  * show_catalog_select
@@ -438,7 +527,7 @@ function xml_from_array($array, $callback = false, $type = '')
     case 'itunes':
         foreach ($array as $key=>$value) {
             if (is_array($value)) {
-                $value = xoutput_from_array($value,1,$type);
+                $value = xoutput_from_array($value, true, $type);
                 $string .= "\t\t<$key>\n$value\t\t</$key>\n";
             } else {
                 if ($key == "key") {
@@ -459,7 +548,7 @@ function xml_from_array($array, $callback = false, $type = '')
     case 'xspf':
         foreach ($array as $key=>$value) {
             if (is_array($value)) {
-                $value = xoutput_from_array($value,1,$type);
+                $value = xoutput_from_array($value, true, $type);
                 $string .= "\t\t<$key>\n$value\t\t</$key>\n";
             } else {
                 if ($key == "key") {
@@ -625,4 +714,29 @@ function get_allowed_dirname($dirname)
 	return $album_path;
 
 } // get_allowed_dirname
+
+/**
+* get_main_name
+* This gets an artist without feat. or things like this
+*/
+function get_main_name($name)
+{
+    $pos = strpos($name, " feat");
+    if( $pos > 0)
+        $name = substr($name,0,$pos);
+    $pos = strpos($name, " Feat");
+    if( $pos > 0)
+        $name = substr($name,0,$pos);
+    $pos = strpos($name, " vs");
+    if( $pos > 0)
+        $name = substr($name,0,$pos);
+    $pos = strpos($name, " Vs");
+    if( $pos > 0)
+        $name = substr($name,0,$pos);
+
+    return $name;
+
+} // get_from_name
+
+
 

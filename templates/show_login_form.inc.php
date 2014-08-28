@@ -36,35 +36,23 @@ $_SESSION['login'] = true;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $htmllang; ?>" lang="<?php echo $htmllang; ?>" dir="<?php echo $dir; ?>">
     <head>
+<?php if (true == $GLOBALS['isMobile'])
+{ ?>
+<meta name="viewport" content="width=device-width,  minimum-scale=1.0, maximum-scale=1.0" />
+<?php } ?>
+
         <meta http-equiv="Content-Type" content="text/html; charset=<?php echo AmpConfig::get('site_charset'); ?>" />
         <link rel="shortcut icon" href="<?php echo AmpConfig::get('web_path'); ?>/favicon.ico" />
         <link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?>/templates/print.css" type="text/css" media="print" />
         <link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?><?php echo AmpConfig::get('theme_path'); ?>/templates/default.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="<?php echo AmpConfig::get('web_path'); ?><?php echo AmpConfig::get('theme_path'); ?>/templates/dark.css" type="text/css" media="screen" />
         <title> <?php echo scrub_out(AmpConfig::get('site_title')); ?> </title>
         <script type="text/javascript" language="javascript">
             function focus(){ document.login.username.focus(); }
         </script>
-        <?php
-        // If iframes, we check in javascript that parent container doesn't exist, otherwise we redirect to the page without frame.
-        if (AmpConfig::get('iframes')) {
-        ?>
-        <script language="javascript" type="text/javascript">
-            function forceNoframe()
-            {
-                if (self != top) {
-                    var frame = top.document.getElementById('frame_footer');
-                    if (frame != null) {
-                        parent.location = document.location;
-                    }
-                }
-            }
-        </script>
-        <?php
-        }
-        ?>
     </head>
 
-    <body id="loginPage" onload="focus();<?php echo (AmpConfig::get('iframes')) ? "forceNoframe();" : ""; ?>">
+    <body id="loginPage" onload="focus();">
         <div id="maincontainer">
             <div id="header"><!-- This is the header -->
                 <h1 id="headerlogo">

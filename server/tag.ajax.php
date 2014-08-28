@@ -23,11 +23,6 @@
 /**
  * Sub-Ajax page, requires AJAX_INCLUDE
  */
-
-require_once '../modules/getid3/getid3.php';
-require_once '../modules/getid3/getid3.lib.php';
-require_once '../modules/getid3/write.php';
-
 if (!defined('AJAX_INCLUDE')) { exit; }
 
 $results = array();
@@ -70,19 +65,18 @@ switch ($_REQUEST['action']) {
         $object_ids = $browse->get_objects();
         ob_start();
         $browse->show_objects($object_ids);
-        $results['browse_content_' . $browse->get_type()] = ob_get_clean();
+        $results[$browse->get_content_div()] = ob_get_clean();
         $browse->store();
         // Retrieve current objects of type based on combined filters
     break;
     case 'save_tag':
         $new_tag = new Tag($_POST['tag_id']);
+        $new_tag->format();
         $song_id = $_GET['song_id'];
-        $new_tag->update_tag_map('song',$song_id,$new_tag->id);
         $song = new Song($_GET['song_id']);
         $song->format();
-        $id3 = new vainfo($song->file);
-        $data['genre'] = $new_tag->name;
-        $id3->write_id3($data);
+        $data['edit_tags'] = $new_tag->name;
+        $song->update($data);
         break;
     default:
         $results['rfc3514'] = '0x1';

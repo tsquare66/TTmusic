@@ -51,6 +51,7 @@ foreach ($sidebar_items as $item) {
     <li <?php echo $li_params; ?>>
 <?php
         echo Ajax::button("?page=index&action=sidebar&button=".$item['id'], $item['icon'], $item['title'], 'sidebar_'.$item['id']);
+       if (false == $GLOBALS['isMobile']){
         if ($item['id']==$_SESSION['state']['sidebar_tab']) {
 ?>
         <div id="sidebar-page" class="sidebar-page-<?php echo AmpConfig::get('ui_fixed') ? 'fixed' : 'float'; ?>">
@@ -58,6 +59,7 @@ foreach ($sidebar_items as $item) {
         </div>
 <?php
         }
+       }
 ?>
     </li>
 <?php
@@ -80,12 +82,12 @@ $(function() {
         $content = $header.next();
         //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
         $content.slideToggle(500, function() {
-            $header.children().toggleClass("expanded collapsed");
+            $header.children(".sprite").toggleClass("expanded collapsed");
             var sbstate = "expanded";
-            if ($header.children().hasClass("collapsed")) {
+            if ($header.children(".sprite").hasClass("collapsed")) {
                 sbstate = "collapsed";
             }
-            $.cookie('sb_' + $header.children().attr('id'), sbstate, { expires: 30, path: '/'});
+            $.cookie('sb_' + $header.children(".sprite").attr('id'), sbstate, { expires: 30, path: '/'});
         });
 
     });
@@ -110,6 +112,8 @@ $(document).ready(function() {
     // collapsed the found element.
     for (var key in result) {
         if ($("#" + key).length && result[key] == "collapsed") {
+            $("#" + key).removeClass("expanded");
+            $("#" + key).addClass("collapsed");
             $("#" + key).parent().next().slideToggle(0);
         }
     }

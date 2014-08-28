@@ -125,7 +125,7 @@ function create_preference_input($name,$value)
         } elseif ($value == '0') {
             echo "Disabled";
         } else {
-            if (preg_match('/_pass$/', $name)) {
+            if (preg_match('/_pass$/', $name) || preg_match('/_api_key$/', $name)) {
                 echo "******";
             } else {
                 echo $value;
@@ -154,7 +154,7 @@ function create_preference_input($name,$value)
         case 'rio_track_stats':
         case 'rio_global_stats':
         case 'direct_link':
-        case 'iframes':
+        case 'ajax_load':
         case 'now_playing_per_user':
         case 'show_played_times':
         case 'song_page_title':
@@ -182,6 +182,9 @@ function create_preference_input($name,$value)
         case 'upload_subdir':
         case 'upload_user_artist':
         case 'upload_allow_edit':
+        case 'daap_backend':
+        case 'upnp_backend':
+        case 'album_release_type':
             $is_true = '';
             $is_false = '';
             if ($value == '1') {

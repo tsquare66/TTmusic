@@ -2,6 +2,10 @@
 
 namespace MusicBrainz;
 
+/**
+ * Class Country
+ * @package MusicBrainz
+ */
 class Country
 {
     /**
@@ -15,14 +19,19 @@ class Country
      * Get the country name for a MusicBrainz country code
      *
      * @static
+     *
      * @param $countryCode
+     *
      * @throws \OutOfBoundsException
      * @return bool
      */
     public static function getName($countryCode)
     {
         if (!isset(self::$countries[$countryCode])) {
-            throw new \OutOfBoundsException(sprintf("Could not find corresponding country name for the country code %s", $countryCode));
+            throw new \OutOfBoundsException(sprintf(
+                "Could not find corresponding country name for the country code %s",
+                $countryCode
+            ));
         }
 
         return self::$countries[$countryCode];

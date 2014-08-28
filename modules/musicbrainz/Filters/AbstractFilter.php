@@ -12,37 +12,65 @@ namespace MusicBrainz\Filters;
  */
 abstract class AbstractFilter
 {
+    /**
+     * @var array
+     */
     protected $validArgTypes;
-    protected $validArgs;
+    /**
+     * @var array
+     */
+    protected $validArgs = array();
+    /**
+     * @var array
+     */
+    protected $protectedArgs = array(
+        'arid'
+    );
 
-    public function __construct($args)
+    /**
+     * @param array $args
+     */
+    public function __construct(array $args)
     {
-        $this->validArgs = array();
         foreach ($args as $key => $value) {
-            if (in_array($key,$this->validArgTypes)) {
+            if (in_array($key, $this->validArgTypes)) {
                 $this->validArgs[$key] = $value;
             }
         }
     }
 
+    /**
+     * @param array $params
+     *
+     * @return array
+     */
     public function createParameters(array $params = array())
     {
-        if (!empty($this->validArgs)) {
-            $params = $params + array('query' => '');
+        $params = $params + array('query' => '');
 
-            if ($params['query'] == '') {
-                foreach ($this->validArgs as $key => $val) {
-                    if ($params['query'] != '') {
-                        $params['query'] .= '+AND+';
-                    }
-                    if ($key == 'arid')
-                    {
-                        $params['query'] .= $key . ':' . $val;
-                    } else {
-                        $params['query'] .= $key . ':' .  urlencode(preg_replace('/([\+\-\!\(\)\{\}\[\]\^\~\*\?\:\\\\])/', '/$1', $val));
-                    }
-                }
+        if (empty($this->validArgs) || $params['query'] != '') {
+            return $params;
+        }
+
+        foreach ($this->validArgs as $key => $val) {
+            if ($params['query'] != '') {
+                $params['query'] .= '+AND+';
             }
+
+            if (!in_array($key, $this->protectedArgs)) {
+                // Lucene escape characters
+                $val = urlencode(
+                    preg_replace('/([\+\-\!\(\)\{\}\[\]\^\~\*\?\:\\\\])/', '\\\\$1', $val)
+                );
+            }
+            // If the search string contains a space, wrap it in brackets/quotes
+            // This isn't always wanted, but for the searches required in this
+            // library, I'm going to do it.
+            if (preg_match('/[\+]/', $val)) {
+                $val = '(' . $val . ')';
+            }
+
+            $params['query'] .= $key . ':' . $val;
         }
 
         return $params;

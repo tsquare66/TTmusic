@@ -23,8 +23,16 @@
 $web_path = AmpConfig::get('web_path');
 $theme_path = AmpConfig::get('theme_path') . '/templates';
 ?>
+
+<?php if (true == $GLOBALS['isMobile'])
+{ ?>
+<meta name="viewport" content="width=device-width,  minimum-scale=1.0, maximum-scale=1.0" />
+<?php } ?>
+
+
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/base.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/default.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/dark.css" type="text/css" media="screen" />
 <?php
 if (file_exists(AmpConfig::get('prefix') . $theme_path . '/icons.sprite.css')) {
 ?>
@@ -40,11 +48,6 @@ if (is_rtl(AmpConfig::get('lang'))
 <?php
 }
 ?>
-<?php if (true == $GLOBALS['isMobile'])
-{ ?>
-   <meta name="viewport" content="width=320, initial-scale=1.0, user-scalable=no" />
-<?php } ?>
-
 <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/prettyPhoto/css/prettyPhoto.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/jquery-ui.custom.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/print.css" type="text/css" media="print" />
