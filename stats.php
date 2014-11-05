@@ -57,6 +57,9 @@ switch ($_REQUEST['action']) {
     case 'upload':
         require_once AmpConfig::get('prefix') . '/templates/show_uploads.inc.php';
     break;
+    case 'graph':
+        Graph::display_from_request();
+        break;
     case 'show':
     default:
         require_once AmpConfig::get('prefix') . '/templates/show_stats.inc.php';

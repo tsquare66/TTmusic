@@ -194,10 +194,5 @@ switch ($_REQUEST['action']) {
 
 $browse->store();
 
-if (true == $GLOBALS['isMobile'])
-{
-	$results['sidebar-page'] = "";
-}
-
 // We always do this
 echo xoutput_from_array($results);

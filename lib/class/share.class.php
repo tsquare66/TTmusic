@@ -97,6 +97,7 @@ class Share extends database_object
             case 'album':
             case 'song':
             case 'playlist':
+            case 'video':
                 return $type;
             default:
                 return '';
@@ -193,13 +194,15 @@ class Share extends database_object
         }
     }
 
-    public function format()
+    public function format($details = true)
     {
-        $object = new $this->object_type($this->object_id);
-        $object->format();
-        $this->f_object_link = $object->f_link;
-        $user = new User($this->user);
-        $this->f_user = $user->fullname;
+        if ($details) {
+            $object = new $this->object_type($this->object_id);
+            $object->format();
+            $this->f_object_link = $object->f_link;
+            $user = new User($this->user);
+            $this->f_user = $user->fullname;
+        }
         $this->f_allow_stream = $this->allow_stream;
         $this->f_allow_download = $this->allow_download;
         $this->f_creation_date = date("Y-m-d H:i:s", $this->creation_date);
@@ -261,11 +264,11 @@ class Share extends database_object
             case 'album':
             case 'playlist':
                 $object = new $this->object_type($this->object_id);
-                $songs = $object->get_songs('song');
-                foreach ($songs as $id) {
+                $songs = $object->get_medias('song');
+                foreach ($songs as $song) {
                     $medias[] = array(
-                        'object_type' => 'song',
-                        'object_id' => $id,
+                        'object_type' => $song['object_type'],
+                        'object_id' => $song['object_id'],
                     );
                 }
             break;

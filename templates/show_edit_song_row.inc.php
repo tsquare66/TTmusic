@@ -60,6 +60,10 @@
                 <td class="edit_dialog_content_header"><?php echo T_('Track') ?></td>
                 <td><input type="text" name="track" value="<?php echo scrub_out($libitem->track); ?>" /></td>
             </tr>
+             <tr>
+                <td class="edit_dialog_content_header"><?php echo T_('Year') ?></td>
+                <td><input type="text" name="year" value="<?php echo scrub_out($libitem->year); ?>" /></td>
+            </tr>
             <tr>
                 <td class="edit_dialog_content_header"><?php echo T_('MusicBrainz ID') ?></td>
                 <td><input type="text" name="mbid" value="<?php echo $libitem->mbid; ?>" /></td>

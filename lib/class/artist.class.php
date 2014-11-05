@@ -292,6 +292,21 @@ class Artist extends database_object implements library_item
                     $results[$rtype] = array();
                 }
                 $results[$rtype][] = $r['id'];
+
+                $sort = AmpConfig::get('album_release_type_sort');
+                if ($sort) {
+                    $results_sort = array();
+                    $asort = explode(',', $sort);
+
+                    foreach ($asort as $rtype) {
+                        if (array_key_exists($rtype, $results)) {
+                            $results_sort[$rtype] = $results[$rtype];
+                            unset($results[$rtype]);
+                        }
+                    }
+
+                    $results = array_merge($results_sort, $results);
+                }
             } else {
                 $results[] = $r['id'];
             }
@@ -406,7 +421,7 @@ class Artist extends database_object implements library_item
      * it changes the title into a full link.
      * @return boolean
       */
-    public function format()
+    public function format($details = true)
     {
         /* Combine prefix and name, trim then add ... if needed */
         $name = trim($this->prefix . " " . $this->name);
@@ -423,21 +438,24 @@ class Artist extends database_object implements library_item
             $this->f_link = AmpConfig::get('web_path') . '/artists.php?action=show&artist=' . $this->id;
             $this->f_name_link = "<a href=\"" . $this->f_link . "\" title=\"" . $this->f_full_name . "\">" . $name . "</a>";
         }
-        // Get the counts
-        $extra_info = $this->_get_extra_info($this->catalog_id);
 
-        //Format the new time thingy that we just got
-        $min = sprintf("%02d",(floor($extra_info['time']/60)%60));
+        if ($details) {
+            // Get the counts
+            $extra_info = $this->_get_extra_info($this->catalog_id);
 
-        $sec = sprintf("%02d",($extra_info['time']%60));
-        $hours = floor($extra_info['time']/3600);
+            //Format the new time thingy that we just got
+            $min = sprintf("%02d",(floor($extra_info['time']/60)%60));
 
-        $this->f_time = ltrim($hours . ':' . $min . ':' . $sec,'0:');
+            $sec = sprintf("%02d",($extra_info['time']%60));
+            $hours = floor($extra_info['time']/3600);
 
-        $this->tags = Tag::get_top_tags('artist', $this->id);
-        $this->f_tags = Tag::get_display($this->tags, true, 'artist');
+            $this->f_time = ltrim($hours . ':' . $min . ':' . $sec,'0:');
 
-        $this->object_cnt = $extra_info['object_cnt'];
+            $this->tags = Tag::get_top_tags('artist', $this->id);
+            $this->f_tags = Tag::get_display($this->tags, true, 'artist');
+
+            $this->object_cnt = $extra_info['object_cnt'];
+        }
 
         return true;
 
@@ -645,6 +663,9 @@ class Artist extends database_object implements library_item
         // Save our current ID
         $name = $data['name'] ?: $this->name;
         $mbid = $data['mbid'] ?: $this->mbid;
+        $summary = $data['summary'] ?: $this->summary;
+        $placeformed = $data['placeformed'] ?: $this->placeformed;
+        $yearformed = $data['yearformed'] ?: $this->yearformed;
 
         $current_id = $this->id;
 
@@ -663,6 +684,8 @@ class Artist extends database_object implements library_item
                 }
                 $updated = true;
                 $current_id = $artist_id;
+                Stats::migrate('artist', $this->id, $artist_id);
+                Art::migrate('artist', $this->id, $artist_id);
                 self::gc();
             } // end if it changed
 
@@ -686,6 +709,8 @@ class Artist extends database_object implements library_item
             $sql = 'UPDATE `artist` SET `name` = ? WHERE `id` = ?';
             Dba::write($sql, array($name, $current_id));
         }
+
+        $this->update_artist_info($summary, $placeformed, $yearformed);
 
         $this->name = $name;
         $this->mbid = $mbid;
@@ -737,7 +762,13 @@ class Artist extends database_object implements library_item
     public function update_artist_info($summary, $placeformed, $yearformed)
     {
         $sql = "UPDATE `artist` SET `summary` = ?, `placeformed` = ?, `yearformed` = ?, `last_update` = ? WHERE `id` = ?";
-        return Dba::write($sql, array($summary, $placeformed, $yearformed, time(), $this->id));
+        $sqlret = Dba::write($sql, array($summary, $placeformed, $yearformed, time(), $this->id));
+
+        $this->summary = $summary;
+        $this->placeformed = $placeformed;
+        $this->yearformed = $yearformed;
+
+        return $sqlret;
     }
 
     /**

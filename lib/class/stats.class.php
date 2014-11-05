@@ -73,37 +73,97 @@ class Stats
     }
 
     /**
+     * Migrate an object associate stats to a new object
+     * @param string $object_type
+     * @param int $old_object_id
+     * @param int $new_object_id
+     * @return boolean
+     */
+    public static function migrate($object_type, $old_object_id, $new_object_id)
+    {
+        $sql = "UPDATE `object_count` SET `object_id` = ? WHERE `object_type` = ? AND `object_id` = ?";
+        return Dba::write($sql, array($new_object_id, $object_type, $old_object_id));
+    }
+
+    /**
       * insert
      * This inserts a new record for the specified object
      * with the specified information, amazing!
      */
-    public static function insert($type, $oid, $user, $agent='')
+    public static function insert($type, $oid, $user, $agent='', $location, $count_type = 'stream')
     {
-        $type = self::validate_type($type);
+        if (!self::is_already_inserted($type, $oid, $user)) {
+            $type = self::validate_type($type);
 
-        $sql = "INSERT INTO `object_count` (`object_type`,`object_id`,`date`,`user`,`agent`) " .
-            " VALUES (?, ?, ?, ?, ?)";
-        $db_results = Dba::write($sql, array($type, $oid, time(), $user, $agent));
+            $latitude = null;
+            $longitude = null;
+            $geoname = null;
+            if (isset($location['latitude']))
+                $latitude = $location['latitude'];
+            if (isset($location['longitude']))
+                $longitude = $location['longitude'];
+            if (isset($location['name']))
+                $geoname = $location['name'];
 
-        if (!$db_results) {
-            debug_event('statistics','Unabled to insert statistics:' . $sql,'3');
+            $sql = "INSERT INTO `object_count` (`object_type`,`object_id`,`count_type`,`date`,`user`,`agent`, `geo_latitude`, `geo_longitude`, `geo_name`) " .
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $db_results = Dba::write($sql, array($type, $oid, $count_type, time(), $user, $agent, $latitude, $longitude, $geoname));
+
+            if (!$db_results) {
+                debug_event('statistics', 'Unabled to insert statistics:' . $sql, '3');
+            }
+        } else {
+            debug_event('statistics', 'Statistics insertion ignored due to graceful delay.', '3');
+        }
+    } // insert
+
+    /**
+      * is_already_inserted
+     * Check if the same stat has not already been inserted within a graceful delay
+     */
+    public static function is_already_inserted($type, $oid, $user, $count_type = 'stream')
+    {
+        $delay = time() - 10; // We look 10 seconds in the past
+
+        $sql = "SELECT `id` FROM `object_count` ";
+        $sql .= "WHERE `object_count`.`user` = ? AND `object_count`.`object_type` = ? AND `object_count`.`object_id` = ?  AND `object_count`.`count_type` = ? AND `object_count`.`date` >= ? ";
+        $sql .= "ORDER BY `object_count`.`date` DESC";
+
+        $db_results = Dba::read($sql, array($user, $type, $oid, $count_type, $delay));
+        $results = array();
+
+        while ($row = Dba::fetch_assoc($db_results)) {
+            $results[] = $row['id'];
         }
 
-    } // insert
+        return count($results) > 0;
+
+    } // is_already_inserted
 
     /**
       * get_object_count
      * Get count for an object
      */
-    public static function get_object_count($object_type, $object_id)
+    public static function get_object_count($object_type, $object_id, $count_type = 'stream')
     {
-        $sql = "SELECT COUNT(*) AS `object_cnt` FROM `object_count` WHERE `object_type`= ? AND `object_id` = ?";
-        $db_results = Dba::read($sql, array($object_type, $object_id));
+        $sql = "SELECT COUNT(*) AS `object_cnt` FROM `object_count` WHERE `object_type`= ? AND `object_id` = ? AND `count_type` = ?";
+        $db_results = Dba::read($sql, array($object_type, $object_id, $count_type));
 
         $results = Dba::fetch_assoc($db_results);
 
         return $results['object_cnt'];
     } // get_object_count
+
+    public static function get_cached_place_name($latitude, $longitude)
+    {
+        $name = null;
+        $sql = "SELECT `geo_name` FROM `object_count` WHERE `geo_latitude` = ? AND `geo_longitude` = ? AND `geo_name` IS NOT NULL ORDER BY `id` DESC LIMIT 1";
+        $db_results = Dba::read($sql, array($latitude, $longitude));
+        if ($results = Dba::fetch_assoc($db_results)) {
+            $name = $results['geo_name'];
+        }
+        return $name;
+    }
 
     /**
      * get_last_song
@@ -199,7 +259,7 @@ class Stats
             $count = AmpConfig::get('popular_threshold');
         }
 
-        $count    = intval($count);
+        $count = intval($count);
         if (!$offset) {
             $limit = $count;
         } else {
@@ -324,6 +384,7 @@ class Stats
             case 'tvshow_season':
             case 'tvshow_episode':
             case 'movie':
+            case 'playlist':
                 return $type;
             default:
                 return 'song';

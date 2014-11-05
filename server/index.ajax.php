@@ -198,6 +198,13 @@ switch ($_REQUEST['action']) {
         require_once AmpConfig::get('prefix') . '/templates/show_recently_played.inc.php';
         $results['recently_played'] = ob_get_clean();
     break;
+    case 'remove-sidebar-page':
+        if (true == $GLOBALS['isMobile'])
+        {
+            $results['sidebar-page'] = "";
+        }
+        break;
+
     case 'sidebar':
         switch ($_REQUEST['button']) {
             case 'home':
@@ -215,14 +222,16 @@ switch ($_REQUEST['action']) {
                 exit;
         } // end switch on button
 
+        Ajax::set_include_override(true);
         ob_start();
         $_SESSION['state']['sidebar_tab'] = $button;
         if (true == $GLOBALS['isMobile'])
         {
             //$results['sidebar-content'] = "";
-            $results['sidebar-page'] = "";
+            //$results['sidebar-page'] = "";
             //$results['content'] = "";
-            $results['browse_content'] = "";
+            $results['guts'] = "";
+            //$results['browse_content'] = "";
         }
         require_once AmpConfig::get('prefix') . '/templates/sidebar.inc.php';
         $results['sidebar-content'] = ob_get_contents();

@@ -383,8 +383,10 @@ class Album extends database_object implements library_item
         $params = array($name, $disk);
 
         if ($mbid) {
-           $sql .= 'AND `album`.`mbid` = ? ';
-           $params[] = $mbid;
+            $sql .= 'AND `album`.`mbid` = ? ';
+            $params[] = $mbid;
+        } else {
+            $sql .= 'AND `album`.`mbid` IS NULL ';
         }
         if ($prefix) {
            $sql .= 'AND `album`.`prefix` = ? ';
@@ -552,18 +554,49 @@ class Album extends database_object implements library_item
     } // has_track
 
     /**
+     * get_addtime_first_song
+     * Get the add date of first added song.
+     * @return int
+     */
+    public function get_addtime_first_song()
+    {
+        $time = 0;
+
+        $sql = "SELECT MIN(`addition_time`) FROM `song` WHERE `album` = ?";
+        $db_results = Dba::read($sql, array($this->id));
+        if ($data = Dba::fetch_row($db_results)) {
+            $time = $data[0];
+        }
+
+        return $time;
+    }
+
+    /**
      * format
      * This is the format function for this object. It sets cleaned up
      * album information with the base required
      * f_link, f_name
      */
-    public function format()
+    public function format($details = true)
     {
         $web_path = AmpConfig::get('web_path');
 
-        /* Pull the advanced information */
-        $data = $this->_get_extra_info();
-        foreach ($data as $key=>$value) { $this->$key = $value; }
+        if ($details) {
+            /* Pull the advanced information */
+            $data = $this->_get_extra_info();
+            foreach ($data as $key=>$value) { $this->$key = $value; }
+
+            if ($this->album_artist) {
+                $Album_artist = new Artist($this->album_artist);
+                $Album_artist->format();
+                $this->album_artist_name = $Album_artist->name;
+                $this->f_album_artist_name = $Album_artist->f_name;
+                $this->f_album_artist_link = "<a href=\"" . $web_path . "/artists.php?action=show&artist=" . $this->album_artist . "\" title=\"" . scrub_out($this->album_artist_name) . "\">" . $this->f_album_artist_name . "</a>";
+            }
+
+            $this->tags = Tag::get_top_tags('album', $this->id);
+            $this->f_tags = Tag::get_display($this->tags, true, 'album');
+        }
 
         /* Truncate the string if it's to long */
         $this->f_name = $this->full_name;
@@ -591,20 +624,9 @@ class Album extends database_object implements library_item
             $this->f_artist_name =  $this->f_artist;
         }
 
-        if ($this->album_artist) {
-            $Album_artist = new Artist($this->album_artist);
-            $Album_artist->format();
-            $this->album_artist_name = $Album_artist->name;
-            $this->f_album_artist_name = $Album_artist->f_name;
-            $this->f_album_artist_link = "<a href=\"" . $web_path . "/artists.php?action=show&artist=" . $this->album_artist . "\" title=\"" . scrub_out($this->album_artist_name) . "\">" . $this->f_album_artist_name . "</a>";
-        }
-
         if (!$this->year) {
             $this->f_year = "N/A";
         }
-
-        $this->tags = Tag::get_top_tags('album', $this->id);
-        $this->f_tags = Tag::get_display($this->tags, true, 'album');
 
         $this->f_release_type = ucwords($this->release_type);
 
@@ -750,7 +772,7 @@ class Album extends database_object implements library_item
     public function update(array $data)
     {
         $year = $data['year'] ?: $this->year;
-        $artist = $data['artist'] ? intval($data['artist']) : $this->artist;
+        $artist = $data['artist'] ? intval($data['artist']) : $this->artist_id;
         $album_artist = $data['album_artist'] ? intval($data['album_artist']) : $this->album_artist;
         $name = $data['name'] ?: $this->name;
         $disk = $data['disk'] ?: $this->disk;
@@ -791,6 +813,8 @@ class Album extends database_object implements library_item
             }
             $current_id = $album_id;
             $updated = true;
+            Stats::migrate('album', $this->id, $album_id);
+            Art::migrate('album', $this->id, $album_id);
             self::gc();
         } else {
             Album::update_year($year, $album_id);
@@ -802,7 +826,7 @@ class Album extends database_object implements library_item
         $this->release_type = $release_type;
         $this->name = $name;
         $this->disk = $disk;
-        $this->mb_id = $mbid;
+        $this->mbid = $mbid;
 
         if ($updated && is_array($songs)) {
             foreach ($songs as $song_id) {

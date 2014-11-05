@@ -1,8 +1,65 @@
 CHANGELOG
 =========
 
-3.7.1
+3.8.0
 ----------
+- Added `quick play url` to have permanent authenticated stream link without session
+- Fixed unresponsive website on batch download (thanks Rouzax)
+- Added batch download item granularity
+- Fixed 'guest' user site rendering
+- Added Aurora.js support in webplayer
+- Added Google Maps geolocation analyze plugin
+- Added statistical graphs
+- Added user geolocation
+- Added 'Missing Artist' search
+- Fixed Ampache installation with FastCGI
+- Added a new RSS Feed plugin
+- Added a new 'display home' plugin type
+- Added Favorite and Rating features to playlists
+- Added user feedback near mouse cursor on democratic votes
+- Changed header page position to be fixed
+- Added external links on song page details
+- Fixed Subsonic API getAlbumList2 byGenre and byYear order (thanks rrjk)
+- Added html5 desktop notification
+- Added album group order setting
+- Fixed unwanted album merge when one of the album doesn't have mbid
+- Changed video player to go outside the footer
+- Added ip address in authentication failure for fail2ban scripts (thanks popindavibe)
+- Added parameter to hide directplay button if number of items is above a limit
+- Added Tag split (thanks jcwmoore)
+- Fixed album/artist arts and stats migration on rename (thanks jcwmoore)
+- Fixed get lyrics from files (thanks apastuszak)
+- Fixed verify local catalog (thanks JoeDat)
+- Removed Twitter code
+- Added optional cookie disclaimer for the EU Cookie Law
+- Replaced catalog action links to action dropdown list (thanks Psy-Virus)
+- Fixed `remember me` feature (thanks ainola)
+- Added email when registered user must be enabled by administrators
+- Fixed local catalog clean on Windows (thanks Rouzax)
+- Added Subsonic API maxBitRate parameter support (thanks philipl)
+- Fixed SubSonic API special characters encode (thanks nan4k7)
+- Added Beets local and remote catalog support (thanks Razrael)
+- Fixed XML error code returned with invalid Ampache API handshake (thanks funkygaddafi)
+- Replaced iframe to Ajax dynamic page loading
+- Changed `Albums of the moment` to not necessarily have a cover
+- Added Plex backend items edition support
+- Added hls stream support
+- Added X-Content-Duration header support on streams
+- Removed Toogle Art from artist page
+- Fixed track numbers when removing a song from playlist (thanks stonie08)
+- Added Plex backend playlist support
+- Added gather art from video files (thanks wagnered)
+- Added Plex backend movie / tvshow support
+- Added release group on albums
+- Added Smart Playlist songs list
+- Added zlib test
+- Removed old Ampache themes
+- Fixed SubSonic API lastModified element (thanks bikkuri10)
+- Disabled `beautiful url` on XML-API for retro-compatibility
+- Fixed image resource allocation (thanks greengeek1)
+- Added setting to write id3 metadata to files (thanks tsquare66)
+- Added check for large files manipulation
+- Added video subtitle support
 - Fixed Google arts to use real arts and not the small size preview
 - Added Tmdb metadata plugin
 - Added Omdb metadata plugin
@@ -12,7 +69,7 @@ CHANGELOG
 - Added beautiful url on arts
 - Improved browse list header (thanks Psy-Virus)
 - Fixed user online/offline information on Reborn theme (thanks thorsforge)
-- Added UPnP backend
+- Added UPnP backend (thanks SeregaPru)
 - Added DAAP backend
 - Added sort options on playlists (thanks Shdwdrgn)
 - Fixed XML-API tag information (thanks jcwmoore)
@@ -38,6 +95,7 @@ CHANGELOG
 - Added git pull update from web interface for development versions
 - Fixed http-rang requests on streaming (thanks thejk)
 - Improved installation process
+- Improved French translation (thanks arnaudbey)
 - Improved German translation (thanks Psy-Virus and meandor)
 
 3.7.0

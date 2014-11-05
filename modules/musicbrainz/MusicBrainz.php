@@ -355,7 +355,7 @@ class MusicBrainz
         $entity,
         $mbid,
         array $includes,
-        $limit = 25,
+        $limit = 50,
         $offset = null,
         $releaseType = array(),
         $releaseStatus = array()
@@ -434,7 +434,7 @@ class MusicBrainz
      * @return array
      * @throws Exception
      */
-    public function browseRecording($entity, $mbid, array $includes = array(), $limit = 25, $offset = null)
+    public function browseRecording($entity, $mbid, array $includes = array(), $limit = 50, $offset = null)
     {
         if (!in_array($entity, array('artist', 'release'))) {
             throw new Exception('Invalid browse entity for recording');
@@ -459,7 +459,7 @@ class MusicBrainz
         $entity,
         $mbid,
         array $includes = array(),
-        $limit = 25,
+        $limit = 50,
         $offset = null,
         $releaseType = array(),
         $releaseStatus = array()
@@ -759,4 +759,7 @@ class MusicBrainz
     {
         $this->password = $password;
     }
+    
+    
+    
 }

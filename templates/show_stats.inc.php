@@ -97,3 +97,9 @@ $catalogs = Catalog::get_catalogs();
     </tbody>
 </table>
 <?php UI::show_box_bottom(); ?>
+
+<?php
+if (AmpConfig::get('statistical_graphs')) {
+    Graph::display_from_request();
+}
+?>

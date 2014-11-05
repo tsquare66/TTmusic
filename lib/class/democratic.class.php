@@ -148,7 +148,7 @@ class Democratic extends Tmp_Playlist
      * format
      * This makes the variables all purrty so that they can be displayed
      */
-    public function format()
+    public function format($details = true)
     {
         $this->f_cooldown    = $this->cooldown . ' ' . T_('minutes');
         $this->f_primary    = $this->primary ? T_('Primary') : '';
@@ -405,6 +405,10 @@ class Democratic extends Tmp_Playlist
      */
     private function _add_vote($object_id, $object_type = 'song')
     {
+        if (!$this->tmp_playlist) {
+            return false;
+        }
+
         $media = new $object_type($object_id);
         $track = isset($media->track) ? intval($media->track) : null;
 
@@ -588,11 +592,13 @@ class Democratic extends Tmp_Playlist
     {
         $tmp_id = Dba::escape($this->tmp_playlist);
 
-        /* Clear all votes then prune */
-        $sql = "DELETE FROM `user_vote` USING `user_vote` " .
-            "LEFT JOIN `tmp_playlist_data` ON `user_vote`.`object_id` = `tmp_playlist_data`.`id` " .
-            "WHERE `tmp_playlist_data`.`tmp_playlist`='$tmp_id'";
-        Dba::write($sql);
+        if ($tmp_id) {
+            /* Clear all votes then prune */
+            $sql = "DELETE FROM `user_vote` USING `user_vote` " .
+                "LEFT JOIN `tmp_playlist_data` ON `user_vote`.`object_id` = `tmp_playlist_data`.`id` " .
+                "WHERE `tmp_playlist_data`.`tmp_playlist`='$tmp_id'";
+            Dba::write($sql);
+        }
 
         // Prune!
         self::prune_tracks();

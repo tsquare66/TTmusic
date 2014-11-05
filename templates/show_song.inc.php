@@ -26,22 +26,24 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
 <?php UI::show_box_top($song->title . ' ' . T_('Details'), 'box box_song_details'); ?>
 <dl class="media_details">
 
-<?php if (AmpConfig::get('ratings')) { ?>
-    <?php $rowparity = UI::flip_class(); ?>
-    <dt class="<?php echo $rowparity; ?>"><?php echo T_('Rating'); ?></dt>
-    <dd class="<?php echo $rowparity; ?>">
-        <div id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?>
-        </div>
-    </dd>
-<?php } ?>
+<?php if (User::is_registered()) { ?>
+    <?php if (AmpConfig::get('ratings')) { ?>
+        <?php $rowparity = UI::flip_class(); ?>
+        <dt class="<?php echo $rowparity; ?>"><?php echo T_('Rating'); ?></dt>
+        <dd class="<?php echo $rowparity; ?>">
+            <div id="rating_<?php echo $song->id; ?>_song"><?php Rating::show($song->id,'song'); ?>
+            </div>
+        </dd>
+    <?php } ?>
 
-<?php if (AmpConfig::get('userflags')) { ?>
-    <?php $rowparity = UI::flip_class(); ?>
-    <dt class="<?php echo $rowparity; ?>"><?php echo T_('Fav.'); ?></dt>
-    <dd class="<?php echo $rowparity; ?>">
-        <div id="userflag_<?php echo $song->id; ?>_song"><?php Userflag::show($song->id,'song'); ?>
-        </div>
-    </dd>
+    <?php if (AmpConfig::get('userflags')) { ?>
+        <?php $rowparity = UI::flip_class(); ?>
+        <dt class="<?php echo $rowparity; ?>"><?php echo T_('Fav.'); ?></dt>
+        <dd class="<?php echo $rowparity; ?>">
+            <div id="userflag_<?php echo $song->id; ?>_song"><?php Userflag::show($song->id,'song'); ?>
+            </div>
+        </dd>
+    <?php } ?>
 <?php } ?>
 <?php if (AmpConfig::get('waveform')) { ?>
     <?php $rowparity = UI::flip_class(); ?>
@@ -63,19 +65,25 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
             <?php echo $song->show_custom_play_actions(); ?>
         <?php } ?>
         <?php echo Ajax::button('?action=basket&type=song&id=' . $song->id,'add', T_('Add to temporary playlist'),'add_song_' . $song->id); ?>
-        <?php if (AmpConfig::get('sociable')) { ?>
-            <a href="<?php echo AmpConfig::get('web_path'); ?>/shout.php?action=show_add_shout&type=song&id=<?php echo $song->id; ?>">
-            <?php echo UI::get_icon('comment', T_('Post Shout')); ?>
-            </a>
-        <?php } ?>
-        <?php if (AmpConfig::get('share')) { ?>
-            <a href="<?php echo AmpConfig::get('web_path'); ?>/share.php?action=show_create&type=song&id=<?php echo $song->id; ?>"><?php echo UI::get_icon('share', T_('Share')); ?></a>
+        <?php if (Access::check('interface','25')) { ?>
+            <?php if (AmpConfig::get('sociable')) { ?>
+                <a href="<?php echo AmpConfig::get('web_path'); ?>/shout.php?action=show_add_shout&type=song&id=<?php echo $song->id; ?>">
+                <?php echo UI::get_icon('comment', T_('Post Shout')); ?>
+                </a>
+            <?php } ?>
+            <?php if (AmpConfig::get('share')) { ?>
+                <a href="<?php echo AmpConfig::get('web_path'); ?>/share.php?action=show_create&type=song&id=<?php echo $song->id; ?>"><?php echo UI::get_icon('share', T_('Share')); ?></a>
+            <?php } ?>
         <?php } ?>
         <?php if (Access::check_function('download')) { ?>
             <a rel="nohtml" href="<?php echo Song::play_url($song->id); ?>"><?php echo UI::get_icon('link', T_('Link')); ?></a>
             <a rel="nohtml" href="<?php echo AmpConfig::get('web_path'); ?>/stream.php?action=download&amp;song_id=<?php echo $song->id; ?>"><?php echo UI::get_icon('download', T_('Download')); ?></a>
         <?php } ?>
         <?php if (Access::check('interface','50')) { ?>
+            <?php if (AmpConfig::get('statistical_graphs')) { ?>
+                <a href="<?php echo AmpConfig::get('web_path'); ?>/stats.php?action=graph&object_type=song&object_id=<?php echo $song->id; ?>"><?php echo UI::get_icon('statistics', T_('Graphs')); ?></a>
+            <?php } ?>
+
             <a onclick="showEditDialog('song_row', '<?php echo $song->id ?>', '<?php echo 'edit_song_'.$song->id ?>', '<?php echo T_('Edit') ?>', '')">
                 <?php echo UI::get_icon('edit', T_('Edit')); ?>
             </a>
@@ -95,6 +103,8 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Album')]   = $song->f_album_link . ($song->year ? " (" . scrub_out($song->year). ")" : "");
   $songprops[gettext_noop('Composer')]   = scrub_out($song->composer);
   $songprops[gettext_noop('Genre')]   = $song->f_tags;
+  $songprops[gettext_noop('Links')] = "<a href=\"http://www.google.com/search?q=%22" . rawurlencode($song->f_artist) . "%22+%22" . rawurlencode($song->f_title) . "%22\" target=\"_blank\">" . UI::get_icon('google', T_('Search on Google ...')) . "</a>";
+  $songprops[gettext_noop('Links')] .= "&nbsp;<a href=\"http://www.last.fm/search?q=%22" . rawurlencode($song->f_artist) . "%22+%22" . rawurlencode($song->f_title) . "%22&type=track\" target=\"_blank\">" . UI::get_icon('lastfm', T_('Search on Last.fm ...')) . "</a>";
   $songprops[gettext_noop('Length')]  = scrub_out($song->f_time);
   $songprops[gettext_noop('Comment')] = scrub_out($song->comment);
   $songprops[gettext_noop('Label')]   = scrub_out($song->label);
@@ -103,7 +113,7 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Bitrate')]   = scrub_out($song->f_bitrate);
   $songprops[gettext_noop('Channels')]   = scrub_out($song->channels);
   if (Access::check('interface','75')) {
-    $songprops[gettext_noop('Filename')]   = scrub_out(utf8_encode($song->file)) . " " . $song->f_size;
+  	$songprops[gettext_noop('Filename')]   = scrub_out(utf8_encode($song->file)) . " " . $song->f_size;
   }
   if ($song->update_time) {
     $songprops[gettext_noop('Last Updated')]   = date("d/m/Y H:i",$song->update_time);
@@ -181,24 +191,22 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
             $album_name = $album->name;
             if ($album_name <> T_('Unknown (Orphaned)')) {
                 $album_path = AmpConfig::get('album_path') . get_allowed_dirname($song->f_album_artist_full) . "\\" . get_allowed_dirname($album_name);
-                $filename = utf8_encode($song->file);
-                $filename = substr(strrchr($filename, '\\'), 1);
-                $file_target = $album_path.'\\'.$filename;
+                $file_target = $album_path.'\\'.get_file_name($song);
                 $target = utf8_decode($file_target);
-                if ($target <> $song->file) {
+                if (strtolower($target) <> strtolower($song->file)) {
                     $rowparity = UI::flip_class();
                     echo "<dt class=" . $rowparity .">" . "Move file to" . "</dt>";	
                     echo('<dd>');
                     echo('<div id="mp3_cover">');
-                    echo Ajax::text('?page=musicbrainz&action=move_file&song_id=' . $song->id,$album_path,'move_file_' . $song->id);
+                    echo Ajax::text('?page=musicbrainz&action=move_file&song_id=' . $song->id,scrub_out(utf8_encode($target)),'move_file_' . $song->id);
                     echo('</div>');
                     echo("</dd>\n");
                 }
             }
         }
         echo "<dt class=" . UI::flip_class() .">" . "Search" . "</dt>";
-        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&various=1&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "<br>";
-        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&various=0&song_id=' . $song->id,"Musicbrainz (without Various)",'musicbrainz_varoff_song_' . $song->id) . "<br>";
+        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&offset=0&various=1&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "<br>";
+        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&offset=0&various=0&song_id=' . $song->id,"Musicbrainz (without Various)",'musicbrainz_varoff_song_' . $song->id) . "<br>";
     }
 
 

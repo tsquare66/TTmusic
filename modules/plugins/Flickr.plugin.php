@@ -23,12 +23,15 @@
 class Ampacheflickr {
 
     public $name        = 'Flickr';
+    public $categories  = 'misc,slideshow';
     public $description = 'Artist photos from Flickr';
     public $url         = 'http://www.flickr.com';
     public $version     = '000001';
     public $min_ampache = '360045';
     public $max_ampache = '999999';
 
+    private $api_key;
+    
     /**
      * Constructor
      * This function does nothing...

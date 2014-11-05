@@ -72,7 +72,20 @@ switch ($_REQUEST['action']) {
     break;
     case 'full_service':
         toggle_visible('ajax-loading');
-        ob_end_flush();
+        
+    // Turn off output buffering
+    ini_set('output_buffering', 'off');
+    // Turn off PHP output compression
+    ini_set('zlib.output_compression', false);
+             
+    //Flush (send) the output buffer and turn off output buffering
+    while (@ob_end_flush());
+             
+    // Implicitly flush the buffer(s)
+    ini_set('implicit_flush', true);
+    ob_implicit_flush(true);
+                        
+        
         /* Make sure they aren't in demo mode */
         if (AmpConfig::get('demo_mode')) { UI::access_denied(); break; }
 
@@ -104,14 +117,14 @@ switch ($_REQUEST['action']) {
         }
 
         /* Delete the sucker, we don't need to check perms as thats done above */
-        Catalog::delete($_GET['catalog_id']);
+        foreach ($_REQUEST['catalogs'] as $catalog_id) {
+            Catalog::delete($catalog_id);
+        }
         $next_url = AmpConfig::get('web_path') . '/admin/catalog.php';
         show_confirmation(T_('Catalog Deleted'), T_('The Catalog and all associated records have been deleted'),$next_url);
     break;
     case 'show_delete_catalog':
-        $catalog_id = scrub_in($_GET['catalog_id']);
-
-        $next_url = AmpConfig::get('web_path') . '/admin/catalog.php?action=delete_catalog&catalog_id=' . scrub_out($catalog_id);
+        $next_url = AmpConfig::get('web_path') . '/admin/catalog.php?action=delete_catalog&catalogs[]=' . implode(',', $_REQUEST['catalogs']);
         show_confirmation(T_('Catalog Delete'), T_('Confirm Deletion Request'),$next_url,1,'delete_catalog');
     break;
     case 'enable_disabled':

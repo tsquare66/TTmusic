@@ -45,7 +45,7 @@ class Stream_Playlist
                 Stream::set_session($id);
             }
 
-            $this->id = Stream::$session;
+            $this->id = Stream::get_session();
 
             if (!Session::exists('stream', $this->id)) {
                 debug_event('stream_playlist', 'Session::exists failed', 2);
@@ -130,7 +130,7 @@ class Stream_Playlist
                 //FIXME: play_url shouldn't be static
                 $url['url'] = $type::play_url($object->id, $additional_params);
 
-                $api_session = (AmpConfig::get('require_session')) ? Stream::$session : false;
+                $api_session = (AmpConfig::get('require_session')) ? Stream::get_session() : false;
 
                 // Set a default which can be overridden
                 $url['author'] = 'Ampache';
@@ -497,6 +497,7 @@ class Stream_Playlist
         }
 
         $democratic->add_vote($items);
+        mouse_message(T_('Vote added'));
     }
 
     /**

@@ -35,7 +35,7 @@ require_once $prefix . '/lib/class/session.class.php';
 Session::_auto_init();
 
 // Set up for redirection on important error cases
-$path = preg_replace('#(.*)/(\w+\.php)$#', '$1', $_SERVER['PHP_SELF']);
+$path = get_web_path();
 $path = $http_type . $_SERVER['HTTP_HOST'] . $path;
 
 // Check to make sure the config file exists. If it doesn't then go ahead and
@@ -66,8 +66,8 @@ if (!empty($link)) {
 
 $results['load_time_begin'] = $load_time_begin;
 /** This is the version.... fluf nothing more... **/
-$results['version']        = '3.7.1-develop';
-$results['int_config_version']    = '18';
+$results['version']        = '3.8.0-develop';
+$results['int_config_version']    = '21';
 
 if (!empty($results['force_ssl'])) {
     $http_type = 'https://';
@@ -108,6 +108,7 @@ require_once $prefix . '/modules/getid3/getid3.php';
 require_once $prefix . '/modules/phpmailer/class.phpmailer.php';
 require_once $prefix . '/modules/phpmailer/class.smtp.php';
 require_once $prefix . '/modules/infotools/AmazonSearchEngine.class.php';
+require_once $prefix . '/modules/musicbrainz/SearchSong.php';
 require_once $prefix . '/modules/musicbrainz/MusicBrainz.php';
 require_once $prefix . '/modules/musicbrainz/Exception.php';
 require_once $prefix . '/modules/musicbrainz/Clients/MbClient.php';
@@ -154,8 +155,10 @@ set_memory_limit($results['memory_limit']);
 if (!defined('NO_SESSION') && AmpConfig::get('use_auth')) {
     /* Verify their session */
     if (!Session::exists('interface', $_COOKIE[AmpConfig::get('session_name')])) {
-        Auth::logout($_COOKIE[AmpConfig::get('session_name')]);
-        exit;
+        if (!Session::auth_remember()) {
+            Auth::logout($_COOKIE[AmpConfig::get('session_name')]);
+            exit;
+        }
     }
 
     // This actually is starting the session
@@ -186,7 +189,7 @@ if (!defined('NO_SESSION') && AmpConfig::get('use_auth')) {
         $GLOBALS['user'] = new User($auth['username']);
         $GLOBALS['user']->username = $auth['username'];
         $GLOBALS['user']->fullname = $auth['fullname'];
-        $GLOBALS['user']->access = $auth['access'];
+        $GLOBALS['user']->access = intval($auth['access']);
     } else {
         Session::check();
         if ($_SESSION['userdata']['username']) {
@@ -196,7 +199,7 @@ if (!defined('NO_SESSION') && AmpConfig::get('use_auth')) {
             $GLOBALS['user']->id = -1;
             $GLOBALS['user']->username = $auth['username'];
             $GLOBALS['user']->fullname = $auth['fullname'];
-            $GLOBALS['user']->access = $auth['access'];
+            $GLOBALS['user']->access = intval($auth['access']);
         }
         if (!$GLOBALS['user']->id AND !AmpConfig::get('demo_mode')) {
             Auth::logout(session_id()); exit;

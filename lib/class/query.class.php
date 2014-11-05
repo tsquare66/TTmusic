@@ -31,7 +31,7 @@
 class Query
 {
     /**
-     * @var int $id
+     * @var int|string $id
      */
     public $id;
     /**
@@ -44,7 +44,7 @@ class Query
      */
     protected $_state = array();
     /**
-     * @var boolean $_cache
+     * @var array $_cache
      */
     protected $_cache;
 
@@ -614,10 +614,6 @@ class Query
      */
     public function get_offset()
     {
-        if ($this->is_static_content()) {
-            return $this->get_total();
-        }
-
         return $this->_state['offset'];
     } // get_offset
 
@@ -837,10 +833,7 @@ class Query
     public function set_start($start)
     {
         $start = intval($start);
-
-        if (!$this->is_static_content()) {
-            $this->_state['start'] = $start;
-        }
+        $this->_state['start'] = $start;
 
     } // set_start
 
@@ -867,11 +860,6 @@ class Query
     public function set_static_content($value)
     {
         $value = make_bool($value);
-
-        // We want to start at 0 if it's static
-        if ($value) {
-            $this->set_start('0');
-        }
 
         $this->_state['static'] = $value;
 
@@ -1836,11 +1824,7 @@ class Query
                 } // end switch
             break;
             case 'video':
-                switch ($field) {
-                    default:
-                        $sql = $this->sql_sort_video('video', $field);
-                    break;
-                } // end switch
+                $sql = $this->sql_sort_video('video', $field);
             break;
             case 'wanted':
                 switch ($field) {
@@ -1975,11 +1959,7 @@ class Query
                 }
             break;
             case 'movie':
-                switch ($field) {
-                    default:
-                        $sql = $this->sql_sort_video('movie', $field);
-                    break;
-                }
+                $sql = $this->sql_sort_video('movie', $field);
             break;
             case 'clip':
                 switch ($field) {

@@ -19,21 +19,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
+
+
+if(true == $GLOBALS['isMobile']) {
+	echo '<script type="text/javascript">';
+	echo Ajax::action('?page=index&action=remove-sidebar-page', '');
+	echo ';</script>';
+}
+
+
 ?>
                 </div>
                 <div style="clear:both;">
-</div> <!-- end id="content"-->
-
-
-<?php  if (true == $GLOBALS['isMobile']) { ?>
-        <div id="footer" class="<?php echo (($count_temp_playlist || AmpConfig::get('play_type') == 'localplay') ? '' : 'footer-wild'); ?>">
-            <br>
-           <h3> <?php echo AmpConfig::get('version'); ?></h3>
-        </div>
-        </div> <!-- end id="maincontainer"-->
- <?php } else {?>
+                </div>
             </div>
-       </div> <!-- end id="maincontainer"-->
+<?php  if (false == false /*$GLOBALS['isMobile']*/) { ?>
+        </div> <!-- end id="maincontainer"-->
+<?php } ?>
         <?php
             $count_temp_playlist = 1;
             if (!isset($_SESSION['login']) || !$_SESSION['login']) {
@@ -46,7 +48,7 @@
         <?php if (AmpConfig::get('show_donate')) { ?>
             <a id="donate" href="//ampache.github.io/donate.html" title="Donate" target="_blank"><?php echo ".:: " . T_('Donate') . " ::."; ?></a> |
         <?php } ?>
-            <a href="https://github.com/ampache/ampache#readme" target="_blank" title="Copyright © 2001 - 2014 Ampache.org">Ampache <?php echo AmpConfig::get('version'); ?></a>
+            <a id="ampache_link" href="https://github.com/ampache/ampache#readme" target="_blank" title="Copyright © 2001 - 2014 Ampache.org">Ampache <?php echo AmpConfig::get('version'); ?></a>
             <br />
             <?php echo T_('Queries:'); ?><?php echo Dba::$stats['query']; ?> <?php echo T_('Cache Hits:'); ?><?php echo database_object::$cache_hit; ?>
         <?php
@@ -61,6 +63,10 @@
             require_once AmpConfig::get('prefix') . '/templates/uberviz.inc.php';
         }
         ?>
+
+<?php  if (true == false /*$GLOBALS['isMobile']*/) { ?>
+        </div> <!-- end id="maincontainer"-->
 <?php } ?>
+
     </body>
 </html>

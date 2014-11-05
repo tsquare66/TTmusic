@@ -26,7 +26,9 @@ use MusicBrainz\Clients\RequestsMbClient;
 class AmpacheMusicBrainz {
 
     public $name           = 'MusicBrainz';
+    public $categories     = 'metadata';
     public $description    = 'MusicBrainz metadata integration';
+    public $url            = 'http://www.musicbrainz.org';
     public $version        = '000001';
     public $min_ampache    = '360003';
     public $max_ampache    = '999999';
@@ -92,15 +94,15 @@ class AmpacheMusicBrainz {
 
         $results = array();
 
-        if (count($track->{'artist-credit'}) > 0) {
-            $artist = $track->{'artist-credit'}[0];
-            $artist = $artist->artist;
-            $results['mb_artistid'] = $artist->id;
-            $results['artist'] = $artist->name;
-            $results['title'] = $track->title;
-            if (count($track->releases) == 1) {
-                $release = $track->releases[0];
-                $results['album'] = $release->title;
+        if (count($track['artist-credit']) > 0) {
+            $artist = $track['artist-credit'][0];
+            $artist = $artist['artist'];
+            $results['mb_artistid'] = $artist['id'];
+            $results['artist'] = $artist['name'];
+            $results['title'] = $track['title'];
+            if (count($track['releases']) == 1) {
+                $release = $track['releases'][0];
+                $results['album'] = $release['title'];
             }
         }
         return $results;

@@ -52,7 +52,7 @@ interface media
      * parameter can be used to request a specific format instead of the
      * default from the configuration file.
      */
-    public function get_transcode_settings($target = null, $options=array());
+    public function get_transcode_settings($target = null, $player = null, $options=array());
 
     /**
      * get_stream_name
@@ -60,6 +60,6 @@ interface media
      */
     public function get_stream_name();
 
-    public function set_played($user, $agent);
+    public function set_played($user, $agent, $location);
 
 } // end interface

@@ -7,7 +7,7 @@
 ; if this config file is up to date 
 ; this is compared against a value hard-coded
 ; into the init script
-config_version = 18
+config_version = 21
 
 ;###################
 ; Path Vars        #
@@ -61,6 +61,9 @@ database_username = "tsquare"
 ; will not work
 ; DEFAULT: ""
 database_password = "krake1"
+; Cryptographic secret
+; This MUST BE changed with your own secret key. Ampache-specific, just pick any random string you want.
+secret_key = "abcdefghijklmnoprqstuvwyz0123456"
 
 ; Length that a session will last expressed in seconds. Default is
 ; one hour. 
@@ -215,6 +218,13 @@ require_localnet_session = "true"
 ; want to be able to use this function
 ; DEFAULT: false
 allow_zip_download = "true"
+Allow Zip Types
+; This setting allows/disallows zip download of specific object types
+; If empty, all supported object types can be zipped.
+; Otherwise, only the given object list can be zipped.
+; POSSIBLE VALUES: artist, album, playlist, search, tmp_playlist
+; DEFAULT: none
+;allow_zip_types = "album"
 
 ; File Zip Download
 ; This settings tells Ampache to attempt to save the zip file
@@ -314,10 +324,10 @@ use_auth	= "true"
 ; If use_auth is set to false then this option is used
 ; to determine the permission level of the 'default' users
 ; default is administrator. This setting only takes affect
-; if use_auth if false
+; if use_auth is false
 ; POSSIBLE VALUES: user, admin, manager, guest
-; DEFAULT: admin
-default_auth_level = "admin"
+; DEFAULT: guest
+default_auth_level = "guest"
 
 ; 5 Star Ratings
 ; This allows ratings for almost any object in ampache
@@ -396,6 +406,12 @@ notify = "true"
 ; If you have high-quality album art and a small upload cap
 ; DEFAULT: false
 ;resize_images = "false"
+
+; Statistical Graphs * Requires PHP-GD *
+; Set this to true if you want Ampache to generate statistical
+; graphs on usages / users.
+; DEFAULT: false
+;statistical_graphs = "false"
 
 ; Art Gather Order
 ; Simply arrange the following in the order you would like
@@ -623,7 +639,7 @@ refresh_limit = "60"
 ;auto_user = "guest"
 
 ; This will display the user agreement when registering
-; For agreement text, edit templates/user_agreement.php
+; For agreement text, edit config/registration_agreement.php
 ; User will need to accept the agreement before they can register
 ; DEFAULT: false
 ;user_agreement = "false"
@@ -631,6 +647,24 @@ refresh_limit = "60"
 ; This disable email confirmation when registering.
 ; DEFAULT: false
 ;user_no_email_confirm = "false"
+
+; This will display the cookie disclaimer (EU Cookie Law)
+; DEFAULT: false
+;cookie_disclaimer = "false"
+
+; The fields that will be shown on Registration page
+; If a user wants to register.
+; Username and email fields are forced.
+; POSSIBLE VALUES: fullname,website,state,city
+; DEFAULT: "fullname,website"
+registration_display_fields = "fullname,website"
+
+; The fields that will be mandatory
+; This controls which fields are mandatory for registration.
+; Username and email fields are forced mandatory.
+; POSSIBLE VALUES: fullname,website,state,city
+; DEFAULT: fullname
+registration_mandatory_fields = "fullname"
 
 ;########################################################
 ; These options control the dynamic downsampling based  #
@@ -708,6 +742,21 @@ encode_target = mp3
 ; encode_target_TYPE = TYPE
 ; DEFAULT: none
 ;encode_target_flac = ogg
+
+; Override the default TYPE transcoding behavior on a per-player basis
+; transcode_player_PLAYER_TYPE = TYPE
+; Valid PLAYER is: webplayer, api
+; DEFAULT: none
+;transcode_player_webplayer_m4a = required
+;transcode_player_webplayer_flac = required
+;transcode_player_webplayer_mpc = required
+
+; Override the default output format on a per-player basis
+; encode_player_PLAYER_target = TYPE
+; Valid PLAYER is: webplayer, api
+; DEFAULT: none
+;encode_player_webplayer_target = mp3
+;encode_player_api_target = mp3
 
 ; Allow clients to override transcode settings (output type, bitrate, codec ...)
 ; DEFAULT: true

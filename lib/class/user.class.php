@@ -31,30 +31,105 @@
 class User extends database_object
 {
     //Basic Componets
+    /**
+     * @var int $id
+     */
     public $id;
+    /**
+     * @var string $username
+     */
     public $username;
+    /**
+     * @var string $fullname
+     */
     public $fullname;
+    /**
+     * @var int $access
+     */
     public $access;
+    /**
+     * @var boolean $disabled
+     */
     public $disabled;
+    /**
+     * @var string $email
+     */
     public $email;
+    /**
+     * @var int $last_seen
+     */
     public $last_seen;
+    /**
+     * @var int $create_date
+     */
     public $create_date;
+    /**
+     * @var string $validation
+     */
     public $validation;
+    /**
+     * @var string $website
+     */
     public $website;
+    /**
+     * @var string $state
+     */
+    public $state;
+    /**
+     * @var string city
+     */
+    public $city;
+    /**
+     * @var string $apikey
+     */
     public $apikey;
 
     // Constructed variables
+    /**
+     * @var array $prefs
+     */
     public $prefs = array();
+
+    /**
+     * @var Tmp_Playlist $playlist
+     */
     public $playlist;
 
+    /**
+     * @var string $f_last_seen
+     */
     public $f_last_seen;
+    /**
+     * @var string $f_create_date
+     */
     public $f_create_date;
+    /**
+     * @var string $link
+     */
     public $link;
+    /**
+     * @var string $f_link
+     */
     public $f_link;
+    /**
+     * @var string $f_useage
+     */
     public $f_useage;
+    /**
+     * @var string $ip_history
+     */
     public $ip_history;
+    /**
+     * @var string $f_avatar
+     */
     public $f_avatar;
+    /**
+     * @var string $f_avatar_mini
+     */
     public $f_avatar_mini;
+    /**
+     * @var string $f_avatar_medium
+     */
     public $f_avatar_medium;
 
     /**
@@ -472,13 +547,27 @@ class User extends database_object
      */
     public function has_access($needed_level)
     {
-        if (!AmpConfig::get('use_auth') || AmpConfig::get('demo_mode')) { return true; }
+        if (AmpConfig::get('demo_mode')) { return true; }
 
         if ($this->access >= $needed_level) { return true; }
 
         return false;
 
     } // has_access
+
+    /**
+     * is_registered
+     * Check if the user is registered
+     * @return boolean
+     */
+    public static function is_registered()
+    {
+        if (!$GLOBALS['user']->id) return false;
+
+        if (!AmpConfig::get('use_auth') && $GLOBALS['user']->access <= 5) return false;
+
+        return true;
+    }
 
     /**
      * update
@@ -514,6 +603,8 @@ class User extends database_object
                 case 'username':
                 case 'fullname':
                 case 'website':
+                case 'state':
+                case 'city':
                     if ($this->$name != $value) {
                         $function = 'update_' . $name;
                         $this->$function($value);
@@ -589,6 +680,26 @@ class User extends database_object
         Dba::write($sql, array($new_website, $this->id));
 
     } // update_website
+
+    /**
+     * update_state
+     * updates their state
+     */
+    public function update_state($new_state)
+    {
+        $sql = "UPDATE `user` SET `state` = ? WHERE `id` = ?";
+        Dba::write($sql, array($new_state, $this->id));
+    } // update_state
+
+    /**
+     * update_city
+     * updates their city
+     */
+    public function update_city($new_city)
+    {
+        $sql = "UPDATE `user` SET `city` = ? WHERE `id` = ?";
+        Dba::write($sql, array($new_city, $this->id));
+    } // update_city
 
     /**
      * update_apikey
@@ -694,7 +805,7 @@ class User extends database_object
      * update_user_stats
      * updates the playcount mojo for this specific user
      */
-    public function update_stats($media_type, $media_id, $agent = '')
+    public function update_stats($media_type, $media_id, $agent = '', $location = array())
     {
         debug_event('user.class.php', 'Updating stats for {'.$media_type.'/'.$media_id.'} {'.$agent.'}...', '5');
         $media = new $media_type($media_id);
@@ -719,7 +830,7 @@ class User extends database_object
             User::save_mediaplay($GLOBALS['user'], $media);
         }
 
-        $media->set_played($user, $agent);
+        $media->set_played($user, $agent, $location);
 
         return true;
 
@@ -777,7 +888,7 @@ class User extends database_object
      * create
      * inserts a new user into ampache
      */
-    public static function create($username, $fullname, $email, $website, $password, $access, $disabled = false)
+    public static function create($username, $fullname, $email, $website, $password, $access, $state = '', $city = '', $disabled = false)
     {
         $website     = rtrim($website, "/");
         $password    = hash('sha256', $password);
@@ -787,14 +898,32 @@ class User extends database_object
         $sql = "INSERT INTO `user` (`username`, `disabled`, " .
             "`fullname`, `email`, `password`, `access`, `create_date`";
         $params = array($username, $disabled, $fullname, $email, $password, $access, time());
+
         if (!empty($website)) {
             $sql .= ", `website`";
             $params[] = $website;
         }
+        if (!empty($state)) {
+            $sql .= ", `state`";
+            $params[] = $state;
+        }
+        if (!empty($city)) {
+            $sql .= ", `city`";
+            $params[] = $city;
+        }
+
         $sql .= ") VALUES(?, ?, ?, ?, ?, ?, ?";
+
         if (!empty($website)) {
             $sql .= ", ?";
         }
+        if (!empty($state)) {
+            $sql .= ", ?";
+        }
+        if (!empty($city)) {
+            $sql .= ", ?";
+        }
+
         $sql .= ")";
         $db_results = Dba::write($sql, $params);
 
@@ -1096,9 +1225,9 @@ class User extends database_object
     {
         if (!$type) { $type = 'song'; }
 
-        $sql = "SELECT * FROM `object_count` WHERE `object_type`='$type' AND `user`='$this->id' " .
-            "ORDER BY `date` DESC LIMIT $limit";
-        $db_results = Dba::read($sql);
+        $sql = "SELECT * FROM `object_count` WHERE `object_type` = ? AND `user` = ? " .
+            "ORDER BY `date` DESC LIMIT " . $limit;
+        $db_results = Dba::read($sql, array($type, $this->id));
 
         $results = array();
         while ($row = Dba::fetch_assoc($db_results)) {
@@ -1285,5 +1414,30 @@ class User extends database_object
         return true;
 
     } // rebuild_all_preferences
+
+    /**
+     * stream_control
+     * Check all stream control plugins
+     * @param array $media_ids
+     * @param User $user
+     * @return boolean
+     */
+    public static function stream_control($media_ids, User $user = null)
+    {
+        if ($user == null) {
+            $user = $GLOBALS['user'];
+        }
+
+        foreach (Plugin::get_plugins('stream_control') as $plugin_name) {
+            $plugin = new Plugin($plugin_name);
+            if ($plugin->load($user)) {
+                if (!$plugin->_plugin->stream_control($media_ids)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
 } //end user class

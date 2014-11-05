@@ -236,9 +236,10 @@ class vainfo
             $tagWriter->tag_encoding = 'UTF-8';
             $TagData = $this->_raw['tags']['id3v2'];
 
-            if($this->_raw['tags']['id3v2']['album'][0] <> '')
+            if(isset($this->_raw['id3v2']['APIC'])) {
+                if($this->_raw['tags']['id3v2']['album'][0] <> '')
             	$TagData['attached_picture'][0] = $this->_raw['id3v2']['APIC'][0];
-            
+            }
             // Foreach what we've got
             foreach ($data as $key=>$value) {
                 if ($key == 'APIC') {
@@ -249,8 +250,9 @@ class vainfo
                 }
                 elseif ($key == 'mb_trackid') {
                 	if (strlen($data['mb_trackid']) > 0) {
-            	        $TagData['unique_file_identifier']['ownerid'] = 'http://musicbrainz.org';
-            	        $TagData['unique_file_identifier']['data'] = $data['mb_trackid'];
+                		//Doesn't work
+            	       // $TagData['unique_file_identifier']['data'] = $data['mb_trackid'];
+            	       // $TagData['unique_file_identifier']['ownerid'] = 'http://musicbrainz.org';
                 	}
                 }
                 elseif ($key == 'mb_albumid') {
@@ -264,17 +266,38 @@ class vainfo
 	            	    $TagData['user_text'][1]['description'] = "MusicBrainz Artist Id";
 	            	    $TagData['user_text'][1]['data'] = $data['mb_artistid'];
                 	}
+                	else
+                	  unset($TagData['user_text'][1]);
 	            }
-                elseif ($key == 'genre') {
+            	elseif ($key == 'mb_albumartistid') {
+                	if (strlen($data['mb_albumartistid']) > 0) {
+	            	    $TagData['user_text'][2]['description'] = "MusicBrainz Album Artist Id";
+	            	    $TagData['user_text'][2]['data'] = $data['mb_albumartistid'];
+                	}
+                	else
+                	  unset($TagData['user_text'][2]);
+	            }
+	            elseif ($key == 'genre') {
                     if($data['genre'] == "--Empty--")
                       $TagData['genre'][0] = "";
                    else
                       $TagData['genre'][0] = $data['genre'];
                 }
- 	            else
-                	$TagData[$key][0] = $value;
+                elseif ($key == 'album') {
+                    if($data['album'] == T_('Unknown (Orphaned)'))
+                      $TagData['album'][0] = "";
+                   else
+                      $TagData['album'][0] = $data['album'];
+                }
+                elseif ($key == 'tracknumber') {
+                    $TagData['track'][0] = $data['tracknumber'];
+                }
+                else
+                    $TagData[$key][0] = $value;
             }
 
+            unset($TagData['tracknumber']);
+            unset($TagData['track_number']);
             
             $tagWriter->tag_data = $TagData;
 
@@ -630,6 +653,11 @@ class vainfo
         return $parsed;
     }
 
+    private function trimAscii($string)
+    {
+        return preg_replace('/[\x00-\x1F\x80-\xFF]/', '', trim($string));
+    }
+
     /**
      * _clean_type
      * This standardizes the type that we are given into a recognized type.
@@ -762,6 +790,9 @@ class vainfo
                 case 'musicbrainz_albumtype':
                     $parsed['release_type'] = $data[0];
                     break;
+                case 'lyrics':
+                    $parsed['lyrics'] = $data[0];
+                    break;
                 default:
                     $parsed[$tag] = $data[0];
                 break;
@@ -816,6 +847,9 @@ class vainfo
                 case 'comments':
                     $parsed['comment'] = $data[0];
                 break;
+                case 'unsynchronised_lyric':
+                    $parsed['lyrics'] = $data[0];
+                break;
                 default:
                     $parsed[$tag] = $data[0];
                 break;
@@ -835,25 +869,26 @@ class vainfo
 
             if (!empty($id3v2['TXXX'])) {
                 // Find the MBIDs for the album and artist
+                // Use trimAscii to remove noise (see #225 and #438 issues). Is this a GetID3 bug?
                 foreach ($id3v2['TXXX'] as $txxx) {
-                    switch ($txxx['description']) {
+                    switch ($this->trimAscii($txxx['description'])) {
                         case 'MusicBrainz Album Id':
-                            $parsed['mb_albumid'] = $txxx['data'];
+                            $parsed['mb_albumid'] = $this->trimAscii($txxx['data']);
                         break;
                         case 'MusicBrainz Release Group Id':
-                            $parsed['mb_albumid_group'] = $txxx['data'];
+                            $parsed['mb_albumid_group'] = $this->trimAscii($txxx['data']);
                         break;
                         case 'MusicBrainz Artist Id':
-                            $parsed['mb_artistid'] = $txxx['data'];
+                            $parsed['mb_artistid'] = $this->trimAscii($txxx['data']);
                         break;
                         case 'MusicBrainz Album Artist Id':
-                            $parsed['mb_albumartistid'] = $txxx['data'];
+                            $parsed['mb_albumartistid'] = $this->trimAscii($txxx['data']);
                         break;
                         case 'MusicBrainz Album Type':
-                            $parsed['release_type'] = $txxx['data'];
+                            $parsed['release_type'] = $this->trimAscii($txxx['data']);
                         break;
                         case 'CATALOGNUMBER':
-                            $parsed['catalog_number'] = $txxx['data'];
+                            $parsed['catalog_number'] = $this->trimAscii($txxx['data']);
                         break;
                     }
                 }
@@ -958,6 +993,9 @@ class vainfo
                 case 'MusicBrainz Album Type':
                     $parsed['release_type'] = $data[0];
                 break;
+                case 'track_number':
+                    $parsed['track'] = $data[0];
+                break;
                 default:
                     $parsed[$tag] = $data[0];
                 break;
@@ -1010,21 +1048,23 @@ class vainfo
 
             // Pull out our actual matches
             preg_match($pattern, $filename, $matches);
-            // The first element is the full match text
-            $matched = array_shift($matches);
-            debug_event('vainfo', $pattern . ' matched ' . $matched . ' on ' . $filename, 5);
+            if ($matches != null) {
+                // The first element is the full match text
+                $matched = array_shift($matches);
+                debug_event('vainfo', $pattern . ' matched ' . $matched . ' on ' . $filename, 5);
 
-            // Iterate over what we found
-            foreach ($matches as $key => $value) {
-                $new_key = translate_pattern_code($elements['0'][$key]);
-                if ($new_key) {
-                    $results[$new_key] = $value;
+                // Iterate over what we found
+                foreach ($matches as $key => $value) {
+                    $new_key = translate_pattern_code($elements['0'][$key]);
+                    if ($new_key) {
+                        $results[$new_key] = $value;
+                    }
                 }
-            }
 
-            $results['title'] = $results['title'] ?: basename($filename);
-            if ($this->islocal) {
-                $results['size'] = Core::get_filesize(Core::conv_lc_file($origin));
+                $results['title'] = $results['title'] ?: basename($filename);
+                if ($this->islocal) {
+                    $results['size'] = Core::get_filesize(Core::conv_lc_file($origin));
+                }
             }
         }
 

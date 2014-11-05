@@ -245,7 +245,7 @@ class Video extends database_object implements media, library_item
      * format
      * This formats a video object so that it is human readable
      */
-    public function format()
+    public function format($details = true)
     {
         $this->f_title = scrub_out($this->title);
         $this->f_full_title = $this->f_title;
@@ -261,7 +261,7 @@ class Video extends database_object implements media, library_item
 
         // Format the Bitrate
         $this->f_bitrate = intval($this->bitrate/1000) . "-" . strtoupper($this->mode);
-        $this->f_video_bitrate = intval($this->video_bitrate/1000);
+        $this->f_video_bitrate = (string) intval($this->video_bitrate/1000);
         if ($this->frame_rate) {
             $this->f_frame_rate = $this->frame_rate . ' fps';
         }
@@ -274,9 +274,11 @@ class Video extends database_object implements media, library_item
         $min_h = sprintf("%02d", ($min%60));
         $this->f_time_h = $hour . ":" . $min_h . ":" . $sec;
 
-        // Get the top tags
-        $this->tags = Tag::get_top_tags('video', $this->id);
-        $this->f_tags = Tag::get_display($this->tags, true, 'video');
+        if ($details) {
+            // Get the top tags
+            $this->tags = Tag::get_top_tags('video', $this->id);
+            $this->f_tags = Tag::get_display($this->tags, true, 'video');
+        }
 
         $this->f_length = floor($this->time/60) . ' ' .  T_('minutes');
         $this->f_file = $this->f_title . '.' . $this->type;
@@ -426,9 +428,9 @@ class Video extends database_object implements media, library_item
      * @param array $options
      * @return array
      */
-    public function get_transcode_settings($target = null, $options=array())
+    public function get_transcode_settings($target = null, $player = null, $options=array())
     {
-        return Song::get_transcode_settings_for_media($this->type, $target, 'video', $options);
+        return Song::get_transcode_settings_for_media($this->type, $target, $player, 'video', $options);
     }
 
     /**
@@ -675,18 +677,19 @@ class Video extends database_object implements media, library_item
      * if not then it sets it to played. In any case it updates stats.
      * @param int $user
      * @param string $agent
+     * @param array $location
      * @return boolean
      */
-    public function set_played($user, $agent)
+    public function set_played($user, $agent, $location)
     {
-        Stats::insert('video', $this->id, $user, $agent);
+        Stats::insert('video', $this->id, $user, $agent, $location);
 
         if ($this->played) {
             return true;
         }
 
         /* If it hasn't been played, set it! */
-        Video::update_played('1', $this->id);
+        Video::update_played(true, $this->id);
 
         return true;
 

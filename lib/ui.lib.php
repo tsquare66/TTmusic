@@ -666,6 +666,13 @@ function toggle_visible($element)
 
 } // toggle_visible
 
+function mouse_message($message, $timeout = 1000)
+{
+    echo "<script type='text/javascript'>";
+    echo "mouseMessage('" . $message . "', " . $timeout . ");";
+    echo "</script>\n";
+}
+
 /**
  * print_bool
  * This function takes a boolean value and then prints out a friendly text
@@ -700,20 +707,45 @@ function show_now_playing()
 } // show_now_playing
 
 /**
+ * get_allowed_filename
+ */
+function get_allowed_filename($filename)
+{
+    while ("?" == substr($filename, -1, 1))
+    {
+        $filename = substr($filename, 0, -1);
+    }
+    
+    $not_allowed = array("/", "\\", "*", ":","?","<",">","\"");
+	$filename = str_replace($not_allowed, " ", $filename);
+	return $filename;
+
+} // get_allowed_filename
+
+
+/**
  * get_allowed_dirname
 */
 function get_allowed_dirname($dirname)
 {
-    $not_allowed = array("/", "\\", "*", ":","?","<",">","\"");
-    $album_path .= str_replace($not_allowed, " ", $dirname);
-
-    if ("." == substr($album_path, -1, 1))
+    $dirname = get_allowed_filename($dirname);
+    while ("." == substr($dirname, -1, 1))
     {
-        $album_path = substr($album_path, 0, -1);
+        $dirname = substr($dirname, 0, -1);
     }
-	return $album_path;
+	return $dirname;
 
 } // get_allowed_dirname
+
+/**
+ * get_file_name
+ */
+function get_file_name($song)
+{
+	$filename = get_allowed_filename($song->f_artist_full) . "-" . get_allowed_filename($song->f_title_full) . "." . $song->type;
+	return $filename;
+
+} // get_file_name
 
 /**
 * get_main_name
@@ -737,6 +769,5 @@ function get_main_name($name)
     return $name;
 
 } // get_from_name
-
 
 
