@@ -72,7 +72,7 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
                 </a>
             <?php } ?>
             <?php if (AmpConfig::get('share')) { ?>
-                <a href="<?php echo AmpConfig::get('web_path'); ?>/share.php?action=show_create&type=song&id=<?php echo $song->id; ?>"><?php echo UI::get_icon('share', T_('Share')); ?></a>
+                <?php Share::display_ui('song', $song->id, false); ?>
             <?php } ?>
         <?php } ?>
         <?php if (Access::check_function('download')) { ?>
@@ -97,12 +97,13 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
 <?php
   $songprops[gettext_noop('Title')]   = scrub_out($song->title);
   $songprops[gettext_noop('Artist')]  = $song->f_artist_link;
-  if (!empty($song->f_album_artist_link)) {
-    $songprops[gettext_noop('Album Artist')]   = $song->f_album_artist_link;
+  if (!empty($song->f_albumartist_link)) {
+    $songprops[gettext_noop('Album Artist')]   = $song->f_albumartist_link;
   }
   $songprops[gettext_noop('Album')]   = $song->f_album_link . ($song->year ? " (" . scrub_out($song->year). ")" : "");
   $songprops[gettext_noop('Composer')]   = scrub_out($song->composer);
   $songprops[gettext_noop('Genre')]   = $song->f_tags;
+  $songprops[gettext_noop('Year')]   = $song->year;
   $songprops[gettext_noop('Links')] = "<a href=\"http://www.google.com/search?q=%22" . rawurlencode($song->f_artist) . "%22+%22" . rawurlencode($song->f_title) . "%22\" target=\"_blank\">" . UI::get_icon('google', T_('Search on Google ...')) . "</a>";
   $songprops[gettext_noop('Links')] .= "&nbsp;<a href=\"http://www.last.fm/search?q=%22" . rawurlencode($song->f_artist) . "%22+%22" . rawurlencode($song->f_title) . "%22&type=track\" target=\"_blank\">" . UI::get_icon('lastfm', T_('Search on Last.fm ...')) . "</a>";
   $songprops[gettext_noop('Length')]  = scrub_out($song->f_time);
@@ -112,6 +113,12 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
   $songprops[gettext_noop('Catalog Number')]   = scrub_out($song->catalog_number);
   $songprops[gettext_noop('Bitrate')]   = scrub_out($song->f_bitrate);
   $songprops[gettext_noop('Channels')]   = scrub_out($song->channels);
+  if ($song->replaygain_track_gain != 0) {
+      $songprops[gettext_noop('ReplayGain Track Gain')]   = scrub_out($song->replaygain_track_gain);
+  }
+  if ($song->replaygain_album_gain != 0) {
+      $songprops[gettext_noop('ReplayGain Album Gain')]   = scrub_out($song->replaygain_album_gain);
+  }
   if (Access::check('interface','75')) {
   	$songprops[gettext_noop('Filename')]   = scrub_out(utf8_encode($song->file)) . " " . $song->f_size;
   }
@@ -186,11 +193,9 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
 
 
     if (Access::check('interface','75')) {
-        if (!empty($song->album_artist) && !empty($song->album) ) {
-            $album = new Album($song->album);
-            $album_name = $album->name;
-            if ($album_name <> T_('Unknown (Orphaned)')) {
-                $album_path = AmpConfig::get('album_path') . get_allowed_dirname($song->f_album_artist_full) . "\\" . get_allowed_dirname($album_name);
+        if (!empty($song->f_albumartist_full) && !empty($song->f_album) ) {
+            if ($song->f_album <> T_('Unknown (Orphaned)')) {
+                $album_path = AmpConfig::get('album_path') . get_allowed_dirname($song->f_albumartist_full) . "\\" . get_allowed_dirname($song->f_album);
                 $file_target = $album_path.'\\'.get_file_name($song);
                 $target = utf8_decode($file_target);
                 if (strtolower($target) <> strtolower($song->file)) {
@@ -205,8 +210,9 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
             }
         }
         echo "<dt class=" . UI::flip_class() .">" . "Search" . "</dt>";
-        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&offset=0&various=1&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "<br>";
-        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_song&offset=0&various=0&song_id=' . $song->id,"Musicbrainz (without Various)",'musicbrainz_varoff_song_' . $song->id) . "<br>";
+        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_musicbrainz_song&offset=0&various=1&song_id=' . $song->id,"Musicbrainz",'musicbrainz_song_' . $song->id) . "<br>";
+        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_musicbrainz_song&offset=0&various=0&song_id=' . $song->id,"Musicbrainz (without Various)",'musicbrainz_varoff_song_' . $song->id) . "<br>";
+        echo "<dd class=\"".$rowparity."\">" .  Ajax::text('?page=musicbrainz&action=search_discogs_song&offset=0&various=1&song_id=' . $song->id,"Discogs",'discogs_song_' . $song->id) . "<br>";
     }
 
 
@@ -217,3 +223,4 @@ $button_flip_state_id = 'button_flip_state_' . $song->id;
 <?php UI::show_box_bottom(); ?>
 
 <div id="MusicbrainzContent"></div>
+

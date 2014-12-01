@@ -86,6 +86,7 @@ class vainfo
             $this->_getID3->option_extra_info = true;
             $this->_getID3->option_tag_lyrics3 = true;
             $this->_getID3->option_tags_process = true;
+            $this->_getID3->option_tag_apetag = true;
             $this->_getID3->encoding = $this->encoding;
 
             // get id3tag encoding (try to work around off-spec id3v1 tags)
@@ -427,6 +428,11 @@ class vainfo
                         '<br />',
                         strip_tags($tags['lyrics']));
 
+            $info['replaygain_track_gain'] = $info['replaygain_track_gain'] ?: floatval($tags['replaygain_track_gain']);
+            $info['replaygain_track_peak'] = $info['replaygain_track_peak'] ?: floatval($tags['replaygain_track_peak']);
+            $info['replaygain_album_gain'] = $info['replaygain_album_gain'] ?: floatval($tags['replaygain_album_gain']);
+            $info['replaygain_album_peak'] = $info['replaygain_album_peak'] ?: floatval($tags['replaygain_album_peak']);
+
             $info['track'] = $info['track'] ?: intval($tags['track']);
             $info['resolution_x'] = $info['resolution_x'] ?: intval($tags['resolution_x']);
             $info['resolution_y'] = $info['resolution_y'] ?: intval($tags['resolution_y']);
@@ -515,7 +521,6 @@ class vainfo
 
         // The tags can come in many different shapes and colors
         // depending on the encoding time of day and phase of the moon.
-
         if (is_array($this->_raw['tags'])) {
             foreach ($this->_raw['tags'] as $key => $tag_array) {
                 switch ($key) {
@@ -649,6 +654,21 @@ class vainfo
         $parsed['display_y'] = $tags['video']['display_y'];
         $parsed['frame_rate'] = $tags['video']['frame_rate'];
         $parsed['video_bitrate'] = $tags['video']['bitrate'];
+
+        if (isset($tags['ape'])) {
+            if (isset($tags['ape']['items'])) {
+                foreach ($tags['ape']['items'] as $key => $tag) {
+                    switch (strtolower($key)) {
+                        case 'replaygain_track_gain':
+                        case 'replaygain_track_peak':
+                        case 'replaygain_album_gain':
+                        case 'replaygain_album_peak':
+                            $parsed[$key] = floatval($tag['data'][0]);
+                            break;
+                    }
+                }
+            }
+        }
 
         return $parsed;
     }
@@ -871,24 +891,36 @@ class vainfo
                 // Find the MBIDs for the album and artist
                 // Use trimAscii to remove noise (see #225 and #438 issues). Is this a GetID3 bug?
                 foreach ($id3v2['TXXX'] as $txxx) {
-                    switch ($this->trimAscii($txxx['description'])) {
-                        case 'MusicBrainz Album Id':
+                    switch (strtolower($this->trimAscii($txxx['description']))) {
+                        case 'musicbrainz album id':
                             $parsed['mb_albumid'] = $this->trimAscii($txxx['data']);
                         break;
-                        case 'MusicBrainz Release Group Id':
+                        case 'musicbrainz release group id':
                             $parsed['mb_albumid_group'] = $this->trimAscii($txxx['data']);
                         break;
-                        case 'MusicBrainz Artist Id':
+                        case 'musicbrainz artist id':
                             $parsed['mb_artistid'] = $this->trimAscii($txxx['data']);
                         break;
-                        case 'MusicBrainz Album Artist Id':
+                        case 'musicbrainz album artist id':
                             $parsed['mb_albumartistid'] = $this->trimAscii($txxx['data']);
                         break;
-                        case 'MusicBrainz Album Type':
+                        case 'musicbrainz album type':
                             $parsed['release_type'] = $this->trimAscii($txxx['data']);
                         break;
-                        case 'CATALOGNUMBER':
+                        case 'catalognumber':
                             $parsed['catalog_number'] = $this->trimAscii($txxx['data']);
+                        break;
+                        case 'replaygain_track_gain':
+                            $parsed['replaygain_track_gain'] = floatval($txxx['data']);
+                        break;
+                        case 'replaygain_track_peak':
+                            $parsed['replaygain_track_peak'] = floatval($txxx['data']);
+                        break;
+                        case 'replaygain_album_gain':
+                            $parsed['replaygain_album_gain'] = floatval($txxx['data']);
+                        break;
+                        case 'replaygain_album_peak':
+                            $parsed['replaygain_album_peak'] = floatval($txxx['data']);
                         break;
                     }
                 }
@@ -1030,7 +1062,7 @@ class vainfo
             $pattern = preg_quote($this->_dir_pattern) . $slash_type_preg . preg_quote($this->_file_pattern);
 
             // Remove first left directories from filename to match pattern
-            $cntslash = substr_count($pattern, $slash_type) + 1;
+            $cntslash = substr_count($pattern, preg_quote($slash_type)) + 1;
             $filepart = explode($slash_type, $filename);
             if (count($filepart) > $cntslash) {
                 $filename = implode($slash_type, array_slice($filepart, count($filepart) - $cntslash));

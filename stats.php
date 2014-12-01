@@ -23,6 +23,7 @@
 require_once 'lib/init.php';
 
 UI::show_header();
+define('TABLE_RENDERED', 1);
 
 /* Switch on the action to be performed */
 switch ($_REQUEST['action']) {
@@ -62,7 +63,9 @@ switch ($_REQUEST['action']) {
         break;
     case 'show':
     default:
-        require_once AmpConfig::get('prefix') . '/templates/show_stats.inc.php';
+        if (Access::check('interface','50')) {
+            require_once AmpConfig::get('prefix') . '/templates/show_stats.inc.php';
+        }
     break;
 } // end switch on action
 

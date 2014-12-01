@@ -58,6 +58,9 @@ $supplied = WebPlayer::get_supplied_types($playlist);
             oggSupport: false,
             supplied: "<?php echo implode(", ", $supplied); ?>",
             volume: jp_volume,
+<?php if (AmpConfig::get('webplayer_aurora')) { ?>
+            auroraFormats: 'flac, m4a, mp3, oga, wav',
+<?php } ?>
 <?php if (!$is_share) { ?>
             size: {
 <?php
@@ -121,6 +124,7 @@ if ($isVideo) {
 <?php if (AmpConfig::get('browser_notify')) { ?>
                     NotifyOfNewSong(obj.title, obj.artist, currentjpitem.attr("data-poster"));
 <?php } ?>
+                    ApplyReplayGain();
                 }
                 if (brkey != '') {
                     sendBroadcastMessage('SONG', currenti.attr("data-media_id"));
@@ -440,6 +444,9 @@ if ($isVideo) {
         <div class="action_button">
             <a onClick="ShowVisualizerFullScreen();" href="#"><?php echo UI::get_icon('fullscreen', T_('Visualizer Full-Screen')); ?></a>
         </div>
+        <div class="action_button">
+            <a href="javascript:ToggleReplayGain();"><?php echo UI::get_icon('replaygain', T_('ReplayGain')); ?></a>
+        </div>
 <?php } ?>
 <?php } ?>
       </div>
@@ -461,5 +468,7 @@ if (!$iframed || $is_share) {
     require_once AmpConfig::get('prefix') . '/templates/uberviz.inc.php';
 }
 ?>
+<?php if (!$is_share) { ?>
 </body>
 </html>
+<?php } ?>

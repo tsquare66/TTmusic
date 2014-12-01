@@ -24,7 +24,8 @@ $web_path = AmpConfig::get('web_path');
 
 $album->allow_group_disks = true;
 // Title for this album
-$title = scrub_out($album->name) . '&nbsp;(' . $album->year . ')&nbsp;-&nbsp;' . $album->f_artist_link;
+$title = scrub_out($album->name) . '&nbsp;(' . $album->year . ')';
+$title .= '&nbsp;-&nbsp;' . (($album->f_album_artist_link) ? $album->f_album_artist_link : $album->f_artist_link);
 
 $show_direct_play_cfg = AmpConfig::get('directplay');
 $show_playlist_add = Access::check('interface', '25');
@@ -90,6 +91,7 @@ if ($directplay_limit > 0) {
 &nbsp;
 </div>
 <?php
+    define('TABLE_RENDERED', 1);
     $album_suite = $album->get_group_disks_ids();
     foreach ($album_suite as $album_id) {
         $c_album = new Album($album_id);
@@ -123,7 +125,7 @@ if ($directplay_limit > 0) {
                 <a href="<?php echo AmpConfig::get('web_path'); ?>/shout.php?action=show_add_shout&type=album&id=<?php echo $c_album->id; ?>"><?php echo UI::get_icon('comment', T_('Post Shout')); ?></a>
             <?php } ?>
             <?php if (AmpConfig::get('share')) { ?>
-                <a href="<?php echo $web_path; ?>/share.php?action=show_create&type=album&id=<?php echo $c_album->id; ?>"><?php echo UI::get_icon('share', T_('Share')); ?></a>
+                <?php Share::display_ui('album', $c_album->id, false); ?>
             <?php } ?>
         <?php } ?>
         <?php if (Access::check_function('batch_download') && check_can_zip('album')) { ?>

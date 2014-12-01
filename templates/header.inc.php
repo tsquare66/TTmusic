@@ -23,7 +23,6 @@
 if (INIT_LOADED != '1') { exit; }
 
 $web_path = AmpConfig::get('web_path');
-$theme_path = AmpConfig::get('theme_path') . '/templates';
 
 $htmllang = str_replace("_", "-", AmpConfig::get('lang'));
 $location = get_location();
@@ -43,7 +42,11 @@ $_SESSION['login'] = false;
         <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=<?php echo AmpConfig::get('site_charset'); ?>" />
         <title><?php echo AmpConfig::get('site_title'); ?> - <?php echo $location['title']; ?></title>
         <?php require_once AmpConfig::get('prefix') . '/templates/stylesheets.inc.php'; ?>
-        <link rel="stylesheet" href="<?php echo $web_path . $theme_path; ?>/jquery-editdialog.css" type="text/css" media="screen" />
+        <?php if (true == $GLOBALS['isMobile']) { ?>
+            <link rel="stylesheet" href="<?php echo $web_path . AmpConfig::get('theme_path') . '/templates'?>/jquery-editdialog.css" type="text/css" media="screen" />
+        <?php } else { ?>
+        <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/jquery-editdialog.css" type="text/css" media="screen" />
+        <?php } ?>
         <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jquery-ui-ampache/jquery-ui.min.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="<?php echo $web_path; ?>/templates/jquery-file-upload.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="<?php echo $web_path; ?>/modules/jstree/themes/default/style.min.css" type="text/css" media="screen" />
@@ -253,6 +256,18 @@ $_SESSION['login'] = false;
                 init_slideshow_check();
             });
         </script>
+        <script type="text/javascript">
+
+            function SubmitToken(){
+                $token = $("#Token").val();
+                var $my_url =  document.getElementById('TokenUrl');
+                $full_url = jsAjaxUrl + '?page=musicbrainz&action=discogs_login&song_id=' + $my_url.innerHTML + '&token=' + $token;
+            	alert($full_url);
+    	        $('#page-content').load($full_url);
+            }
+
+        </script>
+        
     </head>
     <body>
         <?php if (AmpConfig::get('sociable') && AmpConfig::get('notify')) { ?>
@@ -299,7 +314,7 @@ $_SESSION['login'] = false;
         <?php } ?>
         <!-- rfc3514 implementation -->
         <div id="rfc3514" style="display:none;">0x0</div>
-        <div id="mouse_message"></div>
+        <div id="notification" class="notification-out"><img src="<?php echo $web_path; ?>/images/icon_info.png" /><span id="notification-content"></span></div>
         <div id="maincontainer">
             <div id="header" class="header-<?php echo AmpConfig::get('ui_fixed') ? 'fixed' : 'float'; ?>"><!-- This is the header -->
                 <h1 id="headerlogo">

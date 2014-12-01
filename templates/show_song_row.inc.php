@@ -65,7 +65,7 @@
             <a href="<?php echo AmpConfig::get('web_path'); ?>/shout.php?action=show_add_shout&type=song&id=<?php echo $libitem->id; ?>"><?php echo UI::get_icon('comment', T_('Post Shout')); ?></a>
         <?php } ?>
         <?php if (AmpConfig::get('share')) { ?>
-            <a href="<?php echo $web_path; ?>/share.php?action=show_create&type=song&id=<?php echo $libitem->id; ?>"><?php echo UI::get_icon('share', T_('Share')); ?></a>
+            <?php Share::display_ui('song', $libitem->id, false); ?>
         <?php } ?>
     <?php } ?>
     <?php if (Access::check_function('download')) { ?>
@@ -78,7 +78,7 @@
     <?php } ?>
     <?php if (Access::check('interface','75') || ($libitem->user_upload == $GLOBALS['user']->id && AmpConfig::get('upload_allow_edit'))) { ?>
         <?php $icon = $libitem->enabled ? 'disable' : 'enable'; ?>
-        <?php $button_flip_state_id = 'button_flip_state_' . $libitem_id; ?>
+        <?php $button_flip_state_id = 'button_flip_state_' . $libitem->id; ?>
         <span id="<?php echo($button_flip_state_id); ?>">
         <?php echo Ajax::button('?page=song&action=flip_state&song_id=' . $libitem->id,$icon, T_(ucfirst($icon)),'flip_song_' . $libitem->id); ?>
         </span>

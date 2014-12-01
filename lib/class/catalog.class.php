@@ -1420,6 +1420,10 @@ abstract class Catalog extends database_object
         $new_song->mbid        = $results['mb_trackid'];
         $new_song->label       = $results['publisher'];
         $new_song->composer    = $results['composer'];
+        $new_song->replaygain_track_gain = floatval($results['replaygain_track_gain']);
+        $new_song->replaygain_track_peak = floatval($results['replaygain_track_peak']);
+        $new_song->replaygain_album_gain = floatval($results['replaygain_album_gain']);
+        $new_song->replaygain_album_peak = floatval($results['replaygain_album_peak']);
         $artist                = $results['artist'];
         $artist_mbid           = $results['mb_artistid'];
         $albumartist           = $results['albumartist'] ?: $results['band'];
@@ -1437,9 +1441,9 @@ abstract class Catalog extends database_object
         */
         $new_song->artist = Artist::check($artist, $artist_mbid);
         if ($albumartist) {
-            $new_song->album_artist = Artist::check($albumartist, $albumartist_mbid);
+            $new_song->albumartist = Artist::check($albumartist, $albumartist_mbid);
         }
-        $new_song->album = Album::check($album, $new_song->year, $disk, $album_mbid, $album_mbid_group);
+        $new_song->album = Album::check($album, $new_song->year, $disk, $album_mbid, $album_mbid_group, $new_song->albumartist);
         $new_song->title = self::check_title($new_song->title,$new_song->file);
 
         // Nothing to assign here this is a multi-value doodly
@@ -1466,9 +1470,9 @@ abstract class Catalog extends database_object
                     Art::duplicate('artist', $song->artist, $new_song->artist);
                 }
             }
-            if ($song->album_artist != $new_song->album_artist) {
-                if (!Art::has_db($new_song->album_artist, 'artist')) {
-                    Art::duplicate('artist', $song->album_artist, $new_song->album_artist);
+            if ($song->albumartist != $new_song->albumartist) {
+                if (!Art::has_db($new_song->albumartist, 'artist')) {
+                    Art::duplicate('artist', $song->albumartist, $new_song->albumartist);
                 }
             }
             if ($song->album != $new_song->album) {

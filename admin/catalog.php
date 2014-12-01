@@ -72,20 +72,7 @@ switch ($_REQUEST['action']) {
     break;
     case 'full_service':
         toggle_visible('ajax-loading');
-        
-    // Turn off output buffering
-    ini_set('output_buffering', 'off');
-    // Turn off PHP output compression
-    ini_set('zlib.output_compression', false);
-             
-    //Flush (send) the output buffer and turn off output buffering
-    while (@ob_end_flush());
-             
-    // Implicitly flush the buffer(s)
-    ini_set('implicit_flush', true);
-    ob_implicit_flush(true);
-                        
-        
+        ob_end_flush();
         /* Make sure they aren't in demo mode */
         if (AmpConfig::get('demo_mode')) { UI::access_denied(); break; }
 

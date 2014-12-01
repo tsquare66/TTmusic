@@ -315,7 +315,7 @@ class Art extends database_object
      * @param string $mime
      * @return boolean
      */
-    public function insert($source, $mime, $insert_id3=false) 
+    public function insert($source, $mime = '', $insert_id3=false) 
     {
         // Disabled in demo mode cause people suck and upload porn
         if (AmpConfig::get('demo_mode')) { return false; }
@@ -570,7 +570,7 @@ class Art extends database_object
                 $options['proxy'] = $proxy;
             }
             try {
-                $options['timeout'] = 3;
+                $options['timeout'] = 6;
                 $request = Requests::get($data['url'], array(), $options);
                 $raw = $request->body;
             } catch (Exception $e) {
@@ -843,7 +843,7 @@ class Art extends database_object
             return $images;
         }
 
-        $asin = $release->asin;
+        $asin = $release['asin'];
 
         if ($asin) {
             debug_event('mbz-gatherart', "Found ASIN: " . $asin, '5');
@@ -1241,11 +1241,11 @@ class Art extends database_object
         $results = array_merge($data->responseData->results, $data2->responseData->results);
         
         foreach ($results as $result) {
-        	$images[] = array('url' => $result->url, 'mime' => "image/jpeg");
+        	$images[] = array('url' => $result->url, 'mime' => "image/jpeg", 'title' => 'Google');
         }
         
 
-/*
+
         $size = '&imgsz=m'; // Medium
 
         $url = "http://images.google.com/images?source=hp&q=" . $search . "&oq=&um=1&ie=UTF-8&sa=N&tab=wi&start=0&tbo=1" . $size;
@@ -1273,7 +1273,7 @@ class Art extends database_object
             }
         } catch (Exception $e) {
             debug_event('Art', 'Error getting google images: ' . $e->getMessage(), '1');
-        }*/
+        }
 
         return $images;
 

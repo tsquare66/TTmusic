@@ -355,7 +355,7 @@ class Catalog_local extends Catalog
                     }
                     $full_file = $enc_full_file;
                 } // end if iconv
-		        */
+                */
 
                 if ($is_playlist) {
                     debug_event('read', 'Found playlist file to import: ' . $file, '5');

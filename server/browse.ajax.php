@@ -37,13 +37,13 @@ if (isset($_REQUEST['browse_id'])) {
     $browse_id = null;
 }
 
+debug_event('browse.ajax.php', 'Called for action: {'.$_REQUEST['action'].'}', '5');
+
 $browse = new Browse($browse_id);
 
 if (isset($_REQUEST['show_header']) && $_REQUEST['show_header']) {
     $browse->set_show_header($_REQUEST['show_header'] == 'true');
 }
-
-debug_event('browse.ajax.php', 'Called for action: {'.$_REQUEST['action'].'}', '5');
 
 $results = array();
 switch ($_REQUEST['action']) {
@@ -124,7 +124,6 @@ switch ($_REQUEST['action']) {
     break;
     case 'page':
         $browse->set_start($_REQUEST['start']);
-
         ob_start();
         $browse->show_objects();
         $results[$browse->get_content_div()] = ob_get_clean();
@@ -183,9 +182,19 @@ switch ($_REQUEST['action']) {
                 }
             break;
         }
+
         ob_start();
         $browse->show_objects();
         $results[$browse->get_content_div()] = ob_get_clean();
+    break;
+    case 'get_share_links':
+        $object_type = $_REQUEST['object_type'];
+        $object_id = intval($_REQUEST['object_id']);
+
+        if (Core::is_library_item($object_type) && $object_id > 0) {
+            Share::display_ui_links($object_type, $object_id);
+            exit;
+        }
     break;
     default:
         $results['rfc3514'] = '0x1';

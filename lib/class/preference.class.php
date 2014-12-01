@@ -474,11 +474,15 @@ class Preference extends database_object
         } else {
         if (strlen($results['theme_name']) > 0) {
             $results['theme_path'] = '/themes/' . $results['theme_name'];
+            // In case the theme was removed
+            if (Core::is_readable(AmpConfig::get('prefix') . $results['theme_path'])) {
+                unset($results['theme_path']);
+            }
         }
         // Default theme if we don't get anything from their
         // preferences because we're going to want at least something otherwise
         // the page is going to be really ugly
-        else {
+        if (!isset($results['theme_path'])) {
             $results['theme_path'] = '/themes/reborn';
         }
         }
